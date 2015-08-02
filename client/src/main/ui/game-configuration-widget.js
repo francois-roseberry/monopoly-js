@@ -1,7 +1,11 @@
 (function() {
 	"use strict";
 	
+	var precondition = require('./contract').precondition;
+	
 	exports.render = function (container) {
+		precondition(container, 'Game configuration widget requires container to render into');
+		
 		var panel = d3.select(container[0])
 			.append('div')
 			.classed('monopoly-game-configuration', true);
