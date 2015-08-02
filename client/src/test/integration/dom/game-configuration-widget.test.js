@@ -18,6 +18,10 @@
 			domContext.assertText('h1', 'Monopoly game configuration');
 		});
 		
+		it('displays a control for selecting the computer players', function () {
+			domContext.assertOneOf('.computer-players');
+		});
+		
 		it('displays the start game button', function () {
 			domContext.assertOneOf('button');
 			domContext.assertText('button', 'Start game');
