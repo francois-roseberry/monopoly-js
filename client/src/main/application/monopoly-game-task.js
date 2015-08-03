@@ -12,11 +12,24 @@
 	function configuringStatus() {
 		return {
 			statusName: 'configuring',
-			match : function (visitor) {
+			match: function (visitor) {
 				visitor.configuring();
 			}
 		};
 	}
+	
+	function playingStatus() {
+		return {
+			statusName: 'playing',
+			match: function (visitor) {
+				visitor.playing();
+			}
+		};
+	}
+	
+	MonopolyGameTask.prototype.startGame = function () {
+		this._statusChanged.onNext(playingStatus());
+	};
 	
 	MonopolyGameTask.prototype.statusChanged = function () {
 		return this._statusChanged.asObservable();

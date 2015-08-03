@@ -15,5 +15,13 @@
 				expect(status.statusName).to.eql('configuring');
 			}, done, done);
 		});
+		
+		it('send a playing status when starting game', function (done) {
+			task.statusChanged().skip(1).take(1).subscribe(function (status) {
+				expect(status.statusName).to.eql('playing');
+			}, done, done);
+			
+			task.startGame();
+		});
 	});
 }());

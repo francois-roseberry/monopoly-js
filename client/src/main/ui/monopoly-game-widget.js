@@ -11,7 +11,8 @@
 		
 		gameTask.statusChanged().subscribe(function (status) {
 			status.match({
-				'configuring': renderGameConfiguration(container)
+				'configuring': renderGameConfiguration(container),
+				'playing' : renderGame(container)
 			});
 		});
 	};
@@ -19,6 +20,12 @@
 	function renderGameConfiguration(container) {
 		return function () {
 			GameConfigurationWidget.render(container);
+		};
+	}
+	
+	function renderGame(container) {
+		return function () {
+			d3.select(container[0]).append('div').classed('monopoly-game', true);
 		};
 	}
 }());
