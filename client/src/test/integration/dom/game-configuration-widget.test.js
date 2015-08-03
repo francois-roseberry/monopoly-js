@@ -2,12 +2,16 @@
 	"use strict";
 	
 	var GameConfigurationWidget = require('./game-configuration-widget');
+	var MonopolyGameTask = require('./monopoly-game-task');
 	
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
 	describeInDom('A game configuration widget', function (domContext) {
+		var task;
+		
 		beforeEach(function () {
-			GameConfigurationWidget.render(domContext.rootElement);
+			task = MonopolyGameTask.start();
+			GameConfigurationWidget.render(domContext.rootElement, task);
 		});
 		
 		it('is rendered in the given container', function () {
@@ -25,6 +29,14 @@
 		it('displays the start game button', function () {
 			domContext.assertOneOf('button');
 			domContext.assertText('button', 'Start game');
+		});
+		
+		it('clicking the start game button starts a game', function () {
+			domContext.clickOn('button');
+			
+			task.statusChanged().subscribe(function (status) {
+				expect(status.statusName).to.eql('playing');
+			});
 		});
 	});
 }());

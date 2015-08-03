@@ -24,6 +24,7 @@
 				task.startGame();
 				
 				domContext.assertOneOf('.monopoly-game');
+				domContext.assertNothingOf('.monopoly-game-configuration');
 			});
 	});
 }());

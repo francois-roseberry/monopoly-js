@@ -10,16 +10,17 @@
 		precondition(gameTask, 'A Monopoly game widget requires a game task');
 		
 		gameTask.statusChanged().subscribe(function (status) {
+			d3.select(container[0]).selectAll('*').remove();
 			status.match({
-				'configuring': renderGameConfiguration(container),
+				'configuring': renderGameConfiguration(container, gameTask),
 				'playing' : renderGame(container)
 			});
 		});
 	};
 	
-	function renderGameConfiguration(container) {
+	function renderGameConfiguration(container, gameTask) {
 		return function () {
-			GameConfigurationWidget.render(container);
+			GameConfigurationWidget.render(container, gameTask);
 		};
 	}
 	

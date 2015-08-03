@@ -3,8 +3,9 @@
 	
 	var precondition = require('./contract').precondition;
 	
-	exports.render = function (container) {
+	exports.render = function (container, gameTask) {
 		precondition(container, 'Game configuration widget requires container to render into');
+		precondition(gameTask, 'Game configuration widget requires a game task');
 		
 		var panel = d3.select(container[0])
 			.append('div')
@@ -19,6 +20,9 @@
 		spinner.spinner({ min: 1, max: 7 });
 		spinner.spinner('value', 1);
 		
-		panel.append('button').text('Start game');
+		panel.append('button').text('Start game')
+			.on('click', function () {
+				gameTask.startGame();
+			});
 	};
 }());
