@@ -14,17 +14,21 @@
 			MonopolyGameWidget.render(domContext.rootElement, task);
 		});
 		
-		it('renders the game configuration widget in the given container ' +
-			'when its game task send the configuring status', function () {
-				domContext.assertOneOf('.monopoly-game-configuration');
-			});
+		it('is rendered in the given container', function () {
+			domContext.assertOneOf('.monopoly-game');
+		});
+		
+		it('renders a new game button', function () {
+			domContext.assertOneOf('button');
+			domContext.assertText('button', 'New game');
+		});
+		
+		it('clicking on the new game button creates a new game', function () {
+			domContext.clickOn('button');
 			
-		it('renders the game widget in the given container ' +
-			'when its game task send the playing status', function () {
-				task.startGame();
-				
-				domContext.assertOneOf('.monopoly-game');
-				domContext.assertNothingOf('.monopoly-game-configuration');
+			task.statusChanged().take(1).subscribe(function (status) {
+				expect(status.statusName).to.eql('configuring');
 			});
+		});
 	});
 }());

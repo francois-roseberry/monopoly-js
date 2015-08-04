@@ -2,7 +2,7 @@
 	"use strict";
 	
 	var MonopolyGameTask = require('./monopoly-game-task');
-	var MonopolyGameWidget = require('./monopoly-game-widget');
+	var GameWidget = require('./game-widget');
 	
 	var failFast = require('./fail-fast');
 	
@@ -15,7 +15,7 @@
 		var container = $('.game-container');
 
 		var task = MonopolyGameTask.start();
-		MonopolyGameWidget.render(container, task);
+		GameWidget.render(container, task);
 	}
 }());
 

@@ -28,7 +28,16 @@
 	}
 	
 	MonopolyGameTask.prototype.startGame = function () {
-		this._statusChanged.onNext(playingStatus());
+		var self = this;
+		this._statusChanged.take(1).subscribe(function (status) {
+			if (status.statusName === 'configuring') {
+				self._statusChanged.onNext(playingStatus());
+			}
+		});
+	};
+	
+	MonopolyGameTask.prototype.newGame = function () {
+		this._statusChanged.onNext(configuringStatus());
 	};
 	
 	MonopolyGameTask.prototype.statusChanged = function () {

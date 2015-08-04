@@ -25,12 +25,21 @@
 		});
 		
 		it('never sends two playing statuses in a row', function () {
-			task.startGame();
-			task.startGame();
-			
-			task.statusChanged().skip(1).subscribe(function (status) {
+			task.statusChanged().skip(2).take(1).subscribe(function (status) {
 				throw new Error('should never send a second playing status');
 			});
+			
+			task.startGame();
+			task.startGame();
+		});
+		
+		it('sends a configuring status when creating new game', function (done) {
+			task.startGame();
+			task.newGame();
+			
+			task.statusChanged().take(1).subscribe(function (status) {
+				expect(status.statusName).to.eql('configuring');
+			}, done, done);
 		});
 	});
 }());
