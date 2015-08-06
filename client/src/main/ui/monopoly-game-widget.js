@@ -19,7 +19,13 @@
 			.on('click', function () {
 				gameTask.newGame();
 			});
-			
-		BoardWidget.render($(panel[0]));
+		
+		gameTask.statusChanged().take(1).subscribe(function (status) {
+			status.match({
+				'playing': function (square) {
+					BoardWidget.render($(panel[0]), square);
+				}
+			});
+		});
 	};
 }());

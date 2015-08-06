@@ -11,6 +11,7 @@
 		
 		beforeEach(function () {
 			task = MonopolyGameTask.start();
+			task.startGame();
 			MonopolyGameWidget.render(domContext.rootElement, task);
 		});
 		

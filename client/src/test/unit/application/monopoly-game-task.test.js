@@ -1,6 +1,7 @@
 (function() {
 	"use strict";
 	
+	var Square = require('./square');
 	var MonopolyGameTask = require('./monopoly-game-task');
 	
 	describe('A Monopoly game task', function () {
@@ -23,7 +24,7 @@
 				expect(status.statusName).to.eql('playing');
 				status.match({
 					'playing': function (square) {
-						expect(square).to.eql({});
+						expect(square).to.eql(Square.START_SQUARE);
 					}
 				});
 			}, done, done);

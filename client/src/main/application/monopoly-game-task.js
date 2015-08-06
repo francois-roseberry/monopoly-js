@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	
-	var startSquare = {};
+	var Square = require('./square');
 	
 	exports.start = function () {
 		return new MonopolyGameTask();
@@ -24,7 +24,7 @@
 		return {
 			statusName: 'playing',
 			match: function (visitor) {
-				visitor.playing(startSquare);
+				visitor.playing(Square.START_SQUARE);
 			}
 		};
 	}
