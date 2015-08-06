@@ -1,6 +1,8 @@
 (function() {
 	"use strict";
 	
+	var BoardWidget = require('./board-widget');
+	
 	var precondition = require('./contract').precondition;
 	
 	exports.render = function (container, gameTask) {
@@ -11,10 +13,13 @@
 			.append('div')
 			.classed('monopoly-game', true);
 			
-		panel.append('button')
+		panel.append('div')
+			.append('button')
 			.text('New game')
 			.on('click', function () {
 				gameTask.newGame();
 			});
+			
+		BoardWidget.render($(panel[0]));
 	};
 }());

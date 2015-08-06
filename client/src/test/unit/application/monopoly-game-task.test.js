@@ -16,11 +16,16 @@
 			}, done, done);
 		});
 		
-		it('send a playing status when starting game', function (done) {
+		it('send a playing status when starting game with a square', function (done) {
 			task.startGame();
 			
 			task.statusChanged().take(1).subscribe(function (status) {
 				expect(status.statusName).to.eql('playing');
+				status.match({
+					'playing': function (square) {
+						expect(square).to.eql({});
+					}
+				});
 			}, done, done);
 		});
 		

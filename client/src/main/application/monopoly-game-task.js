@@ -1,6 +1,8 @@
 (function() {
 	"use strict";
 	
+	var startSquare = {};
+	
 	exports.start = function () {
 		return new MonopolyGameTask();
 	};
@@ -22,7 +24,7 @@
 		return {
 			statusName: 'playing',
 			match: function (visitor) {
-				visitor.playing();
+				visitor.playing(startSquare);
 			}
 		};
 	}

@@ -30,5 +30,9 @@
 				expect(status.statusName).to.eql('configuring');
 			});
 		});
+		
+		it('renders the board', function () {
+			domContext.assertOneOf('.monopoly-board');
+		});
 	});
 }());
