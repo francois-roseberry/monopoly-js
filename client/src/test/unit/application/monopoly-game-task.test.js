@@ -24,7 +24,7 @@
 				expect(status.statusName).to.eql('playing');
 				status.match({
 					'playing': function (square) {
-						expect(square).to.eql(Square.START_SQUARE);
+						expect(square).to.eql(Square.SQUARES);
 					}
 				});
 			}, done, done);

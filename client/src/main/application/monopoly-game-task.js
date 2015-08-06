@@ -24,7 +24,7 @@
 		return {
 			statusName: 'playing',
 			match: function (visitor) {
-				visitor.playing(Square.START_SQUARE);
+				visitor.playing(Square.SQUARES);
 			}
 		};
 	}

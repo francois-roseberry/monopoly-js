@@ -8,15 +8,15 @@
 		
 	describeInDom('A Board Widget', function (domContext) {
 		beforeEach(function () {
-			BoardWidget.render(domContext.rootElement, Square.START_SQUARE);
+			BoardWidget.render(domContext.rootElement, Square.SQUARES);
 		});
 		
 		it('is rendered in the correct div', function () {
 			domContext.assertOneOf('.monopoly-board');
 		});
 		
-		it('renders a square', function () {
-			domContext.assertOneOf('.monopoly-square');
+		it('renders all the squares', function () {
+			domContext.assertElementCount('.monopoly-square', Square.SQUARES.length);
 		});
 	});
 }());
