@@ -2,17 +2,17 @@
 	"use strict";
 	
 	exports.SQUARES = [
-		go(), property(0), communityChest(), property(0), incomeTax(),
-		railroad(), property(1), chance(), property(1), property(1),
+		go(), estate(0), communityChest(), estate(0), incomeTax(),
+		railroad(), estate(1), chance(), estate(1), estate(1),
 		
-		jail(), property(2), company(), property(2), property(2),
-		railroad(), property(3), communityChest(), property(3), property(3),
+		jail(), estate(2), company(), estate(2), estate(2),
+		railroad(), estate(3), communityChest(), estate(3), estate(3),
 		
-		parking(), property(4), chance(), property(4), property(4),
-		railroad(), property(5), property(5), company(), property(5),
+		parking(), estate(4), chance(), estate(4), estate(4),
+		railroad(), estate(5), estate(5), company(), estate(5),
 		
-		goToJail(), property(6), property(6), communityChest(), property(6),
-		railroad(), chance(), property(7), luxuryTax(), property(7)
+		goToJail(), estate(6), estate(6), communityChest(), estate(6),
+		railroad(), chance(), estate(7), luxuryTax(), estate(7)
 	];
 	
 	function go() {
@@ -55,7 +55,7 @@
 		return { property: {} };
 	}
 	
-	function property(group) {
+	function estate(group) {
 		return { property: { group: group } };
 	}
 }());
