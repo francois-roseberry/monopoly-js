@@ -35,15 +35,23 @@
 			
 		graphicalSquares
 			.each(function (square) {
-				if (square.property && square.property.group !== 'railroad') {
+				if (square.property && _.isNumber(square.property.group)) {
 					d3.select(this).append('rect')
 						.attr({
 							width: 60,
 							height: 30,
-							fill: 'white',
+							fill: groupColor(square.property.group),
 							stroke: 'black'
 						});
 				}
 			});
 	};
+	
+	function groupColor(group) {
+		var colors = ['purple', 'blue'];
+		
+		precondition(colors[group], 'No color has been defined for group ' + group);
+		
+		return colors[group];
+	}
 }());

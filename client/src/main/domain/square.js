@@ -2,8 +2,8 @@
 	"use strict";
 	
 	exports.SQUARES = [
-		go(), property(), communityChest(), property(), incomeTax(),
-		railroad(), property(), chance(), property(), property()
+		go(), property(0), communityChest(), property(0), incomeTax(),
+		railroad(), property(1), chance(), property(1), property(1)
 	];
 	
 	function go() {
@@ -23,10 +23,10 @@
 	}
 	
 	function railroad() {
-		return { property: { group: 'railroad' } };
+		return { property: {} };
 	}
 	
-	function property() {
-		return { property: { group: 'purple' } };
+	function property(group) {
+		return { property: { group: group } };
 	}
 }());
