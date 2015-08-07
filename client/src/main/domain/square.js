@@ -16,46 +16,79 @@
 	];
 	
 	function go() {
-		return {};
+		return {
+			match: function (visitor) {
+				visitor['go']();
+			}};
 	}
 	
 	function jail() {
-		return {};
+		return {
+			match: function (visitor) {
+				visitor['jail']();
+			}};
 	}
 	
 	function parking() {
-		return {};
+		return {
+			match: function (visitor) {
+				visitor['parking']();
+			}};
 	}
 	
 	function goToJail() {
-		return {};
+		return {
+			match: function (visitor) {
+				visitor['go-to-jail']();
+			}};
 	}
 	
 	function communityChest() {
-		return {};
+		return {
+			match: function (visitor) {
+				visitor['community-chest']();
+			}};
 	}
 	
 	function chance() {
-		return {};
+		return {
+			match: function (visitor) {
+				visitor['chance']();
+			}};
 	}
 	
 	function incomeTax() {
-		return {};
+		return {
+			match: function (visitor) {
+				visitor['income-tax']();
+			}};
 	}
 	
 	function luxuryTax() {
-		return {};
+		return {
+			match: function (visitor) {
+				visitor['luxury-tax']();
+			}};
 	}
 	
 	function company() {
-		return {};
+		return {
+			match: function (visitor) {
+				visitor['company']();
+			}};
 	}
 	
 	function railroad() {
-		return { type: 'railroad' };
+		return {
+			match: function (visitor) {
+				visitor['railroad']();
+			}};
 	}
 	
 	function estate(group) {
-		return { type: 'estate', property: { group: group } };
+		return {
+			match: function (visitor) {
+				visitor['estate'](group);
+			}};
 	}
 }());

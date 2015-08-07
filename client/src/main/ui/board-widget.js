@@ -50,19 +50,27 @@
 	};
 	
 	function renderSquare(container, square) {
-		if (square.type) {
-			if (square.type === 'estate') {
+		square.match({
+			'estate': function (group) {
 				container.append('rect')
 					.attr({
 						width: SQUARE_WIDTH,
 						height: SQUARE_HEIGHT / 5,
-						fill: groupColor(square.property.group),
+						fill: groupColor(group),
 						stroke: 'black'
 					});
-			} else if (square.type === 'railroad') {
-				writeCenteredText(container, 'CHEMIN DE FER');
-			}
-		}
+			},
+			'railroad': function() { writeCenteredText(container, 'CHEMIN DE FER'); },
+			'community-chest': function () { writeCenteredText(container, 'CAISSE'); },
+			'chance': function () { writeCenteredText(container, 'CHANCE'); },
+			'income-tax': function () { writeCenteredText(container, 'IMPÔT SUR'); },
+			'luxury-tax': function () { writeCenteredText(container, 'TAXE'); },
+			'company': _.noop,
+			'go': _.noop,
+			'jail': _.noop,
+			'go-to-jail': _.noop,
+			'parking': _.noop
+		});
 	}
 	
 	function writeCenteredText(container, text) {
