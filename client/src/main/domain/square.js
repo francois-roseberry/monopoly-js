@@ -52,10 +52,10 @@
 	}
 	
 	function railroad() {
-		return { property: {} };
+		return { type: 'railroad' };
 	}
 	
 	function estate(group) {
-		return { property: { group: group } };
+		return { type: 'estate', property: { group: group } };
 	}
 }());

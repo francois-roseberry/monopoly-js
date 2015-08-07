@@ -3,6 +3,9 @@
 	
 	var precondition = require('./contract').precondition;
 	
+	var SQUARE_WIDTH = 100;
+	var SQUARE_HEIGHT = 160;
+	
 	exports.render = function (container, squares) {
 		precondition(container, 'A Board Widget requires a container to render into');
 		precondition(_.isArray(squares), 'A Board Widget requires a list of squares');
@@ -11,8 +14,8 @@
 		var graphicalSquares = d3.select(container[0]).append('svg')
 			.classed('monopoly-board', true)
 			.attr({
-				width: 13 * 60,
-				height: 13 * 60
+				width: 9 * SQUARE_WIDTH + 2 * SQUARE_HEIGHT,
+				height: 9 * SQUARE_WIDTH + 2 * SQUARE_HEIGHT
 			})
 			.selectAll('.monopoly-row')
 			.data(rows)
@@ -26,7 +29,7 @@
 			.append('g')
 			.classed('monopoly-square', true)
 			.attr('transform', function (_, index) {
-				return 'translate(' + (11 * 60 - 60 * index) + ')';
+				return 'translate(' + (9 * SQUARE_WIDTH + SQUARE_HEIGHT - SQUARE_WIDTH * index) + ')';
 			});
 			
 		graphicalSquares
@@ -35,31 +38,51 @@
 				fill: 'white',
 				stroke: 'black',
 				width: function (square, index) {
-					return 60 * (index === 0 ? 2 : 1);
+					return index === 0 ? SQUARE_HEIGHT : SQUARE_WIDTH;
 				},
-				height: 120
+				height: SQUARE_HEIGHT
 			});
 			
 		graphicalSquares
 			.each(function (square) {
-				if (square.property && _.isNumber(square.property.group)) {
-					d3.select(this).append('rect')
-						.attr({
-							width: 60,
-							height: 30,
-							fill: groupColor(square.property.group),
-							stroke: 'black'
-						});
-				}
+				renderSquare(d3.select(this), square);
 			});
 	};
 	
+	function renderSquare(container, square) {
+		if (square.type) {
+			if (square.type === 'estate') {
+				container.append('rect')
+					.attr({
+						width: SQUARE_WIDTH,
+						height: SQUARE_HEIGHT / 5,
+						fill: groupColor(square.property.group),
+						stroke: 'black'
+					});
+			} else if (square.type === 'railroad') {
+				writeCenteredText(container, 'CHEMIN DE FER');
+			}
+		}
+	}
+	
+	function writeCenteredText(container, text) {
+		var textElement = container.append('text')
+			.text(text)
+			.attr({
+				y: 20,
+				'font-size': 10
+			});
+		var textWidth = textElement.node().getComputedTextLength();
+		textElement.attr('x', (SQUARE_WIDTH - textWidth) / 2);
+	}
+	
 	function transformForRow(rowIndex) {
 		var transforms = [
-			'translate(0, ' + (11 * 60) + ')',
-			'translate(' + (2 * 60) + ') rotate(90)',
-			'translate(' + (13 * 60) + ', ' + (2 * 60) + ') rotate(180)',
-			'translate(' + (11 * 60) + ', ' + (13 * 60)  + ') rotate(270)'
+			'translate(0, ' + (9 * SQUARE_WIDTH + SQUARE_HEIGHT) + ')',
+			'translate(' + SQUARE_HEIGHT + ') rotate(90)',
+			'translate(' + (9 * SQUARE_WIDTH + 2 * SQUARE_HEIGHT) + ', ' + SQUARE_HEIGHT + ') rotate(180)',
+			'translate(' + (9 * SQUARE_WIDTH + SQUARE_HEIGHT) + ', ' +
+				(9 * SQUARE_WIDTH + 2 * SQUARE_HEIGHT)  + ') rotate(270)'
 		];
 		
 		precondition(transforms[rowIndex], 'No transform has been defined for row ' + rowIndex);
