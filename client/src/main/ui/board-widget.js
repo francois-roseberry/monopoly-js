@@ -51,16 +51,8 @@
 	
 	function renderSquare(container, square) {
 		square.match({
-			'estate': function (group) {
-				container.append('rect')
-					.attr({
-						width: SQUARE_WIDTH,
-						height: SQUARE_HEIGHT / 5,
-						fill: groupColor(group),
-						stroke: 'black'
-					});
-			},
-			'railroad': function (id) { writeText(container, ['CHEMIN DE FER', railroadName(id)]); },
+			'estate': renderEstate(container),
+			'railroad': renderRailroad(container),
 			'community-chest': function () { writeText(container, ['CAISSE', 'COMMUNE']); },
 			'chance': function () { writeText(container, ['CHANCE']); },
 			'income-tax': function () { writeText(container, ['IMPÔT SUR', 'LE REVENU']); },
@@ -71,6 +63,24 @@
 			'go-to-jail': _.noop,
 			'parking': _.noop
 		});
+	}
+	
+	function renderEstate(container) {
+		return function (group) {
+			container.append('rect')
+				.attr({
+					width: SQUARE_WIDTH,
+					height: SQUARE_HEIGHT / 5,
+					fill: groupColor(group),
+					stroke: 'black'
+				});
+		};
+	}
+	
+	function renderRailroad(container) {
+		return function (id) {
+			writeText(container, ['CHEMIN DE FER', railroadName(id)]);
+		};
 	}
 	
 	function railroadName(id) {
