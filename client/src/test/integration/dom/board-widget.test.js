@@ -15,8 +15,12 @@
 			domContext.assertOneOf('.monopoly-board');
 		});
 		
+		it('renders 4 rows', function () {
+			domContext.assertElementCount('.monopoly-row', 4);
+		});
+		
 		it('renders all the squares', function () {
-			domContext.assertElementCount('.monopoly-square', Square.SQUARES.length);
+			domContext.assertElementCount('.monopoly-row > .monopoly-square', Square.SQUARES.length);
 		});
 	});
 }());
