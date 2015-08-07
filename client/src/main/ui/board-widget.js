@@ -60,11 +60,11 @@
 						stroke: 'black'
 					});
 			},
-			'railroad': function() { writeCenteredText(container, 'CHEMIN DE FER'); },
-			'community-chest': function () { writeCenteredText(container, 'CAISSE'); },
-			'chance': function () { writeCenteredText(container, 'CHANCE'); },
-			'income-tax': function () { writeCenteredText(container, 'IMPÔT SUR'); },
-			'luxury-tax': function () { writeCenteredText(container, 'TAXE'); },
+			'railroad': function (id) { writeText(container, ['CHEMIN DE FER', railroadName(id)]); },
+			'community-chest': function () { writeText(container, ['CAISSE', 'COMMUNE']); },
+			'chance': function () { writeText(container, ['CHANCE']); },
+			'income-tax': function () { writeText(container, ['IMPÔT SUR', 'LE REVENU']); },
+			'luxury-tax': function () { writeText(container, ['TAXE', 'DE LUXE']); },
 			'company': _.noop,
 			'go': _.noop,
 			'jail': _.noop,
@@ -73,11 +73,29 @@
 		});
 	}
 	
-	function writeCenteredText(container, text) {
+	function railroadName(id) {
+		var names = {
+			'reading': 'READING',
+			'penn': 'PENNSYLVANIE',
+			'b-o': 'B. & O.',
+			'small': 'PETIT RÉSEAU'
+		};
+		
+		return names[id];
+	}
+	
+	function writeText(container, lines) {
+		_.each(lines, function (line, index) {
+			var y = 20 + index * 18;
+			writeTextLine(container, line, y);
+		});
+	}
+	
+	function writeTextLine(container, text, y) {
 		var textElement = container.append('text')
 			.text(text)
 			.attr({
-				y: 20,
+				y: y,
 				'font-size': 10
 			});
 		var textWidth = textElement.node().getComputedTextLength();
@@ -98,11 +116,11 @@
 		return transforms[rowIndex];
 	}
 	
-	function groupColor(group) {
+	function groupColor(groupIndex) {
 		var colors = ['midnightblue', 'lightskyblue', 'mediumvioletred', 'orange', 'red', 'yellow', 'green', 'blue'];
 		
-		precondition(colors[group], 'No color has been defined for group ' + group);
+		precondition(colors[groupIndex], 'No color has been defined for group ' + groupIndex);
 		
-		return colors[group];
+		return colors[groupIndex];
 	}
 }());
