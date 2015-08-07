@@ -48,7 +48,7 @@
 	};
 	
 	function groupColor(group) {
-		var colors = ['purple', 'blue'];
+		var colors = ['midnightblue', 'lightskyblue', 'mediumvioletred', 'orange', 'red', 'yellow', 'green', 'blue'];
 		
 		precondition(colors[group], 'No color has been defined for group ' + group);
 		
