@@ -2,17 +2,17 @@
 	"use strict";
 	
 	exports.SQUARES = [
-		go(), estate(0), communityChest(), estate(0), incomeTax(),
-		railroad('reading'), estate(1), chance(), estate(1), estate(1),
+		go(), estate('med', 0, 60), communityChest(), estate('baltic', 0, 60), incomeTax(),
+		railroad('reading'), estate('east', 1, 100), chance(), estate('vt', 1, 100), estate('conn', 1, 120),
 		
-		jail(), estate(2), company(), estate(2), estate(2),
-		railroad('penn'), estate(3), communityChest(), estate(3), estate(3),
+		jail(), estate('charles', 2, 140), company('electric'), estate('us', 2, 140), estate('vn', 2, 160),
+		railroad('penn'), estate('jack', 3, 180), communityChest(), estate('tn', 3, 180), estate('ny', 3, 200),
 		
-		parking(), estate(4), chance(), estate(4), estate(4),
-		railroad('b-o'), estate(5), estate(5), company(), estate(5),
+		parking(), estate('kt', 4, 220), chance(), estate('in', 4, 220), estate('il', 4, 240),
+		railroad('b-o'), estate('at', 5, 260), estate('vr', 5, 260), company('water'), estate('marvin', 5, 280),
 		
-		goToJail(), estate(6), estate(6), communityChest(), estate(6),
-		railroad('small'), chance(), estate(7), luxuryTax(), estate(7)
+		goToJail(), estate('pa', 6, 300), estate('nc', 6, 300), communityChest(), estate('penn', 6, 320),
+		railroad('short'), chance(), estate('pk', 7, 350), luxuryTax(), estate('bw', 7, 400)
 	];
 	
 	function go() {
@@ -71,24 +71,24 @@
 			}};
 	}
 	
-	function company() {
+	function company(id) {
 		return {
 			match: function (visitor) {
-				visitor['company']();
+				visitor['company'](id, 150);
 			}};
 	}
 	
 	function railroad(id) {
 		return {
 			match: function (visitor) {
-				visitor['railroad'](id);
+				visitor['railroad'](id, 200);
 			}};
 	}
 	
-	function estate(group) {
+	function estate(id, group, price) {
 		return {
 			match: function (visitor) {
-				visitor['estate'](group);
+				visitor['estate'](id, group, price);
 			}};
 	}
 }());
