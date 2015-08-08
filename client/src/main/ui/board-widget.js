@@ -59,7 +59,7 @@
 			'luxury-tax': function () { writeText(container, ['TAXE', 'DE LUXE']); },
 			'company': renderCompany(container),
 			'go': _.noop,
-			'jail': _.noop,
+			'jail': renderJail(container),
 			'go-to-jail': _.noop,
 			'parking': _.noop
 		});
@@ -90,6 +90,27 @@
 		return function (id, price) {
 			writeText(container, companyName(id));
 			writePrice(container, price);
+		};
+	}
+	
+	function renderJail(container) {
+		return function () {
+			container.append('rect')
+				.attr({
+					width: SQUARE_HEIGHT * 3/4,
+					height: SQUARE_HEIGHT * 3/4,
+					fill: 'orangered',
+					stroke: 'black'
+				});
+				
+			container.append('rect')
+				.attr({
+					width: SQUARE_HEIGHT * 3/8,
+					height: SQUARE_HEIGHT * 3/8,
+					fill: 'white',
+					stroke: 'black',
+					transform: 'translate(' + (SQUARE_HEIGHT * 3/11) + ') rotate(45)'
+				});
 		};
 	}
 	
