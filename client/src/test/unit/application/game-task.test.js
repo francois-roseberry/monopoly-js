@@ -2,13 +2,13 @@
 	"use strict";
 	
 	var Square = require('./square');
-	var MonopolyGameTask = require('./monopoly-game-task');
+	var GameTask = require('./game-task');
 	
 	describe('A Monopoly game task', function () {
 		var task;
 		
 		beforeEach(function () {
-			task = MonopolyGameTask.start();
+			task = GameTask.start();
 		});
 		
 		it('send a configuring status at start', function (done) {

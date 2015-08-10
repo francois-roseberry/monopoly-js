@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	
-	var MonopolyGameTask = require('./monopoly-game-task');
+	var GameTask = require('./game-task');
 	var GameWidget = require('./game-widget');
 	
 	var failFast = require('./fail-fast');
@@ -14,7 +14,7 @@
 	function startApplication() {
 		var container = $('.game-container');
 
-		var task = MonopolyGameTask.start();
+		var task = GameTask.start();
 		GameWidget.render(container, task);
 	}
 }());

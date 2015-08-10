@@ -2,7 +2,7 @@
 	"use strict";
 	
 	var GameWidget = require('./game-widget');
-	var MonopolyGameTask = require('./monopoly-game-task');
+	var GameTask = require('./game-task');
 	
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
@@ -10,7 +10,7 @@
 		var task;
 		
 		beforeEach(function () {
-			task = MonopolyGameTask.start();
+			task = GameTask.start();
 			GameWidget.render(domContext.rootElement, task);
 		});
 		

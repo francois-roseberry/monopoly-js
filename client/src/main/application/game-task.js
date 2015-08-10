@@ -4,10 +4,10 @@
 	var Square = require('./square');
 	
 	exports.start = function () {
-		return new MonopolyGameTask();
+		return new GameTask();
 	};
 
-	function MonopolyGameTask() {
+	function GameTask() {
 		this._statusChanged = new Rx.BehaviorSubject(configuringStatus());
 	}
 	
@@ -29,7 +29,7 @@
 		};
 	}
 	
-	MonopolyGameTask.prototype.startGame = function () {
+	GameTask.prototype.startGame = function () {
 		var self = this;
 		this._statusChanged.take(1).subscribe(function (status) {
 			if (status.statusName === 'configuring') {
@@ -38,11 +38,11 @@
 		});
 	};
 	
-	MonopolyGameTask.prototype.newGame = function () {
+	GameTask.prototype.newGame = function () {
 		this._statusChanged.onNext(configuringStatus());
 	};
 	
-	MonopolyGameTask.prototype.statusChanged = function () {
+	GameTask.prototype.statusChanged = function () {
 		return this._statusChanged.asObservable();
 	};
 }());
