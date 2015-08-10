@@ -7,10 +7,11 @@
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
 	describeInDom('A Game widget', function (domContext) {
+		var PLAYERS = [{}, {}, {}];
 		var task;
 		
 		beforeEach(function () {
-			task = GameTask.start();
+			task = GameTask.start(PLAYERS);
 			GameWidget.render(domContext.rootElement, task);
 		});
 		
@@ -21,7 +22,7 @@
 			
 		it('renders the monopoly game widget in the given container ' +
 			'when its game task send the playing status', function () {
-				task.startGame();
+				task.startGame(PLAYERS);
 				
 				domContext.assertOneOf('.monopoly-game');
 				domContext.assertNothingOf('.monopoly-game-configuration');

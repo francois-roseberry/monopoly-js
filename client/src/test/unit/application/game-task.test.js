@@ -4,8 +4,9 @@
 	var Square = require('./square');
 	var GameTask = require('./game-task');
 	
-	describe('A Monopoly game task', function () {
+	describe('A Game task', function () {
 		var task;
+		var PLAYERS = [{}, {}, {}];
 		
 		beforeEach(function () {
 			task = GameTask.start();
@@ -17,14 +18,15 @@
 			}, done, done);
 		});
 		
-		it('send a playing status when starting game with a square', function (done) {
-			task.startGame();
+		it('send a playing status when starting game with board and players', function (done) {
+			task.startGame(PLAYERS);
 			
 			task.statusChanged().take(1).subscribe(function (status) {
 				expect(status.statusName).to.eql('playing');
 				status.match({
-					'playing': function (square) {
-						expect(square).to.eql(Square.SQUARES);
+					'playing': function (squares, players) {
+						expect(squares).to.eql(Square.SQUARES);
+						expect(players).to.eql(PLAYERS);
 					}
 				});
 			}, done, done);
@@ -35,12 +37,12 @@
 				throw new Error('should never send a second playing status');
 			});
 			
-			task.startGame();
-			task.startGame();
+			task.startGame(PLAYERS);
+			task.startGame(PLAYERS);
 		});
 		
 		it('sends a configuring status when creating new game', function (done) {
-			task.startGame();
+			task.startGame(PLAYERS);
 			task.newGame();
 			
 			task.statusChanged().take(1).subscribe(function (status) {

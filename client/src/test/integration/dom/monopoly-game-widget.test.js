@@ -10,8 +10,9 @@
 		var task;
 		
 		beforeEach(function () {
+			var PLAYERS = [{}, {}, {}];
 			task = GameTask.start();
-			task.startGame();
+			task.startGame(PLAYERS);
 			MonopolyGameWidget.render(domContext.rootElement, task);
 		});
 		

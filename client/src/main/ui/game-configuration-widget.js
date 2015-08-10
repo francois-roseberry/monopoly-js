@@ -22,7 +22,15 @@
 		
 		panel.append('button').text('Start game')
 			.on('click', function () {
-				gameTask.startGame();
+				gameTask.startGame(players(spinner.spinner('value')));
 			});
 	};
+	
+	function players(computers) {
+		var allPlayers = [{}];
+		for (var i = 0; i < computers; i++) {
+			allPlayers.push({});
+		}
+		return allPlayers;
+	}
 }());
