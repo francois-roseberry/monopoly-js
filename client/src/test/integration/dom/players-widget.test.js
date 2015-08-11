@@ -25,5 +25,9 @@
 		it('renders the player names', function () {
 			domContext.assertElementCount('.player-panel > .player-name', testPlayers.PLAYERS.length);
 		});
+		
+		it('renders the player amounts', function () {
+			domContext.assertElementCount('.player-panel > .player-money', testPlayers.PLAYERS.length);
+		});
 	});
 }());

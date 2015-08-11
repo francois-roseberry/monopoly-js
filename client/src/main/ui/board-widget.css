@@ -1,3 +1,8 @@
+.monopoly-board {
+	left: 100px;
+	display: block;
+}
+
 .square {
 	fill: 'white'
 }

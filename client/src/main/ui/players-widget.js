@@ -16,15 +16,24 @@
 	
 	function renderPlayerPanels(container) {
 		return function (players) {
-			container.selectAll('.player-panel')
+			var panels = container.selectAll('.player-panel')
 				.data(players)
 				.enter()
 				.append('div')
-				.classed('player-panel', true)
+				.classed('player-panel', true);
+				
+			panels
 				.append('span')
 				.classed('player-name', true)
 				.text(function (player) {
 					return player.name;
+				});
+				
+			panels
+				.append('span')
+				.classed('player-money', true)
+				.text(function (player) {
+					return player.money + ' $';
 				});
 		};
 	}

@@ -18,7 +18,7 @@
 	
 	function forGame(players) {
 		return _.map(players, function (player, index) {
-			return { name: 'Joueur ' + (index + 1)};
+			return { name: 'Joueur ' + (index + 1), money: 1500 };
 		});
 	}
 	

@@ -24,6 +24,7 @@
 				expect(players.length).to.eql(testPlayers.PLAYERS.length);
 				_.each(players, function (player, index) {
 					expect(player.name).to.eql('Joueur ' + (index + 1));
+					expect(player.money).to.eql(1500);
 				});
 			}, done, done);
 		});
