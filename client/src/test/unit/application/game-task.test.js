@@ -31,7 +31,7 @@
 						});
 						
 						playGameTask.players().take(1).subscribe(function (players) {
-							expect(players).to.eql(testPlayers.PLAYERS);
+							expect(players.length).to.eql(testPlayers.PLAYERS.length);
 						});
 					}
 				});

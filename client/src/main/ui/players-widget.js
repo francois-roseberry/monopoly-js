@@ -20,7 +20,12 @@
 				.data(players)
 				.enter()
 				.append('div')
-				.classed('player-panel', true);
+				.classed('player-panel', true)
+				.append('span')
+				.classed('player-name', true)
+				.text(function (player) {
+					return player.name;
+				});
 		};
 	}
 }());

@@ -12,8 +12,14 @@
 	
 	function PlayGameTask(squares, players) {
 		this._squares = new Rx.BehaviorSubject(squares);
-		this._players = new Rx.BehaviorSubject(players);
+		this._players = new Rx.BehaviorSubject(forGame(players));
 		this._completed = new Rx.AsyncSubject();
+	}
+	
+	function forGame(players) {
+		return _.map(players, function (player, index) {
+			return { name: 'Joueur ' + (index + 1)};
+		});
 	}
 	
 	PlayGameTask.prototype.players = function () {

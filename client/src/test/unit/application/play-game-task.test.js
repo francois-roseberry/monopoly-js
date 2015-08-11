@@ -21,7 +21,10 @@
 		
 		it('at start, sends an event with the list of players', function (done) {
 			task.players().take(1).subscribe(function (players) {
-				expect(players).to.eql(testPlayers.PLAYERS);
+				expect(players.length).to.eql(testPlayers.PLAYERS.length);
+				_.each(players, function (player, index) {
+					expect(player.name).to.eql('Joueur ' + (index + 1));
+				});
 			}, done, done);
 		});
 		
