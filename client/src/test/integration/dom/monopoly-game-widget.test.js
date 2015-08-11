@@ -1,18 +1,18 @@
 (function() {
 	"use strict";
 	
+	var Square = require('./square');
 	var MonopolyGameWidget = require('./monopoly-game-widget');
-	var GameTask = require('./game-task');
+	var PlayGameTask = require('./play-game-task');
 	
+	var testPlayers = require('./test-players');
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
 	describeInDom('A Monopoly game widget', function (domContext) {
 		var task;
 		
 		beforeEach(function () {
-			var PLAYERS = [{}, {}, {}];
-			task = GameTask.start();
-			task.startGame(PLAYERS);
+			task = PlayGameTask.start(Square.SQUARES, testPlayers.PLAYERS);
 			MonopolyGameWidget.render(domContext.rootElement, task);
 		});
 		
@@ -25,16 +25,18 @@
 			domContext.assertText('button', 'New game');
 		});
 		
-		it('clicking on the new game button creates a new game', function () {
+		it('clicking on the new game button stops the task', function (done) {
 			domContext.clickOn('button');
 			
-			task.statusChanged().take(1).subscribe(function (status) {
-				expect(status.statusName).to.eql('configuring');
-			});
+			task.completed().subscribe(_.noop, done, done);
 		});
 		
 		it('renders the board', function () {
 			domContext.assertOneOf('.monopoly-board');
+		});
+		
+		it('renders the players widget', function () {
+			domContext.assertOneOf('.monopoly-players');
 		});
 	});
 }());

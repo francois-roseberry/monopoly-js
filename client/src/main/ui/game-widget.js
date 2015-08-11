@@ -14,7 +14,7 @@
 			d3.select(container[0]).selectAll('*').remove();
 			status.match({
 				'configuring': renderGameConfiguration(container, gameTask),
-				'playing' : renderGame(container, gameTask)
+				'playing' : renderGame(container)
 			});
 		});
 	};
@@ -25,8 +25,8 @@
 		};
 	}
 	
-	function renderGame(container, gameTask) {
-		return function () {
+	function renderGame(container) {
+		return function (gameTask) {
 			MonopolyGameWidget.render(container, gameTask);
 		};
 	}

@@ -8,46 +8,53 @@
 	
 	exports.render = function (container, squares) {
 		precondition(container, 'A Board Widget requires a container to render into');
-		precondition(_.isArray(squares), 'A Board Widget requires a list of squares');
+		precondition(squares, 'A Board Widget requires an observable of the list of squares');
 		
-		var rows = [squares.slice(0, 10), squares.slice(10, 20), squares.slice(20, 30), squares.slice(30, 40)];
-		var graphicalSquares = d3.select(container[0]).append('svg')
+		var board = d3.select(container[0]).append('svg')
 			.classed('monopoly-board', true)
 			.attr({
 				width: 9 * SQUARE_WIDTH + 2 * SQUARE_HEIGHT,
 				height: 9 * SQUARE_WIDTH + 2 * SQUARE_HEIGHT
-			})
-			.selectAll('.monopoly-row')
-			.data(rows)
-			.enter()
-			.append('g')
-			.classed('monopoly-row', true)
-			.attr('transform', function (_, index) { return transformForRow(index); })
-			.selectAll('.monopoly-square')
-			.data(function (row) { return row; })
-			.enter()
-			.append('g')
-			.classed('monopoly-square', true)
-			.attr('transform', function (_, index) {
-				return 'translate(' + (9 * SQUARE_WIDTH + SQUARE_HEIGHT - SQUARE_WIDTH * index) + ')';
 			});
-			
-		graphicalSquares
-			.append('rect')
-			.attr({
-				fill: 'white',
-				stroke: 'black',
-				width: function (square, index) {
-					return index === 0 ? SQUARE_HEIGHT : SQUARE_WIDTH;
-				},
-				height: SQUARE_HEIGHT
-			});
-			
-		graphicalSquares
-			.each(function (square) {
-				renderSquare(d3.select(this), square);
-			});
+		
+		squares.subscribe(renderSquares(board));
 	};
+	
+	function renderSquares(container) {
+		return function (squares) {
+			var rows = [squares.slice(0, 10), squares.slice(10, 20), squares.slice(20, 30), squares.slice(30, 40)];
+			var graphicalSquares = container.selectAll('.monopoly-row')
+				.data(rows)
+				.enter()
+				.append('g')
+				.classed('monopoly-row', true)
+				.attr('transform', function (_, index) { return transformForRow(index); })
+				.selectAll('.monopoly-square')
+				.data(function (row) { return row; })
+				.enter()
+				.append('g')
+				.classed('monopoly-square', true)
+				.attr('transform', function (_, index) {
+					return 'translate(' + (9 * SQUARE_WIDTH + SQUARE_HEIGHT - SQUARE_WIDTH * index) + ')';
+				});
+				
+			graphicalSquares
+				.append('rect')
+				.attr({
+					fill: 'white',
+					stroke: 'black',
+					width: function (square, index) {
+						return index === 0 ? SQUARE_HEIGHT : SQUARE_WIDTH;
+					},
+					height: SQUARE_HEIGHT
+				});
+				
+			graphicalSquares
+				.each(function (square) {
+					renderSquare(d3.select(this), square);
+				});
+			};
+	}
 	
 	function renderSquare(container, square) {
 		square.match({

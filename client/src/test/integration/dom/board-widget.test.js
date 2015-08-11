@@ -3,12 +3,15 @@
 	
 	var Square = require('./square');
 	var BoardWidget = require('./board-widget');
+	var PlayGameTask = require('./play-game-task');
 	
+	var testPlayers = require('./test-players');
 	var describeInDom = require('./dom-fixture').describeInDom;
 		
 	describeInDom('A Board Widget', function (domContext) {
 		beforeEach(function () {
-			BoardWidget.render(domContext.rootElement, Square.SQUARES);
+			var task = PlayGameTask.start(Square.SQUARES, testPlayers.PLAYERS);
+			BoardWidget.render(domContext.rootElement, task.squares());
 		});
 		
 		it('is rendered in the correct div', function () {

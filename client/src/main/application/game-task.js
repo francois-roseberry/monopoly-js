@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var Square = require('./square');
+	var PlayGameTask = require('./play-game-task');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -22,11 +23,16 @@
 		};
 	}
 	
-	function playingStatus(players) {
+	function playingStatus(players, self) {
 		return {
 			statusName: 'playing',
 			match: function (visitor) {
-				visitor.playing(Square.SQUARES, players);
+				var task = PlayGameTask.start(Square.SQUARES, players);
+				var statusChanged = self._statusChanged;
+				task.completed().subscribe(function () {
+					statusChanged.onNext(configuringStatus());
+				});
+				visitor.playing(task);
 			}
 		};
 	}
@@ -37,13 +43,9 @@
 		var self = this;
 		this._statusChanged.take(1).subscribe(function (status) {
 			if (status.statusName === 'configuring') {
-				self._statusChanged.onNext(playingStatus(players));
+				self._statusChanged.onNext(playingStatus(players, self));
 			}
 		});
-	};
-	
-	GameTask.prototype.newGame = function () {
-		this._statusChanged.onNext(configuringStatus());
 	};
 	
 	GameTask.prototype.statusChanged = function () {
