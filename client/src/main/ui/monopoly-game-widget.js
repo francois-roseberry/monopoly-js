@@ -21,7 +21,7 @@
 				playGameTask.stop();
 			});
 		
-		BoardWidget.render($(panel[0]), playGameTask.squares());
-		PlayersWidget.render($(panel[0]), playGameTask.players());
+		BoardWidget.render($(panel[0]), playGameTask.gameState());
+		PlayersWidget.render($(panel[0]), playGameTask.gameState());
 	};
 }());

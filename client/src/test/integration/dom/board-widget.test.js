@@ -11,7 +11,7 @@
 	describeInDom('A Board Widget', function (domContext) {
 		beforeEach(function () {
 			var task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
-			BoardWidget.render(domContext.rootElement, task.squares());
+			BoardWidget.render(domContext.rootElement, task.gameState());
 		});
 		
 		it('is rendered in the correct div', function () {
@@ -24,6 +24,10 @@
 		
 		it('renders all the squares', function () {
 			domContext.assertElementCount('.monopoly-row > .monopoly-square', Board.SQUARES.length);
+		});
+		
+		it('renders a token for each player', function () {
+			domContext.assertElementCount('.player-token', testPlayers.PLAYERS.length);
 		});
 	});
 }());

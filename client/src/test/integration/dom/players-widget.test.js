@@ -11,7 +11,7 @@
 	describeInDom('A Players widget', function (domContext) {
 		beforeEach(function () {
 			var task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
-			PlayersWidget.render(domContext.rootElement, task.players());
+			PlayersWidget.render(domContext.rootElement, task.gameState());
 		});
 		
 		it('is rendered in the given container', function () {

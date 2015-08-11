@@ -13,18 +13,14 @@
 			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
 		});
 		
-		it('at start, sends an event with the list of squares', function (done) {
-			task.squares().take(1).subscribe(function (squares) {
-				expect(squares).to.eql(Board.SQUARES);
-			}, done, done);
-		});
-		
-		it('at start, sends an event with the list of players', function (done) {
-			task.players().take(1).subscribe(function (players) {
-				expect(players.length).to.eql(testPlayers.PLAYERS.length);
-				_.each(players, function (player, index) {
+		it('at start, sends an event with the initial game state', function (done) {
+			task.gameState().take(1).subscribe(function (state) {
+				expect(state.squares).to.eql(Board.SQUARES);
+				expect(state.players.length).to.eql(testPlayers.PLAYERS.length);
+				_.each(state.players, function (player, index) {
 					expect(player.name).to.eql('Joueur ' + (index + 1));
 					expect(player.money).to.eql(1500);
+					expect(player.position).to.eql(0);
 				});
 			}, done, done);
 		});

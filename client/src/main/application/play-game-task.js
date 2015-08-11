@@ -11,23 +11,25 @@
 	};
 	
 	function PlayGameTask(squares, players) {
-		this._squares = new Rx.BehaviorSubject(squares);
-		this._players = new Rx.BehaviorSubject(forGame(players));
+		this._gameState = new Rx.BehaviorSubject(initialGameState(squares, players));
 		this._completed = new Rx.AsyncSubject();
+	}
+	
+	function initialGameState(squares, players) {
+		return {
+			squares: squares,
+			players: forGame(players)
+		};
 	}
 	
 	function forGame(players) {
 		return _.map(players, function (player, index) {
-			return { name: 'Joueur ' + (index + 1), money: 1500 };
+			return { name: 'Joueur ' + (index + 1), money: 1500, position: 0 };
 		});
 	}
 	
-	PlayGameTask.prototype.players = function () {
-		return this._players.asObservable();
-	};
-	
-	PlayGameTask.prototype.squares = function () {
-		return this._squares.asObservable();
+	PlayGameTask.prototype.gameState = function () {
+		return this._gameState.asObservable();
 	};
 	
 	PlayGameTask.prototype.completed = function () {

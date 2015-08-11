@@ -3,21 +3,21 @@
 	
 	var precondition =  require('./contract').precondition;
 	
-	exports.render = function (container, players) {
+	exports.render = function (container, gameState) {
 		precondition(container, 'Players widget requires a container to render into');
-		precondition(players, 'Players widget requires an observable of the list of players');
+		precondition(gameState, 'Players widget requires an observable of the gameState');
 		
 		var panel = d3.select(container[0])
 			.append('div')
 			.classed('monopoly-players', true);
 			
-		players.subscribe(renderPlayerPanels(panel));
+		gameState.subscribe(renderPlayerPanels(panel));
 	};
 	
 	function renderPlayerPanels(container) {
-		return function (players) {
+		return function (state) {
 			var panels = container.selectAll('.player-panel')
-				.data(players)
+				.data(state.players)
 				.enter()
 				.append('div')
 				.classed('player-panel', true);

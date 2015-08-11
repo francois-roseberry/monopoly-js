@@ -26,12 +26,9 @@
 				expect(status.statusName).to.eql('playing');
 				status.match({
 					'playing': function (playGameTask) {
-						playGameTask.squares().take(1).subscribe(function (squares) {
-							expect(squares).to.eql(Board.SQUARES);
-						});
-						
-						playGameTask.players().take(1).subscribe(function (players) {
-							expect(players.length).to.eql(testPlayers.PLAYERS.length);
+						playGameTask.gameState().take(1).subscribe(function (state) {
+							expect(state.squares).to.eql(Board.SQUARES);
+							expect(state.players.length).to.eql(testPlayers.PLAYERS.length);
 						});
 					}
 				});

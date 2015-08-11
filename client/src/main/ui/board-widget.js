@@ -5,10 +5,11 @@
 	
 	var SQUARE_WIDTH = 100;
 	var SQUARE_HEIGHT = 160;
+	var SQUARES_PER_ROW = 10;
 	
-	exports.render = function (container, squares) {
+	exports.render = function (container, gameState) {
 		precondition(container, 'A Board Widget requires a container to render into');
-		precondition(squares, 'A Board Widget requires an observable of the list of squares');
+		precondition(gameState, 'A Board Widget requires an observable of the gameState');
 		
 		var board = d3.select(container[0]).append('svg')
 			.classed('monopoly-board', true)
@@ -17,20 +18,26 @@
 				height: 9 * SQUARE_WIDTH + 2 * SQUARE_HEIGHT
 			});
 		
-		squares.subscribe(renderSquares(board));
+		gameState.subscribe(renderSquares(board));
 	};
 	
 	function renderSquares(container) {
-		return function (squares) {
-			var rows = [squares.slice(0, 10), squares.slice(10, 20), squares.slice(20, 30), squares.slice(30, 40)];
-			var graphicalSquares = container.selectAll('.monopoly-row')
+		return function (state) {
+			var rows = [
+				state.squares.slice(0, SQUARES_PER_ROW),
+				state.squares.slice(SQUARES_PER_ROW, SQUARES_PER_ROW * 2),
+				state.squares.slice(SQUARES_PER_ROW * 2, SQUARES_PER_ROW * 3),
+				state.squares.slice(SQUARES_PER_ROW * 3, SQUARES_PER_ROW * 4)
+			];
+			
+			var squares = container.selectAll('.monopoly-row')
 				.data(rows)
 				.enter()
 				.append('g')
 				.classed('monopoly-row', true)
 				.attr('transform', function (_, index) { return transformForRow(index); })
 				.selectAll('.monopoly-square')
-				.data(function (row) { return row; })
+				.data(squaresInRow)
 				.enter()
 				.append('g')
 				.classed('monopoly-square', true)
@@ -38,25 +45,35 @@
 					return 'translate(' + (9 * SQUARE_WIDTH + SQUARE_HEIGHT - SQUARE_WIDTH * index) + ')';
 				});
 				
-			graphicalSquares
+			squares
 				.append('rect')
 				.attr({
 					fill: 'white',
 					stroke: 'black',
-					width: function (square, index) {
+					width: function (_, index) {
 						return index === 0 ? SQUARE_HEIGHT : SQUARE_WIDTH;
 					},
 					height: SQUARE_HEIGHT
 				});
 				
-			graphicalSquares
-				.each(function (square) {
-					renderSquare(d3.select(this), square);
+			squares
+				.each(function (square, index) {
+					var squareIndex = index + square.rowIndex * SQUARES_PER_ROW;
+					renderSquare(d3.select(this), square.square, squareIndex, state.players);
 				});
 			};
 	}
 	
-	function renderSquare(container, square) {
+	function squaresInRow(row, index) {
+		return _.map(row, function (square) {
+					return {
+						square: square,
+						rowIndex : index
+					};
+				});
+	}
+	
+	function renderSquare(container, square, squareIndex, players) {
 		square.match({
 			'estate': renderEstate(container),
 			'railroad': renderRailroad(container),
@@ -70,6 +87,24 @@
 			'go-to-jail': _.noop,
 			'parking': _.noop
 		});
+		renderPlayerTokens(container, squareIndex, players);
+	}
+	
+	function renderPlayerTokens(container, squareIndex, players) {
+		var playersOnSquare = _.filter(players, function (player) {
+			return player.position === squareIndex;
+		});
+		
+		container.selectAll('.player-token')
+			.data(playersOnSquare)
+			.enter()
+			.append('circle')
+			.classed('player-token', true)
+			.attr({
+				cx: SQUARE_WIDTH / 4,
+				cy: SQUARE_HEIGHT / 4,
+				r: 5
+			});
 	}
 	
 	function renderEstate(container) {
