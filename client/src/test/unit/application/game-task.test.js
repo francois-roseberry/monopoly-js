@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	
-	var Square = require('./square');
+	var Board = require('./board');
 	var GameTask = require('./game-task');
 	
 	var testPlayers = require('./test-players');
@@ -27,7 +27,7 @@
 				status.match({
 					'playing': function (playGameTask) {
 						playGameTask.squares().take(1).subscribe(function (squares) {
-							expect(squares).to.eql(Square.SQUARES);
+							expect(squares).to.eql(Board.SQUARES);
 						});
 						
 						playGameTask.players().take(1).subscribe(function (players) {

@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	
-	var Square = require('./square');
+	var Board = require('./board');
 	var PlayGameTask = require('./play-game-task');
 	
 	var precondition = require('./contract').precondition;
@@ -27,7 +27,7 @@
 		return {
 			statusName: 'playing',
 			match: function (visitor) {
-				var task = PlayGameTask.start(Square.SQUARES, players);
+				var task = PlayGameTask.start(Board.SQUARES, players);
 				var statusChanged = self._statusChanged;
 				task.completed().subscribe(function () {
 					statusChanged.onNext(configuringStatus());

@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	
-	var Square = require('./square');
+	var Board = require('./board');
 	var BoardWidget = require('./board-widget');
 	var PlayGameTask = require('./play-game-task');
 	
@@ -10,7 +10,7 @@
 		
 	describeInDom('A Board Widget', function (domContext) {
 		beforeEach(function () {
-			var task = PlayGameTask.start(Square.SQUARES, testPlayers.PLAYERS);
+			var task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
 			BoardWidget.render(domContext.rootElement, task.squares());
 		});
 		
@@ -23,7 +23,7 @@
 		});
 		
 		it('renders all the squares', function () {
-			domContext.assertElementCount('.monopoly-row > .monopoly-square', Square.SQUARES.length);
+			domContext.assertElementCount('.monopoly-row > .monopoly-square', Board.SQUARES.length);
 		});
 	});
 }());

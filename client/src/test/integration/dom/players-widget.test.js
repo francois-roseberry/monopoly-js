@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	
-	var Square = require('./square');
+	var Board = require('./board');
 	var PlayersWidget = require('./players-widget');
 	var PlayGameTask = require('./play-game-task');
 	
@@ -10,7 +10,7 @@
 	
 	describeInDom('A Players widget', function (domContext) {
 		beforeEach(function () {
-			var task = PlayGameTask.start(Square.SQUARES, testPlayers.PLAYERS);
+			var task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
 			PlayersWidget.render(domContext.rootElement, task.players());
 		});
 		

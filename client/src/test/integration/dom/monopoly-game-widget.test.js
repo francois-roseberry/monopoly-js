@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	
-	var Square = require('./square');
+	var Board = require('./board');
 	var MonopolyGameWidget = require('./monopoly-game-widget');
 	var PlayGameTask = require('./play-game-task');
 	
@@ -12,7 +12,7 @@
 		var task;
 		
 		beforeEach(function () {
-			task = PlayGameTask.start(Square.SQUARES, testPlayers.PLAYERS);
+			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
 			MonopolyGameWidget.render(domContext.rootElement, task);
 		});
 		
