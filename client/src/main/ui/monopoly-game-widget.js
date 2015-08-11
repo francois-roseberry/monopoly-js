@@ -15,6 +15,7 @@
 			.classed('monopoly-game', true);
 			
 		panel.append('div')
+			.classed('monopoly-header')
 			.append('button')
 			.text('New game')
 			.on('click', function () {
