@@ -84,7 +84,7 @@
 			'income-tax': function () { writeText(container, ['IMPÔT SUR', 'LE REVENU']); },
 			'luxury-tax': function () { writeText(container, ['TAXE', 'DE LUXE']); },
 			'company': renderCompany(container),
-			'go': _.noop,
+			'go': renderStart(container),
 			'jail': renderJail(container),
 			'go-to-jail': _.noop,
 			'parking': _.noop
@@ -140,6 +140,14 @@
 				
 			writeText(container, ['CHEMIN DE FER', railroadName(id)]);
 			writePrice(container, price);
+		};
+	}
+	
+	function renderStart(container) {
+		return function () {
+			container.append('g')
+				.attr('transform', 'translate(6, 130)')
+				.html(Symbols.arrow());
 		};
 	}
 	
