@@ -3,6 +3,8 @@
 	
 	var precondition = require('./contract').precondition;
 	
+	var Symbols = require('./symbols');
+	
 	var SQUARE_WIDTH = 100;
 	var SQUARE_HEIGHT = 160;
 	var SQUARES_PER_ROW = 10;
@@ -132,6 +134,10 @@
 	
 	function renderRailroad(container) {
 		return function (id, price) {
+			container.append('g')
+				.attr('transform', 'scale(0.25) translate(50, 150)')
+				.html(Symbols.train());
+				
 			writeText(container, ['CHEMIN DE FER', railroadName(id)]);
 			writePrice(container, price);
 		};
