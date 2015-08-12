@@ -3,6 +3,7 @@
 	
 	var PlayGameTask = require('./play-game-task');
 	var Board = require('./board');
+	var PlayerColors = require('./player-colors').colors();
 	
 	var testPlayers = require('./test-players');
 	
@@ -21,6 +22,7 @@
 					expect(player.name).to.eql('Joueur ' + (index + 1));
 					expect(player.money).to.eql(1500);
 					expect(player.position).to.eql(0);
+					expect(player.color).to.eql(PlayerColors[index]);
 				});
 			}, done, done);
 		});

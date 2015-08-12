@@ -22,6 +22,10 @@
 			domContext.assertElementCount('.player-panel', testPlayers.PLAYERS.length);
 		});
 		
+		it('renders the player tokens', function () {
+			domContext.assertElementCount('.player-panel > .player-panel-token', testPlayers.PLAYERS.length);
+		});
+		
 		it('renders the player names', function () {
 			domContext.assertElementCount('.player-panel > .player-name', testPlayers.PLAYERS.length);
 		});

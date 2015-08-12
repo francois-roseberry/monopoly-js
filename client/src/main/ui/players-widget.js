@@ -23,6 +23,23 @@
 				.classed('player-panel', true);
 				
 			panels
+				.append('svg')
+				.attr({
+					width: 12,
+					height: 12
+				})
+				.classed('player-panel-token', true)
+				.append('circle')
+				.attr({
+					cx: 6,
+					cy: 6,
+					r: 6,
+					fill: function (player) {
+						return player.color;
+					}
+				});
+				
+			panels
 				.append('span')
 				.classed('player-name', true)
 				.text(function (player) {

@@ -101,9 +101,18 @@
 			.append('circle')
 			.classed('player-token', true)
 			.attr({
-				cx: SQUARE_WIDTH / 4,
-				cy: SQUARE_HEIGHT / 4,
-				r: 5
+				cx: function (_, index) {
+					return (SQUARE_WIDTH / 5) * (index % 4 + 1);
+				},
+				cy: function (_, index) {
+					return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
+				},
+				r: 8,
+				fill: function (player) {
+					return player.color;
+				},
+				stroke: 'black',
+				'stroke-width': 1
 			});
 	}
 	

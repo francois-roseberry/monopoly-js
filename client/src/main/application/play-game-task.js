@@ -1,6 +1,8 @@
 (function() {
 	"use strict";
 	
+	var PlayerColors = require('./player-colors').colors();
+	
 	var precondition = require('./contract').precondition;
 	
 	exports.start = function (squares, players) {
@@ -24,7 +26,12 @@
 	
 	function forGame(players) {
 		return _.map(players, function (player, index) {
-			return { name: 'Joueur ' + (index + 1), money: 1500, position: 0 };
+			return {
+				name: 'Joueur ' + (index + 1),
+				money: 1500,
+				position: 0,
+				color: PlayerColors[index]
+			};
 		});
 	}
 	

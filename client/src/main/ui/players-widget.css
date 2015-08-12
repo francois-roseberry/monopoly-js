@@ -10,6 +10,10 @@
 	margin-right: 10px;
 }
 
+.player-panel-token {
+	margin-right: 4px;
+}
+
 .player-name {
 	text-align: left;
 	margin-right: 40px;
