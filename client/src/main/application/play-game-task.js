@@ -15,6 +15,9 @@
 	function PlayGameTask(squares, players) {
 		this._gameState = new Rx.BehaviorSubject(initialGameState(squares, players));
 		this._completed = new Rx.AsyncSubject();
+		this._choices = new Rx.ReplaySubject(1);
+		
+		this._choices.onNext(['roll-dice']);
 	}
 	
 	function initialGameState(squares, players) {
@@ -37,6 +40,10 @@
 	
 	PlayGameTask.prototype.gameState = function () {
 		return this._gameState.asObservable();
+	};
+	
+	PlayGameTask.prototype.choices = function () {
+		return this._choices.asObservable();
 	};
 	
 	PlayGameTask.prototype.completed = function () {

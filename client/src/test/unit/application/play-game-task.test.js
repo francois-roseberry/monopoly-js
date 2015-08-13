@@ -14,6 +14,12 @@
 			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
 		});
 		
+		it('at start, sends an event with the roll-dice choice', function (done) {
+			task.choices().take(1).subscribe(function (choices) {
+				expect(choices).to.eql(['roll-dice']);
+			}, done, done);
+		});
+		
 		it('at start, sends an event with the initial game state', function (done) {
 			task.gameState().take(1).subscribe(function (state) {
 				expect(state.squares).to.eql(Board.SQUARES);
