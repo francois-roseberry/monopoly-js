@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var BoardWidget = require('./board-widget');
+	var GameChoicesWidget = require('./game-choices-widget');
 	var PlayersWidget = require('./players-widget');
 	
 	var precondition = require('./contract').precondition;
@@ -17,11 +18,13 @@
 		panel.append('div')
 			.classed('monopoly-header', true)
 			.append('button')
+			.attr('id', 'new-game-button')
 			.text('New game')
 			.on('click', function () {
 				playGameTask.stop();
 			});
 		
+		GameChoicesWidget.render($(panel[0]), playGameTask);
 		BoardWidget.render($(panel[0]), playGameTask.gameState());
 		PlayersWidget.render($(panel[0]), playGameTask.gameState());
 	};

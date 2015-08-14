@@ -21,18 +21,22 @@
 		});
 		
 		it('renders a new game button', function () {
-			domContext.assertOneOf('button');
-			domContext.assertText('button', 'New game');
+			domContext.assertOneOf('#new-game-button');
+			domContext.assertText('#new-game-button', 'New game');
 		});
 		
 		it('clicking on the new game button stops the task', function (done) {
-			domContext.clickOn('button');
+			domContext.clickOn('#new-game-button');
 			
 			task.completed().subscribe(_.noop, done, done);
 		});
 		
 		it('renders the board', function () {
 			domContext.assertOneOf('.monopoly-board');
+		});
+		
+		it('renders the game choices widget', function () {
+			domContext.assertOneOf('.monopoly-game-choices');
 		});
 		
 		it('renders the players widget', function () {

@@ -4,6 +4,7 @@
 	var PlayGameTask = require('./play-game-task');
 	var Board = require('./board');
 	var PlayerColors = require('./player-colors').colors();
+	var Choices = require('./choices');
 	
 	var testPlayers = require('./test-players');
 	
@@ -16,7 +17,7 @@
 		
 		it('at start, sends an event with the roll-dice choice', function (done) {
 			task.choices().take(1).subscribe(function (choices) {
-				expect(choices).to.eql(['roll-dice']);
+				expect(choices).to.eql([Choices.rollDice()]);
 			}, done, done);
 		});
 		

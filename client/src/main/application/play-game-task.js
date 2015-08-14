@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var PlayerColors = require('./player-colors').colors();
+	var Choices = require('./choices');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -17,7 +18,7 @@
 		this._completed = new Rx.AsyncSubject();
 		this._choices = new Rx.ReplaySubject(1);
 		
-		this._choices.onNext(['roll-dice']);
+		this._choices.onNext([Choices.rollDice()]);
 	}
 	
 	function initialGameState(squares, players) {
@@ -53,5 +54,9 @@
 	PlayGameTask.prototype.stop = function () {
 		this._completed.onNext(true);
 		this._completed.onCompleted();
+	};
+	
+	PlayGameTask.prototype.makeChoice = function (choice) {
+		// TODO : validate choice is legal
 	};
 }());
