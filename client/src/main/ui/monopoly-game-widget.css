@@ -3,3 +3,9 @@
 	padding-bottom: 4px;
 	margin-bottom: 4px;
 }
+
+.monopoly-central-components {
+	position: absolute;
+	top: 400px;
+	left: 500px;
+}

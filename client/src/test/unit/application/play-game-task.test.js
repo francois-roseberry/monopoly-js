@@ -39,5 +39,13 @@
 			
 			task.completed().subscribe(_.noop, done, done);
 		});
+		
+		it('when roll-dice is chosen, sends an event with the task', function (done) {
+			task.rollDiceTaskCreated().take(1).subscribe(function (task) {
+				expect(task).to.not.eql(undefined);
+			}, done, done);
+			
+			task.makeChoice(Choices.rollDice().id);
+		});
 	});
 }());

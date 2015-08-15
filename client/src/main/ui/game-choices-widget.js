@@ -12,9 +12,11 @@
 			.classed('monopoly-game-choices', true);
 		
 		playGameTask.choices().subscribe(function (choices) {
-			choicesContainer
+			var choiceButtons = choicesContainer
 				.selectAll('.monopoly-game-choices-item')
-				.data(choices)
+				.data(choices);
+				
+			choiceButtons
 				.enter()
 				.append('button')
 				.classed('monopoly-game-choices-item', true)
@@ -25,8 +27,12 @@
 					return choice.name;
 				})
 				.on('click', function (choice) {
-					playGameTask.makeChoice(choice);
+					playGameTask.makeChoice(choice.id);
 				});
+				
+			choiceButtons
+				.exit()
+				.remove();
 		});
 	};
 }());

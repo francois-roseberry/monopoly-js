@@ -3,6 +3,7 @@
 	
 	var PlayerColors = require('./player-colors').colors();
 	var Choices = require('./choices');
+	var RollDiceTask = require('./roll-dice-task');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -17,6 +18,8 @@
 		this._gameState = new Rx.BehaviorSubject(initialGameState(squares, players));
 		this._completed = new Rx.AsyncSubject();
 		this._choices = new Rx.ReplaySubject(1);
+		this._choiceMade = new Rx.Subject();
+		this._rollDiceTaskCreated = new Rx.Subject();
 		
 		this._choices.onNext([Choices.rollDice()]);
 	}
@@ -47,6 +50,14 @@
 		return this._choices.asObservable();
 	};
 	
+	PlayGameTask.prototype.choiceMade = function () {
+		return this._choiceMade.asObservable();
+	};
+	
+	PlayGameTask.prototype.rollDiceTaskCreated = function () {
+		return this._rollDiceTaskCreated.asObservable();
+	};
+	
 	PlayGameTask.prototype.completed = function () {
 		return this._completed.asObservable();
 	};
@@ -58,5 +69,10 @@
 	
 	PlayGameTask.prototype.makeChoice = function (choice) {
 		// TODO : validate choice is legal
+		this._choiceMade.onNext(choice);
+		this._choices.onNext([]);
+		if (choice === Choices.rollDice().id) {
+			this._rollDiceTaskCreated.onNext(RollDiceTask.start());
+		}
 	};
 }());

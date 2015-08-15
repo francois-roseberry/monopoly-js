@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var BoardWidget = require('./board-widget');
+	var DiceWidget = require('./dice-widget');
 	var GameChoicesWidget = require('./game-choices-widget');
 	var PlayersWidget = require('./players-widget');
 	
@@ -23,9 +24,16 @@
 			.on('click', function () {
 				playGameTask.stop();
 			});
+			
+		var centralComponentsContainer = panel.append('div')
+			.classed('monopoly-central-components', true);
 		
-		GameChoicesWidget.render($(panel[0]), playGameTask);
+		GameChoicesWidget.render($(centralComponentsContainer[0]), playGameTask);
 		BoardWidget.render($(panel[0]), playGameTask.gameState());
 		PlayersWidget.render($(panel[0]), playGameTask.gameState());
+		
+		playGameTask.rollDiceTaskCreated().subscribe(function (task) {
+			DiceWidget.render($(centralComponentsContainer[0]), task);
+		});
 	};
 }());

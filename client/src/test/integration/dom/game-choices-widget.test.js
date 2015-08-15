@@ -1,6 +1,7 @@
 (function() {
 	"use strict";
 	
+	var Choices = require('./choices');
 	var Board = require('./board');
 	var GameChoicesWidget = require('./game-choices-widget');
 	var PlayGameTask = require('./play-game-task');
@@ -10,9 +11,10 @@
 	
 	describeInDom('A game choices widget', function (domContext) {
 		var initialChoices;
+		var task;
 		
 		beforeEach(function (done) {
-			var task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
+			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
 			GameChoicesWidget.render(domContext.rootElement, task);
 			
 			task.choices().take(1).subscribe(function (choices) {
@@ -26,6 +28,14 @@
 		
 		it('renders one item per choice', function () {
 			domContext.assertElementCount('.monopoly-game-choices-item', initialChoices.length);
+		});
+		
+		it('clicking on a choice sends an event in the task', function (done) {
+			task.choiceMade().take(1).subscribe(function (choice) {
+				expect(choice).to.eql(Choices.rollDice().id);
+			}, done, done);
+			
+			domContext.clickOn('[data-id=' + Choices.rollDice().id + ']');
 		});
 	});
 }());
