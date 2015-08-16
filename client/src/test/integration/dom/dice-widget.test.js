@@ -8,9 +8,10 @@
 	
 	describeInDom('A Dice widget', function (domContext) {
 		var diceCount;
+		var task;
 
 		beforeEach(function (done) {
-			var task = RollDiceTask.start();
+			task = RollDiceTask.start();
 			DiceWidget.render(domContext.rootElement, task);
 			
 			task.diceRolled().take(1).subscribe(function (dice) {
@@ -24,6 +25,12 @@
 		
 		it('renders as many dice as the task sends', function () {
 			domContext.assertElementCount('.die', diceCount);
+		});
+		
+		it('removes itself when the task finishes rolling dice', function (done) {
+			task.diceRolled().last().subscribe(function () {
+				domContext.assertNothingOf('.dice-container');
+			}, done, done);
 		});
 	});
 }());

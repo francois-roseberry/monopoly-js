@@ -31,6 +31,8 @@
 					return dieRepresentation(die);
 				});
 				
+		}, _.noop, function () {
+			diceContainer.remove();
 		});
 	};
 	
