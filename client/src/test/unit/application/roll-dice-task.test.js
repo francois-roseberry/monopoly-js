@@ -17,7 +17,7 @@
 		});
 		
 		it('send multiple diceRolled events', function (done) {
-			task.diceRolled().take(10).subscribe(function (dice) {
+			task.diceRolled().subscribe(function (dice) {
 				expect(dice.length).to.eql(2);
 				assertValidDie(dice[0]);
 				assertValidDie(dice[1]);
