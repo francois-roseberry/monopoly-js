@@ -31,8 +31,8 @@
 		});
 		
 		it('clicking on a choice sends an event in the task', function (done) {
-			task.choiceMade().take(1).subscribe(function (choice) {
-				expect(choice).to.eql(Choices.rollDice().id);
+			task.rollDiceTaskCreated().take(1).subscribe(function (task) {
+				expect(task).to.not.eql(undefined);
 			}, done, done);
 			
 			domContext.clickOn('[data-id=' + Choices.rollDice().id + ']');
