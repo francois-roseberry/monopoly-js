@@ -71,7 +71,6 @@
 			this._rollDiceTaskCreated.onNext(task);
 			task.diceRolled().last()
 				.subscribe(function (dice) {
-					// TODO : move the player and send a new game state
 					gameState.take(1).subscribe(function (state) {
 						state.players[0].position = state.players[0].position + dice[0] + dice[1];
 						gameState.onNext(state);
