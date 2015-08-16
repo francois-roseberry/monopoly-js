@@ -7,4 +7,11 @@
 			name: 'Roll the dice'
 		};
 	};
+	
+	exports.finishTurn = function () {
+		return {
+			id: 'finish-turn',
+			name: 'Finish this turn'
+		};
+	};
 }());

@@ -48,12 +48,33 @@
 			task.makeChoice(Choices.rollDice().id);
 		});
 		
-		it('send a game state event with the new position when the dice have finished rolling', function (done) {
-			task.gameState().skip(1).take(1).subscribe(function (state) {
-				expect(state.players[0].position).to.not.eql(0);
-			}, done, done);
+		describe('after dice have finished rolling', function () {
+			var newPosition;
+			var newChoices;
 			
-			task.makeChoice(Choices.rollDice().id);
+			beforeEach(function (done) {
+				Rx.Observable.combineLatest(
+					task.gameState().skip(1).take(1),
+					task.choices().skip(2).take(1),
+					
+					function (state, choices) {
+						newPosition = state.players[0].position;
+						newChoices = choices;
+						
+						return {};
+					})
+					.subscribe(_.noop, done, done);
+				
+				task.makeChoice(Choices.rollDice().id);
+			});
+			
+			it('send a game state event with the new position', function () {
+				expect(newPosition).to.not.eql(0);
+			});
+			
+			it('send a choices event with the finish-turn choice', function () {
+				expect(newChoices).to.eql([Choices.finishTurn()]);
+			});
 		});
 	});
 }());

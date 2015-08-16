@@ -64,18 +64,27 @@
 	
 	PlayGameTask.prototype.makeChoice = function (choice) {
 		// TODO : validate choice is legal
+		var self = this;
 		this._choices.onNext([]);
 		if (choice === Choices.rollDice().id) {
-			var gameState = this._gameState;
 			var task = RollDiceTask.start();
 			this._rollDiceTaskCreated.onNext(task);
 			task.diceRolled().last()
 				.subscribe(function (dice) {
-					gameState.take(1).subscribe(function (state) {
+					self._gameState.take(1).subscribe(function (state) {
 						state.players[0].position = state.players[0].position + dice[0] + dice[1];
-						gameState.onNext(state);
+						self._gameState.onNext(state);
+						self._choices.onNext(choicesForSquare(state));
 					});
 				});
 		}
 	};
+	
+	function choicesForSquare(state) {
+		/*state.squares[state.players[0].position].match({
+							
+		});*/
+		
+		return [Choices.finishTurn()];
+	}
 }());
