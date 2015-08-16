@@ -66,7 +66,17 @@
 		// TODO : validate choice is legal
 		this._choices.onNext([]);
 		if (choice === Choices.rollDice().id) {
-			this._rollDiceTaskCreated.onNext(RollDiceTask.start());
+			var gameState = this._gameState;
+			var task = RollDiceTask.start();
+			this._rollDiceTaskCreated.onNext(task);
+			task.diceRolled().last()
+				.subscribe(function (dice) {
+					// TODO : move the player and send a new game state
+					gameState.take(1).subscribe(function (state) {
+						state.players[0].position = state.players[0].position + dice[0] + dice[1];
+						gameState.onNext(state);
+					});
+				});
 		}
 	};
 }());

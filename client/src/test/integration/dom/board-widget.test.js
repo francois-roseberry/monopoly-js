@@ -9,8 +9,9 @@
 	var describeInDom = require('./dom-fixture').describeInDom;
 		
 	describeInDom('A Board Widget', function (domContext) {
+		var task;
 		beforeEach(function () {
-			var task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
+			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
 			BoardWidget.render(domContext.rootElement, task.gameState());
 		});
 		

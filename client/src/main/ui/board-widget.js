@@ -39,7 +39,7 @@
 				.classed('monopoly-row', true)
 				.attr('transform', function (_, index) { return transformForRow(index); })
 				.selectAll('.monopoly-square')
-				.data(squaresInRow)
+				.data(function (row) { return row; })
 				.enter()
 				.append('g')
 				.classed('monopoly-square', true)
@@ -59,23 +59,19 @@
 				});
 				
 			squares
+				.each(function (square) {
+					renderSquare(d3.select(this), square, state.players);
+				});
+				
+			container.selectAll('.monopoly-square')
+				.data(state.squares)
 				.each(function (square, index) {
-					var squareIndex = index + square.rowIndex * SQUARES_PER_ROW;
-					renderSquare(d3.select(this), square.square, squareIndex, state.players);
+					renderPlayerTokens(d3.select(this), index, state.players);
 				});
 			};
 	}
 	
-	function squaresInRow(row, index) {
-		return _.map(row, function (square) {
-					return {
-						square: square,
-						rowIndex : index
-					};
-				});
-	}
-	
-	function renderSquare(container, square, squareIndex, players) {
+	function renderSquare(container, square, players) {
 		square.match({
 			'estate': renderEstate(container),
 			'railroad': renderRailroad(container),
@@ -89,7 +85,6 @@
 			'go-to-jail': _.noop,
 			'parking': _.noop
 		});
-		renderPlayerTokens(container, squareIndex, players);
 	}
 	
 	function renderPlayerTokens(container, squareIndex, players) {
@@ -97,8 +92,10 @@
 			return player.position === squareIndex;
 		});
 		
-		container.selectAll('.player-token')
-			.data(playersOnSquare)
+		var tokens = container.selectAll('.player-token')
+			.data(playersOnSquare);
+			
+		tokens
 			.enter()
 			.append('circle')
 			.classed('player-token', true)
@@ -110,12 +107,17 @@
 					return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
 				},
 				r: 8,
-				fill: function (player) {
-					return player.color;
-				},
 				stroke: 'black',
 				'stroke-width': 1
 			});
+			
+		tokens.attr(
+			'fill', function (player) {
+				return player.color;
+			}
+		);
+			
+		tokens.exit().remove();
 	}
 	
 	function renderEstate(container) {

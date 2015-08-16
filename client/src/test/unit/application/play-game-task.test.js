@@ -47,5 +47,13 @@
 			
 			task.makeChoice(Choices.rollDice().id);
 		});
+		
+		it('send a game state event with the new position when the dice have finished rolling', function (done) {
+			task.gameState().skip(1).take(1).subscribe(function (state) {
+				expect(state.players[0].position).to.not.eql(0);
+			}, done, done);
+			
+			task.makeChoice(Choices.rollDice().id);
+		});
 	});
 }());
