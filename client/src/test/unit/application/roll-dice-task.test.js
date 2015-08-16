@@ -15,5 +15,17 @@
 				expect(dice.length).to.eql(2);
 			}, done, done);
 		});
+		
+		it('send multiple diceRolled events', function (done) {
+			task.diceRolled().take(10).subscribe(function (dice) {
+				expect(dice.length).to.eql(2);
+				assertValidDie(dice[0]);
+				assertValidDie(dice[1]);
+			}, done, done);
+		});
+		
+		function assertValidDie(die) {
+			return die >= 1 && die <= 6;
+		}
 	});
 }());
