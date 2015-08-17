@@ -13,7 +13,7 @@
 		var logTask;
 		
 		beforeEach(function () {
-			gameTask = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
+			gameTask = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS, { fastDice: true });
 			logTask = LogGameTask.start(gameTask);
 		});
 		

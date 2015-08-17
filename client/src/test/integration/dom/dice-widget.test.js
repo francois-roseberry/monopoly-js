@@ -11,7 +11,7 @@
 		var task;
 
 		beforeEach(function (done) {
-			task = RollDiceTask.start();
+			task = RollDiceTask.start({ fast: true });
 			DiceWidget.render(domContext.rootElement, task);
 			
 			task.diceRolled().take(1).subscribe(function (dice) {

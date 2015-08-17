@@ -8,15 +8,16 @@
 	
 	var precondition = require('./contract').precondition;
 	
-	exports.start = function (squares, players) {
+	exports.start = function (squares, players, options) {
 		precondition(_.isArray(squares), 'PlayGameTask requires a list of squares');
 		precondition(_.isArray(players), 'PlayGameTask requires a list of players');
 		
-		return new PlayGameTask(squares, players);
+		return new PlayGameTask(squares, players, options);
 	};
 	
-	function PlayGameTask(squares, players) {
+	function PlayGameTask(squares, players, options) {
 		this._gameState = new Rx.BehaviorSubject(initialGameState(squares, players));
+		this._options = options || { fastDice: false };
 		this._completed = new Rx.AsyncSubject();
 		this._choices = new Rx.ReplaySubject(1);
 		this._rollDiceTaskCreated = new Rx.Subject();
@@ -73,7 +74,7 @@
 		var self = this;
 		this._choices.onNext([]);
 		if (choice === Choices.rollDice().id) {
-			var task = RollDiceTask.start();
+			var task = RollDiceTask.start({ fast: this._options.fastDice });
 			this._rollDiceTaskCreated.onNext(task);
 			task.diceRolled().last()
 				.subscribe(function (dice) {

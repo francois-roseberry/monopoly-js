@@ -1,19 +1,19 @@
 (function() {
 	"use strict";
 	
-	exports.start = function () {
-		return new RollDiceTask();
+	exports.start = function (options) {
+		return new RollDiceTask(options && options.fast || false);
 	};
 	
-	function RollDiceTask() {
+	function RollDiceTask(fastOption) {
 		this._diceRolled = new Rx.BehaviorSubject([rollDie(), rollDie()]);
 		
-		rollDice(this._diceRolled);
+		rollDice(fastOption, this._diceRolled);
 	}
 	
-	function rollDice(diceRolled) {
+	function rollDice(fastOption, diceRolled) {
 		Rx.Observable.interval(100)
-			.take(15)
+			.take(fastOption ? 1 : 15)
 			.subscribe(function () {
 				diceRolled.onNext([rollDie(), rollDie()]);
 			}, _.noop, function () {

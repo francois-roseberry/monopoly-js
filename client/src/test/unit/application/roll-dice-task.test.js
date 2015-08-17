@@ -7,16 +7,10 @@
 		var task;
 		
 		beforeEach(function () {
-			task = RollDiceTask.start();
+		task = RollDiceTask.start({ fast: true });
 		});
 		
-		it('at start, sends an event with two dice', function (done) {
-			task.diceRolled().take(1).subscribe(function (dice) {
-				expect(dice.length).to.eql(2);
-			}, done, done);
-		});
-		
-		it('send multiple diceRolled events', function (done) {
+		it('diceRolled observabled completes', function (done) {
 			task.diceRolled().subscribe(function (dice) {
 				expect(dice.length).to.eql(2);
 				assertValidDie(dice[0]);

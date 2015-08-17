@@ -12,7 +12,7 @@
 		var task;
 		
 		beforeEach(function () {
-			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
+			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS, { fastDice: true });
 		});
 		
 		it('at start, sends an event with the roll-dice choice', function (done) {
