@@ -34,13 +34,17 @@
 			}, done, done);
 		});
 		
+		it('has a messages observable', function () {
+			expect(task.messages()).to.not.be(undefined);
+		});
+		
 		it('stopping the task sends an event', function (done) {
 			task.stop();
 			
 			task.completed().subscribe(_.noop, done, done);
 		});
 		
-		it('when roll-dice is chosen, sends an event with the task', function (done) {
+		it('when roll-dice is chosen, creates a roll-dice-task', function (done) {
 			task.rollDiceTaskCreated().take(1).subscribe(function (task) {
 				expect(task).to.not.eql(undefined);
 			}, done, done);

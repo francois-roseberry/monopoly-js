@@ -39,6 +39,10 @@
 			domContext.assertOneOf('.monopoly-game-choices');
 		});
 		
+		it('renders the log game widget', function () {
+			domContext.assertOneOf('.game-log-console');
+		});
+		
 		it('renders the players widget', function () {
 			domContext.assertOneOf('.monopoly-players');
 		});

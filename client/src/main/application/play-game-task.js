@@ -4,6 +4,7 @@
 	var PlayerColors = require('./player-colors').colors();
 	var Choices = require('./choices');
 	var RollDiceTask = require('./roll-dice-task');
+	var LogGameTask = require('./log-game-task');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -19,6 +20,7 @@
 		this._completed = new Rx.AsyncSubject();
 		this._choices = new Rx.ReplaySubject(1);
 		this._rollDiceTaskCreated = new Rx.Subject();
+		this._logGameTask = LogGameTask.start(this);
 		
 		this._choices.onNext([Choices.rollDice()]);
 	}
@@ -40,6 +42,10 @@
 			};
 		});
 	}
+	
+	PlayGameTask.prototype.messages = function () {
+		return this._logGameTask.messages();
+	};
 	
 	PlayGameTask.prototype.gameState = function () {
 		return this._gameState.asObservable();
@@ -77,6 +83,8 @@
 						self._choices.onNext(choicesForSquare(state));
 					});
 				});
+		} else if (choice === Choices.finishTurn().id) {
+			// TODO : advance to the next player
 		}
 	};
 	

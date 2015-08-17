@@ -5,6 +5,7 @@
 	var DiceWidget = require('./dice-widget');
 	var GameChoicesWidget = require('./game-choices-widget');
 	var PlayersWidget = require('./players-widget');
+	var LogGameWidget = require('./log-game-widget');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -29,6 +30,7 @@
 			.classed('monopoly-central-components', true);
 		
 		GameChoicesWidget.render($(centralComponentsContainer[0]), playGameTask);
+		LogGameWidget.render($(centralComponentsContainer[0]), playGameTask.messages());
 		BoardWidget.render($(panel[0]), playGameTask.gameState());
 		PlayersWidget.render($(panel[0]), playGameTask.gameState());
 		
