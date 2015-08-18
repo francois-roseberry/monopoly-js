@@ -17,9 +17,18 @@
 	
 	function watchGame(messages, playGameTask) {
 		playGameTask.rollDiceTaskCreated().subscribe(function (task) {
-			task.diceRolled().last().subscribe(function (dice) {
-				messages.onNext('Player rolled a ' + dice[0] + ' and a ' + dice[1]);
-			});
+			task.diceRolled().last().withLatestFrom(
+				playGameTask.gameState(),
+				function (dice, state) {
+					return {
+						firstDie : dice[0],
+						secondDie: dice[1],
+						player: state.players[state.currentPlayerIndex].name
+					};
+				})
+				.subscribe(function (dice) {
+					messages.onNext(dice.player + ' rolled a ' + dice.firstDie + ' and a ' + dice.secondDie);
+				});
 		});
 	}
 	
