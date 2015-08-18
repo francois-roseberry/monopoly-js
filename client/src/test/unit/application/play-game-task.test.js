@@ -31,6 +31,7 @@
 					expect(player.position).to.eql(0);
 					expect(player.color).to.eql(PlayerColors[index]);
 				});
+				expect(state.currentPlayerIndex).to.eql(0);
 			}, done, done);
 		});
 		
@@ -93,6 +94,24 @@
 			
 			task.choices().take(1).subscribe(function (choices) {
 				expect(choices).to.eql([Choices.rollDice()]);
+			}, done, done);
+		});
+		
+		it('when finish-turn is chosen, sends the new game state with the next player', function (done) {
+			task.makeChoice(Choices.finishTurn().id);
+			
+			task.gameState().take(1).subscribe(function (state) {
+				expect(state.currentPlayerIndex).to.eql(1);
+			}, done, done);
+		});
+		
+		it('when all players have finished their turn, the first one plays again', function (done) {
+			for (var i = 0; i < testPlayers.PLAYERS.length; i++) {
+				task.makeChoice(Choices.finishTurn().id);
+			}
+			
+			task.gameState().take(1).subscribe(function (state) {
+				expect(state.currentPlayerIndex).to.eql(0);
 			}, done, done);
 		});
 		
