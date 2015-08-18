@@ -3,4 +3,9 @@
 	top: 100px;
 	width: 300px;
 	height: 200px;
+	overflow-y: auto;
+}
+
+.game-log-message {
+	display: block;
 }

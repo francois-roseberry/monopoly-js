@@ -23,7 +23,7 @@
 		this._rollDiceTaskCreated = new Rx.Subject();
 		this._logGameTask = LogGameTask.start(this);
 		
-		this._choices.onNext([Choices.rollDice()]);
+		startTurn(this._choices);
 	}
 	
 	function initialGameState(squares, players) {
@@ -42,6 +42,10 @@
 				color: PlayerColors[index]
 			};
 		});
+	}
+	
+	function startTurn(choices) {
+		choices.onNext([Choices.rollDice()]);
 	}
 	
 	PlayGameTask.prototype.messages = function () {
@@ -70,22 +74,26 @@
 	};
 	
 	PlayGameTask.prototype.makeChoice = function (choice) {
-		// TODO : validate choice is legal
 		var self = this;
 		this._choices.onNext([]);
 		if (choice === Choices.rollDice().id) {
-			var task = RollDiceTask.start({ fast: this._options.fastDice });
+			var task = RollDiceTask.start({
+				fast: this._options.fastDice,
+				dieFunction: this._options.dieFunction
+			});
+			
 			this._rollDiceTaskCreated.onNext(task);
 			task.diceRolled().last()
 				.subscribe(function (dice) {
 					self._gameState.take(1).subscribe(function (state) {
-						state.players[0].position = state.players[0].position + dice[0] + dice[1];
+						var newPosition = state.players[0].position + dice[0] + dice[1];
+						state.players[0].position = newPosition % state.squares.length;
 						self._gameState.onNext(state);
 						self._choices.onNext(choicesForSquare(state));
 					});
 				});
 		} else if (choice === Choices.finishTurn().id) {
-			// TODO : advance to the next player
+			startTurn(this._choices);
 		}
 	};
 	

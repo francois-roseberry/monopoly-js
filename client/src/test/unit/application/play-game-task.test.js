@@ -57,6 +57,13 @@
 			var newChoices;
 			
 			beforeEach(function (done) {
+				task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS, { 
+					fastDice: true,
+					dieFunction: function () {
+						return 1;
+					}
+				});
+			
 				Rx.Observable.combineLatest(
 					task.gameState().skip(1).take(1),
 					task.choices().skip(2).take(1),
@@ -73,12 +80,35 @@
 			});
 			
 			it('send a game state event with the new position', function () {
-				expect(newPosition).to.not.eql(0);
+				expect(newPosition).to.eql(2);
 			});
 			
 			it('send a choices event with the finish-turn choice', function () {
 				expect(newChoices).to.eql([Choices.finishTurn()]);
 			});
+		});
+		
+		it('when finish-turn is chosen, send the roll-dice choice', function (done) {
+			task.makeChoice(Choices.finishTurn().id);
+			
+			task.choices().take(1).subscribe(function (choices) {
+				expect(choices).to.eql([Choices.rollDice()]);
+			}, done, done);
+		});
+		
+		it('when moving past last square, wraps around the board', function (done) {
+			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS, { 
+				fastDice: true,
+				dieFunction: function () {
+					return Board.SQUARES.length / 2 + 1;
+				}
+			});
+			
+			task.makeChoice(Choices.rollDice().id);
+			
+			task.gameState().skip(1).take(1).subscribe(function (state) {
+				expect(state.players[0].position).to.eql(2);
+			}, done, done);
 		});
 	});
 }());
