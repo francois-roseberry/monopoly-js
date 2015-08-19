@@ -1,4 +1,4 @@
-# flocking-js
+# Monopoly-js
 Implementation of the Monopoly game in javascript, rendering done with D3
 
 Far from complete, right now players alternate and roll the dice. That's it. Not very exciting but at least the main game flow is operational.
