@@ -24,7 +24,7 @@
 				});
 			});
 			
-			gameTask.makeChoice(Choices.rollDice().id);
+			gameTask.makeChoice(Choices.rollDice());
 		});
 		
 		function assertLogged(done) {

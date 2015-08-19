@@ -79,15 +79,15 @@
 		var self = this;
 		this._choices.onNext([]);
 		self._gameState.take(1).subscribe(function (state) {
-			if (choice === Choices.rollDice().id) {
-				rollDice(self, state);
-			} else if (choice === Choices.finishTurn().id) {
-				finishTurn(self, state);
-			}
+			choice.match({
+				'roll-dice': rollDice(self, state),
+				'finish-turn': finishTurn(self, state)
+			});
 		});
 	};
 	
 	function rollDice(self, state) {
+		return function () {
 		var task = RollDiceTask.start({
 			fast: self._options.fastDice,
 			dieFunction: self._options.dieFunction
@@ -101,18 +101,17 @@
 				self._gameState.onNext(state);
 				self._choices.onNext(choicesForSquare(state));				
 			});
+		};
 	}
 	
 	function choicesForSquare(state) {
-		/*state.squares[state.players[0].position].match({
-							
-		});*/
-		
 		return [Choices.finishTurn()];
 	}
 	
 	function finishTurn(self, state) {
+		return function () {
 		startTurn(self._choices, nextPlayer(state), self._gameState);
+		};
 	}
 	
 	function nextPlayer(state) {

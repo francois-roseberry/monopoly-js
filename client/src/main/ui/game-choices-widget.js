@@ -27,7 +27,7 @@
 					return choice.name;
 				})
 				.on('click', function (choice) {
-					playGameTask.makeChoice(choice.id);
+					playGameTask.makeChoice(choice);
 				});
 				
 			choiceButtons

@@ -16,9 +16,11 @@
 		});
 		
 		it('at start, sends an event with the roll-dice choice', function (done) {
-			task.choices().take(1).subscribe(function (choices) {
-				expect(choices).to.eql([Choices.rollDice()]);
-			}, done, done);
+			task.choices().take(1)
+				.map(toChoiceIds)				
+				.subscribe(function (choices) {
+					expect(choices).to.eql([Choices.rollDice().id]);
+				}, done, done);
 		});
 		
 		it('at start, sends an event with the initial game state', function (done) {
@@ -50,7 +52,7 @@
 				expect(task).to.not.eql(undefined);
 			}, done, done);
 			
-			task.makeChoice(Choices.rollDice().id);
+			task.makeChoice(Choices.rollDice());
 		});
 		
 		describe('after dice have finished rolling', function () {
@@ -67,7 +69,7 @@
 			
 				Rx.Observable.combineLatest(
 					task.gameState().skip(1).take(1),
-					task.choices().skip(2).take(1),
+					task.choices().skip(2).take(1).map(toChoiceIds),
 					
 					function (state, choices) {
 						newPosition = state.players[0].position;
@@ -77,7 +79,7 @@
 					})
 					.subscribe(_.noop, done, done);
 				
-				task.makeChoice(Choices.rollDice().id);
+				task.makeChoice(Choices.rollDice());
 			});
 			
 			it('send a game state event with the new position', function () {
@@ -85,20 +87,22 @@
 			});
 			
 			it('send a choices event with the finish-turn choice', function () {
-				expect(newChoices).to.eql([Choices.finishTurn()]);
+				expect(newChoices).to.eql([Choices.finishTurn().id]);
 			});
 		});
 		
 		it('when finish-turn is chosen, send the roll-dice choice', function (done) {
-			task.makeChoice(Choices.finishTurn().id);
+			task.makeChoice(Choices.finishTurn());
 			
-			task.choices().take(1).subscribe(function (choices) {
-				expect(choices).to.eql([Choices.rollDice()]);
-			}, done, done);
+			task.choices().take(1)
+				.map(toChoiceIds)
+				.subscribe(function (choices) {
+					expect(choices).to.eql([Choices.rollDice().id]);
+				}, done, done);
 		});
 		
 		it('when finish-turn is chosen, sends the new game state with the next player', function (done) {
-			task.makeChoice(Choices.finishTurn().id);
+			task.makeChoice(Choices.finishTurn());
 			
 			task.gameState().take(1).subscribe(function (state) {
 				expect(state.currentPlayerIndex).to.eql(1);
@@ -107,7 +111,7 @@
 		
 		it('when all players have finished their turn, the first one plays again', function (done) {
 			for (var i = 0; i < testPlayers.PLAYERS.length; i++) {
-				task.makeChoice(Choices.finishTurn().id);
+				task.makeChoice(Choices.finishTurn());
 			}
 			
 			task.gameState().take(1).subscribe(function (state) {
@@ -123,11 +127,17 @@
 				}
 			});
 			
-			task.makeChoice(Choices.rollDice().id);
+			task.makeChoice(Choices.rollDice());
 			
 			task.gameState().skip(1).take(1).subscribe(function (state) {
 				expect(state.players[0].position).to.eql(2);
 			}, done, done);
 		});
+		
+		function toChoiceIds(choices) {
+			return _.map(choices, function (choice) {
+					return choice.id;
+				});
+		}
 	});
 }());
