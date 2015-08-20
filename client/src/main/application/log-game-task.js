@@ -18,7 +18,7 @@
 	function watchGame(messages, playGameTask) {
 		onDiceRolled(playGameTask)
 			.subscribe(function (dice) {
-				messages.onNext(dice.player + ' rolled ' + diceMessage(dice));
+				messages.onNext(dice.player + ' a obtenu ' + diceMessage(dice));
 			});
 	}
 	
@@ -41,10 +41,10 @@
 	
 	function diceMessage(dice) {
 		if (dice.firstDie === dice.secondDie) {
-			return 'a double of ' + dice.firstDie;
+			return 'un doublé de ' + dice.firstDie;
 		}
 		
-		return 'a ' + dice.firstDie + ' and a ' + dice.secondDie;		
+		return 'un ' + dice.firstDie + ' et un ' + dice.secondDie;		
 	}
 	
 	LogGameTask.prototype.messages = function () {

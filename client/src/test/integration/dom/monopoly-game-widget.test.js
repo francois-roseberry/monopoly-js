@@ -22,7 +22,6 @@
 		
 		it('renders a new game button', function () {
 			domContext.assertOneOf('#new-game-button');
-			domContext.assertText('#new-game-button', 'New game');
 		});
 		
 		it('clicking on the new game button stops the task', function (done) {

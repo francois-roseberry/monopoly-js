@@ -19,7 +19,7 @@
 		});
 		
 		it('displays the title', function () {
-			domContext.assertText('h1', 'Monopoly game configuration');
+			domContext.assertOneOf('h1');
 		});
 		
 		it('displays a control for selecting the computer players', function () {
@@ -28,7 +28,6 @@
 		
 		it('displays the start game button', function () {
 			domContext.assertOneOf('button');
-			domContext.assertText('button', 'Start game');
 		});
 		
 		it('clicking the start game button starts a game', function () {

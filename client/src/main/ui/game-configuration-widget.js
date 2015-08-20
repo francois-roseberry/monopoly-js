@@ -11,16 +11,16 @@
 			.append('div')
 			.classed('monopoly-game-configuration', true);
 			
-		panel.append('h1').text('Monopoly game configuration');
+		panel.append('h1').text('Monopoly - configuration de partie');
 		
 		var computerPlayersBox = panel.append('div');
-		computerPlayersBox.append('span').text('Computer players : ');
+		computerPlayersBox.append('span').text('Joueurs IA : ');
 		computerPlayersBox.append('input').classed('computer-players', true);
 		var spinner = $('.computer-players');
 		spinner.spinner({ min: 1, max: 7 });
 		spinner.spinner('value', 1);
 		
-		panel.append('button').text('Start game')
+		panel.append('button').text('Commencer la partie')
 			.on('click', function () {
 				gameTask.startGame(players(spinner.spinner('value')));
 			});

@@ -4,7 +4,7 @@
 	exports.rollDice = function () {
 		return {
 			id: 'roll-dice',
-			name: 'Roll the dice',
+			name: 'Lancer les dés',
 			match: function (visitor) {
 				visitor['roll-dice']();
 			}
@@ -14,7 +14,7 @@
 	exports.finishTurn = function () {
 		return {
 			id: 'finish-turn',
-			name: 'Finish this turn',
+			name: 'Finir le tour',
 			match: function (visitor) {
 				visitor['finish-turn']();
 			}

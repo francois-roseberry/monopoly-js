@@ -21,7 +21,7 @@
 			.classed('monopoly-header', true)
 			.append('button')
 			.attr('id', 'new-game-button')
-			.text('New game')
+			.text('Nouvelle partie')
 			.on('click', function () {
 				playGameTask.stop();
 			});
