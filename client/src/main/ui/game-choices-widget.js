@@ -12,27 +12,31 @@
 			.classed('monopoly-game-choices', true);
 		
 		playGameTask.choices().subscribe(function (choices) {
-			var choiceButtons = choicesContainer
-				.selectAll('.monopoly-game-choices-item')
-				.data(choices);
-				
-			choiceButtons
-				.enter()
-				.append('button')
-				.classed('monopoly-game-choices-item', true)
-				.attr('data-id', function (choice) {
-					return choice.id;
-				})
-				.text(function (choice) {
-					return choice.name;
-				})
-				.on('click', function (choice) {
-					playGameTask.makeChoice(choice);
-				});
-				
-			choiceButtons
-				.exit()
-				.remove();
+			renderChoices(choicesContainer, playGameTask, choices);
 		});
 	};
+	
+	function renderChoices(choicesContainer, playGameTask, choices) {
+		var choiceButtons = choicesContainer
+			.selectAll('.monopoly-game-choices-item')
+			.data(choices);
+			
+		choiceButtons
+			.enter()
+			.append('button')
+			.classed('monopoly-game-choices-item', true)
+			.attr('data-id', function (choice) {
+				return choice.id;
+			})
+			.text(function (choice) {
+				return choice.name;
+			})
+			.on('click', function (choice) {
+				playGameTask.makeChoice(choice);
+			});
+			
+		choiceButtons
+			.exit()
+			.remove();
+	}
 }());

@@ -16,25 +16,11 @@
 		});
 		
 		it('at start, sends an event with the roll-dice choice', function (done) {
-			task.choices().take(1)
-				.map(toChoiceIds)				
-				.subscribe(function (choices) {
-					expect(choices).to.eql([Choices.rollDice().id]);
-				}, done, done);
+			assertRollDiceChoice(task.choices(), done);
 		});
 		
 		it('at start, sends an event with the initial game state', function (done) {
-			task.gameState().take(1).subscribe(function (state) {
-				expect(state.squares).to.eql(Board.SQUARES);
-				expect(state.players.length).to.eql(testPlayers.PLAYERS.length);
-				_.each(state.players, function (player, index) {
-					expect(player.name).to.eql('Joueur ' + (index + 1));
-					expect(player.money).to.eql(1500);
-					expect(player.position).to.eql(0);
-					expect(player.color).to.eql(PlayerColors[index]);
-				});
-				expect(state.currentPlayerIndex).to.eql(0);
-			}, done, done);
+			assertInitialGameState(task.gameState(), done);
 		});
 		
 		it('has a messages observable', function () {
@@ -60,12 +46,7 @@
 			var newChoices;
 			
 			beforeEach(function (done) {
-				task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS, { 
-					fastDice: true,
-					dieFunction: function () {
-						return 1;
-					}
-				});
+				task = gameTaskWithCheatedDice(1);
 			
 				Rx.Observable.combineLatest(
 					task.gameState().skip(1).take(1),
@@ -94,50 +75,90 @@
 		it('when finish-turn is chosen, send the roll-dice choice', function (done) {
 			task.makeChoice(Choices.finishTurn());
 			
-			task.choices().take(1)
-				.map(toChoiceIds)
-				.subscribe(function (choices) {
-					expect(choices).to.eql([Choices.rollDice().id]);
-				}, done, done);
+			assertRollDiceChoice(task.choices(), done);
 		});
 		
 		it('when finish-turn is chosen, sends the new game state with the next player', function (done) {
 			task.makeChoice(Choices.finishTurn());
 			
-			task.gameState().take(1).subscribe(function (state) {
-				expect(state.currentPlayerIndex).to.eql(1);
-			}, done, done);
+			assertCurrentPlayerIsTheSecondOne(task.gameState(), done);
 		});
 		
 		it('when all players have finished their turn, the first one plays again', function (done) {
-			for (var i = 0; i < testPlayers.PLAYERS.length; i++) {
-				task.makeChoice(Choices.finishTurn());
-			}
+			finishAllPlayerTurns(testPlayers.PLAYERS, task);
 			
-			task.gameState().take(1).subscribe(function (state) {
-				expect(state.currentPlayerIndex).to.eql(0);
-			}, done, done);
+			assertCurrentPlayerIsTheFirstOne(task.gameState(), done);
 		});
 		
 		it('when moving past last square, wraps around the board', function (done) {
-			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS, { 
-				fastDice: true,
-				dieFunction: function () {
-					return Board.SQUARES.length / 2 + 1;
-				}
-			});
+			task = gameTaskWithCheatedDice(Board.SQUARES.length / 2 + 1);
 			
 			task.makeChoice(Choices.rollDice());
 			
-			task.gameState().skip(1).take(1).subscribe(function (state) {
-				expect(state.players[0].position).to.eql(2);
-			}, done, done);
+			assertFirstPlayerPosition(task.gameState().skip(1), 2, done);
 		});
+		
+		function assertRollDiceChoice(choices, done) {
+			choices.take(1)
+				.map(toChoiceIds)
+				.subscribe(function (choices) {
+					expect(choices).to.eql([Choices.rollDice().id]);
+				}, done, done);
+		}
+		
+		function gameTaskWithCheatedDice(dieValue) {
+			return PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS, { 
+				fastDice: true,
+				dieFunction: function () {
+					return dieValue;
+				}
+			});
+		}
+		
+		function assertFirstPlayerPosition(gameState, position, done) {
+			gameState.take(1).subscribe(function (state) {
+				expect(state.players[0].position).to.eql(position);
+			}, done, done);
+		}
 		
 		function toChoiceIds(choices) {
 			return _.map(choices, function (choice) {
 					return choice.id;
 				});
+		}
+		
+		function assertInitialGameState(gameState, done) {
+			gameState.take(1).subscribe(function (state) {
+				expect(state.squares).to.eql(Board.SQUARES);
+				expect(state.players.length).to.eql(testPlayers.PLAYERS.length);
+				_.each(state.players, function (player, index) {
+					expect(player.name).to.eql('Joueur ' + (index + 1));
+					expect(player.money).to.eql(1500);
+					expect(player.position).to.eql(0);
+					expect(player.color).to.eql(PlayerColors[index]);
+				});
+				expect(state.currentPlayerIndex).to.eql(0);
+			}, done, done);
+		}
+		
+		function finishAllPlayerTurns(players, task) {
+			for (var i = 0; i < players.length; i++) {
+				task.makeChoice(Choices.finishTurn());
+			}
+		}
+		
+		function assertCurrentPlayerIsTheFirstOne(gameState, done) {
+			assertCurrentPlayerIndex(gameState, 0, done);
+		}
+		
+		function assertCurrentPlayerIsTheSecondOne(gameState, done) {
+			assertCurrentPlayerIndex(gameState, 1, done);
+		}
+		
+		function assertCurrentPlayerIndex(gameState, index, done) {
+			gameState.take(1).subscribe(function (state) {
+				expect(state.currentPlayerIndex).to.eql(index);
+			}, done, done);
 		}
 	});
 }());

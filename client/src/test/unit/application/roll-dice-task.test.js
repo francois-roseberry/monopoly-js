@@ -10,7 +10,7 @@
 		task = RollDiceTask.start({ fast: true });
 		});
 		
-		it('diceRolled observabled completes', function (done) {
+		it('diceRolled observable completes', function (done) {
 			task.diceRolled().subscribe(function (dice) {
 				expect(dice.length).to.eql(2);
 				assertValidDie(dice[0]);

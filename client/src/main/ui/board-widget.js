@@ -13,24 +13,23 @@
 		precondition(container, 'A Board Widget requires a container to render into');
 		precondition(gameState, 'A Board Widget requires an observable of the gameState');
 		
-		var board = d3.select(container[0]).append('svg')
+		var board = renderBoard(container);
+		
+		gameState.subscribe(renderSquares(board));
+	};
+	
+	function renderBoard(container) {
+		return d3.select(container[0]).append('svg')
 			.classed('monopoly-board', true)
 			.attr({
 				width: 9 * SQUARE_WIDTH + 2 * SQUARE_HEIGHT,
 				height: 9 * SQUARE_WIDTH + 2 * SQUARE_HEIGHT
 			});
-		
-		gameState.subscribe(renderSquares(board));
-	};
+	}
 	
 	function renderSquares(container) {
 		return function (state) {
-			var rows = [
-				state.squares.slice(0, SQUARES_PER_ROW),
-				state.squares.slice(SQUARES_PER_ROW, SQUARES_PER_ROW * 2),
-				state.squares.slice(SQUARES_PER_ROW * 2, SQUARES_PER_ROW * 3),
-				state.squares.slice(SQUARES_PER_ROW * 3, SQUARES_PER_ROW * 4)
-			];
+			var rows = squaresToRows(state.squares);
 			
 			var squares = container.selectAll('.monopoly-row')
 				.data(rows)
@@ -69,6 +68,15 @@
 					renderPlayerTokens(d3.select(this), index, state.players);
 				});
 			};
+	}
+	
+	function squaresToRows(squares) {
+		return [
+				squares.slice(0, SQUARES_PER_ROW),
+				squares.slice(SQUARES_PER_ROW, SQUARES_PER_ROW * 2),
+				squares.slice(SQUARES_PER_ROW * 2, SQUARES_PER_ROW * 3),
+				squares.slice(SQUARES_PER_ROW * 3, SQUARES_PER_ROW * 4)
+			];
 	}
 	
 	function renderSquare(container, square, players) {
