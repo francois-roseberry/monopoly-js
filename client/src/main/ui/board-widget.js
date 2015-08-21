@@ -4,6 +4,7 @@
 	var precondition = require('./contract').precondition;
 	
 	var Symbols = require('./symbols');
+	var TextWrapper = require('./text-wrapper');
 	
 	var SQUARE_WIDTH = 100;
 	var SQUARE_HEIGHT = 160;
@@ -148,7 +149,8 @@
 				.attr('transform', 'scale(0.25) translate(50, 150)')
 				.html(Symbols.train());
 				
-			writeText(container, ['CHEMIN DE FER', railroadName(id)]);
+			TextWrapper.wrap(container, 'CHEMIN DE FER ' + railroadName(id), 20, SQUARE_WIDTH - 4);
+			
 			writePrice(container, price);
 		};
 	}
@@ -235,7 +237,7 @@
 		var names = {
 			'reading': 'READING',
 			'penn': 'PENNSYLVANIE',
-			'b-o': 'B. & O.',
+			'b-o': 'B.& O.',
 			'short': 'PETIT RÉSEAU'
 		};
 		
