@@ -9,22 +9,23 @@
 				'font-size': 10
 			});
 			
-		var words = splitWordsInPart(text);
+		var words = text.split(' ');
 		var line = [];
 		var lineNumber = 0;
 		var lineHeight = 1.4; // ems
+		var margin = 4;
 		
 		var tspan = textElement.append('tspan');
 
 		while (words.length > 0) {
 			var word = words[0];
 			line.push(word);
-			tspan.text(line.join(""));
+			tspan.text(line.join(" "));
 
-			if (tspan.node().getComputedTextLength() > width) {
+			if (tspan.node().getComputedTextLength() > (width - 2 * margin)) {
 				line.pop();
 				tspan
-					.text(line.join(""))
+					.text(line.join(" "))
 					.attr("x", (width - tspan.node().getComputedTextLength()) / 2)
 					.attr("dy", lineNumber * lineHeight + "em");
 				line = [];
@@ -39,29 +40,9 @@
 		
 		if (line.length > 0) {
 			tspan
-				.text(line.join(""))
+				.text(line.join(" "))
 				.attr("x", (width - tspan.node().getComputedTextLength()) / 2)
 				.attr("dy", lineNumber * lineHeight + "em");
 		}
     };
-
-    function splitWordsInPart(text) {
-        var words = [];
-        var word = '';
-        var splitters = [' ', '-'];
-
-        for (var i = 0; i < text.length; i++) {
-            var character = text.charAt(i);
-            word += character;
-            if (_.contains(splitters, character)) {
-                words.push(word);
-                word = '';
-            }
-        }
-
-        if (word !== '') {
-            words.push(word);
-        }
-        return words;
-    }
 }());

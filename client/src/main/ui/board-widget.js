@@ -84,10 +84,18 @@
 		square.match({
 			'estate': renderEstate(container),
 			'railroad': renderRailroad(container),
-			'community-chest': function () { writeText(container, ['CAISSE', 'COMMUNE']); },
-			'chance': function () { writeText(container, ['CHANCE']); },
-			'income-tax': function () { writeText(container, ['IMPÔT SUR', 'LE REVENU']); },
-			'luxury-tax': function () { writeText(container, ['TAXE', 'DE LUXE']); },
+			'community-chest': function () {
+				writeText(container, 'CAISSE COMMUNE', 20);
+			},
+			'chance': function () {
+				writeText(container, 'CHANCE', 20);
+			},
+			'income-tax': function () {
+				writeText(container, 'IMPÔT SUR LE REVENU', 20);
+			},
+			'luxury-tax': function () {
+				writeText(container, 'TAXE DE LUXE', 20);
+			},
 			'company': renderCompany(container),
 			'go': renderStart(container),
 			'jail': renderJail(container),
@@ -138,7 +146,8 @@
 					fill: groupColor(group),
 					stroke: 'black'
 				});
-			writeText(container, estateName(id), SQUARE_HEIGHT / 5);
+				
+			writeText(container, estateName(id), SQUARE_HEIGHT / 4 + 10);
 			writePrice(container, price);
 		};
 	}
@@ -149,8 +158,7 @@
 				.attr('transform', 'scale(0.25) translate(50, 150)')
 				.html(Symbols.train());
 				
-			TextWrapper.wrap(container, 'CHEMIN DE FER ' + railroadName(id), 20, SQUARE_WIDTH - 4);
-			
+			writeText(container, 'CHEMIN DE FER ' + railroadName(id), 20);
 			writePrice(container, price);
 		};
 	}
@@ -165,7 +173,7 @@
 	
 	function renderCompany(container) {
 		return function (id, price) {
-			writeText(container, companyName(id));
+			writeText(container, companyName(id), 20);
 			writePrice(container, price);
 		};
 	}
@@ -193,28 +201,28 @@
 	
 	function estateName(id) {
 		var names = {
-			'med': ['AVENUE', 'DE LA', 'MEDITERRANÉE'],
-			'baltic': ['AVENUE DE', 'LA BALTIQUE'],
-			'east': ['AVENUE', "DE L'ORIENT"],
-			'vt': ['AVENUE', 'VERMONT'],
-			'conn': ['AVENUE', 'CONNECTICUT'],
-			'charles': ['PLACE', 'ST-CHARLES'],
-			'us': ['AVENUE DES', 'ÉTATS-UNIS'],
-			'vn': ['AVENUE', 'VIRGINIE'],
-			'jack': ['PLACE', 'ST-JACQUES'],
-			'tn': ['AVENUE', 'TENNESSEE'],
-			'ny': ['AVENUE', 'NEW YORK'],
-			'kt': ['AVENUE', 'KENTUCKY'],
-			'in': ['AVENUE', 'INDIANA'],
-			'il': ['AVENUE', 'ILLINOIS'],
-			'at': ['AVENUE', 'ATLANTIQUE'],
-			'vr': ['AVENUE', 'VENTNOR'],
-			'marvin': ['JARDINS', 'MARVIN'],
-			'pa': ['AVENUE', 'PACIFIQUE'],
-			'nc': ['AVENUE', 'CAROLINE', 'DU NORD'],
-			'penn': ['AVENUE', 'PENNSYLVANIE'],
-			'pk': ['PLACE', 'DU PARC'],
-			'bw': ['PROMENADE']
+			'med': 'AVENUE DE LA MEDITERRANÉE',
+			'baltic': 'AVENUE DE LA BALTIQUE',
+			'east': "AVENUE DE L'ORIENT",
+			'vt': 'AVENUE VERMONT',
+			'conn': 'AVENUE CONNECTICUT',
+			'charles': 'PLACE ST-CHARLES',
+			'us': 'AVENUE DES ÉTATS-UNIS',
+			'vn': 'AVENUE VIRGINIE',
+			'jack': 'PLACE ST-JACQUES',
+			'tn': 'AVENUE TENNESSEE',
+			'ny': 'AVENUE NEW YORK',
+			'kt': 'AVENUE KENTUCKY',
+			'in': 'AVENUE INDIANA',
+			'il': 'AVENUE ILLINOIS',
+			'at': 'AVENUE ATLANTIQUE',
+			'vr': 'AVENUE VENTNOR',
+			'marvin': 'JARDINS MARVIN',
+			'pa': 'AVENUE PACIFIQUE',
+			'nc': 'AVENUE CAROLINE DU NORD',
+			'penn': 'AVENUE PENNSYLVANIE',
+			'pk': 'PLACE DU PARC',
+			'bw': 'PROMENADE'
 		};
 		
 		precondition(names[id], 'No name has been defined for estate : ' + id);
@@ -224,8 +232,8 @@
 	
 	function companyName(id) {
 		var names = {
-			'water': ['AQUEDUC'],
-			'electric': ['COMPAGNIE', "D'ÉLECTRICITÉ"]
+			'water': 'AQUEDUC',
+			'electric': "COMPAGNIE D'ÉLECTRICITÉ"
 		};
 		
 		precondition(names[id], 'No name has been defined for company : ' + id);
@@ -246,11 +254,8 @@
 		return names[id];
 	}
 	
-	function writeText(container, lines, baseY) {
-		_.each(lines, function (line, index) {
-			var y = (baseY || 0) + 20 + index * 16;
-			writeTextLine(container, line, y);
-		});
+	function writeText(container, text, y) {
+		TextWrapper.wrap(container, text, y, SQUARE_WIDTH);
 	}
 	
 	function writePrice(container, price) {
