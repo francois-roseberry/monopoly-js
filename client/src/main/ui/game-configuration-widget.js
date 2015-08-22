@@ -22,7 +22,7 @@
 		spinner.spinner('value', 1);
 		
 		panel.append('button')
-			.attr('id', 'btn-start-game')
+			.classed('btn-start-game', true)
 			.text(i18n.BUTTON_START_GAME)
 			.on('click', function () {
 				gameTask.startGame(players(spinner.spinner('value')));
@@ -30,9 +30,9 @@
 	};
 	
 	function players(computers) {
-		var allPlayers = [{}];
+		var allPlayers = [{ type: 'human' }];
 		for (var i = 0; i < computers; i++) {
-			allPlayers.push({});
+			allPlayers.push({ type: 'computer' });
 		}
 		return allPlayers;
 	}

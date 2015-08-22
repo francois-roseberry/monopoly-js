@@ -72,12 +72,6 @@
 			});
 		});
 		
-		it('when finish-turn is chosen, send the roll-dice choice', function (done) {
-			task.makeChoice(Choices.finishTurn());
-			
-			assertRollDiceChoice(task.choices(), done);
-		});
-		
 		it('when finish-turn is chosen, sends the new game state with the next player', function (done) {
 			task.makeChoice(Choices.finishTurn());
 			
@@ -96,6 +90,17 @@
 			task.makeChoice(Choices.rollDice());
 			
 			assertFirstPlayerPosition(task.gameState().skip(1), 2, done);
+		});
+		
+		it('when turn starts and player is human, sends the roll-dice-choice', function (done) {
+			assertRollDiceChoice(task.choices(), done);
+		});
+		
+		it('when turn starts and player is computer, creates a rollDiceTask', function (done) {
+			task.rollDiceTaskCreated().take(1).subscribe(_.noop, done, done);
+			
+			// The second player is a computer
+			finishPlayerTurn();
 		});
 		
 		function assertRollDiceChoice(choices, done) {
@@ -136,6 +141,7 @@
 					expect(player.money).to.eql(1500);
 					expect(player.position).to.eql(0);
 					expect(player.color).to.eql(PlayerColors[index]);
+					expect(['human', 'computer']).to.contain(player.type);
 				});
 				expect(state.currentPlayerIndex).to.eql(0);
 			}, done, done);
@@ -145,6 +151,10 @@
 			for (var i = 0; i < players.length; i++) {
 				task.makeChoice(Choices.finishTurn());
 			}
+		}
+		
+		function finishPlayerTurn() {
+			task.makeChoice(Choices.finishTurn());
 		}
 		
 		function assertCurrentPlayerIsTheFirstOne(gameState, done) {

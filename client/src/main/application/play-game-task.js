@@ -23,7 +23,7 @@
 		this._rollDiceTaskCreated = new Rx.Subject();
 		this._logGameTask = LogGameTask.start(this);
 		
-		startTurn(this._choices, initialGameState(squares, players), this._gameState);
+		startTurn(this, initialGameState(squares, players));
 	}
 	
 	function initialGameState(squares, players) {
@@ -40,14 +40,20 @@
 				name: 'Joueur ' + (index + 1),
 				money: 1500,
 				position: 0,
-				color: PlayerColors[index]
+				color: PlayerColors[index],
+				type: player.type
 			};
 		});
 	}
 	
-	function startTurn(choices, newState, gameState) {
-		gameState.onNext(newState);
-		choices.onNext([Choices.rollDice()]);
+	function startTurn(self, state) {
+		self._gameState.onNext(state);
+		var playerType = state.players[state.currentPlayerIndex].type;
+		if (playerType === 'human') {
+			self._choices.onNext([Choices.rollDice()]);
+		} else {
+			rollDice(self, state)();
+		}
 	}
 	
 	PlayGameTask.prototype.messages = function () {
@@ -88,19 +94,19 @@
 	
 	function rollDice(self, state) {
 		return function () {
-		var task = RollDiceTask.start({
-			fast: self._options.fastDice,
-			dieFunction: self._options.dieFunction
-		});
-		
-		self._rollDiceTaskCreated.onNext(task);
-		task.diceRolled().last()
-			.subscribe(function (dice) {
-				var newPosition = state.players[state.currentPlayerIndex].position + dice[0] + dice[1];
-				state.players[state.currentPlayerIndex].position = newPosition % state.squares.length;
-				self._gameState.onNext(state);
-				self._choices.onNext(choicesForSquare(state));				
+			var task = RollDiceTask.start({
+				fast: self._options.fastDice,
+				dieFunction: self._options.dieFunction
 			});
+			
+			self._rollDiceTaskCreated.onNext(task);
+			task.diceRolled().last()
+				.subscribe(function (dice) {
+					var newPosition = state.players[state.currentPlayerIndex].position + dice[0] + dice[1];
+					state.players[state.currentPlayerIndex].position = newPosition % state.squares.length;
+					self._gameState.onNext(state);
+					self._choices.onNext(choicesForSquare(state));				
+				});
 		};
 	}
 	
@@ -110,7 +116,7 @@
 	
 	function finishTurn(self, state) {
 		return function () {
-			startTurn(self._choices, nextPlayer(state), self._gameState);
+			startTurn(self, nextPlayer(state));
 		};
 	}
 	

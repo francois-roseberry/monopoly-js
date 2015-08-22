@@ -27,11 +27,11 @@
 		});
 		
 		it('displays the start game button', function () {
-			domContext.assertOneOf('#btn-start-game');
+			domContext.assertOneOf('.btn-start-game');
 		});
 		
 		it('clicking the start game button starts a game', function () {
-			domContext.clickOn('#btn-start-game');
+			domContext.clickOn('.btn-start-game');
 			
 			task.statusChanged().subscribe(function (status) {
 				expect(status.statusName).to.eql('playing');
