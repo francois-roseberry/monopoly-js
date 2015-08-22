@@ -5,6 +5,7 @@
 	var LogGameTask = require('./log-game-task');
 	var Board = require('./board');
 	var Choices = require('./choices');
+	var Messages = require('./messages');
 	
 	var testPlayers = require('./test-players');
 	
@@ -28,8 +29,11 @@
 		});
 		
 		function assertLogged(done) {
-			logTask.messages().take(1).subscribe(function (message) {
-				expect(message).to.not.be(undefined);
+			logTask.messages().take(1).subscribe(function (log) {
+				expect([
+					Messages.logDiceRoll().id(),
+					Messages.logDoubleDiceRoll().id()
+				]).to.contain(log.id());
 			}, done, done);
 		}
 	});

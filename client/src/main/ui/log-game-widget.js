@@ -11,10 +11,10 @@
 			.append('div')
 			.classed('game-log-console', true);
 			
-		messages.subscribe(function (message) {
+		messages.subscribe(function (log) {
 			console.append('span')
 				.classed('game-log-message', true)
-				.text(message);
+				.text(log.message());
 		});
 	};
 }());

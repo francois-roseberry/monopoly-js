@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var LogGameWidget = require('./log-game-widget');
+	var Messages = require('./messages');
 	
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
@@ -18,7 +19,7 @@
 		});
 		
 		it('appends each message from the observable', function () {
-			messages.onNext('A message');
+			messages.onNext(Messages.simpleLog());
 			
 			domContext.assertOneOf('.game-log-message');
 		});

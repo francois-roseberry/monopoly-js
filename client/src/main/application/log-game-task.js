@@ -3,6 +3,8 @@
 	
 	var precondition = require('./contract').precondition;
 	
+	var Messages = require('./messages');
+	
 	exports.start = function (playGameTask) {
 		precondition(playGameTask, 'LogGameTask requires a PlayGameTask');
 		
@@ -17,9 +19,18 @@
 	
 	function watchGame(messages, playGameTask) {
 		onDiceRolled(playGameTask)
+			.takeUntil(playGameTask.completed())
 			.subscribe(function (dice) {
-				messages.onNext(dice.player + ' a obtenu ' + diceMessage(dice));
+				messages.onNext(diceMessage(dice));
 			});
+	}
+	
+	function diceMessage(dice) {
+		if (dice.firstDie === dice.secondDie) {
+			return Messages.logDoubleDiceRoll(dice.player, dice.firstDie);
+		}
+		
+		return Messages.logDiceRoll(dice.player, dice.firstDie, dice.secondDie);		
 	}
 	
 	function onDiceRolled(playGameTask) {
@@ -37,14 +48,6 @@
 			secondDie: dice[1],
 			player: state.players[state.currentPlayerIndex].name
 		};
-	}
-	
-	function diceMessage(dice) {
-		if (dice.firstDie === dice.secondDie) {
-			return 'un doublé de ' + dice.firstDie;
-		}
-		
-		return 'un ' + dice.firstDie + ' et un ' + dice.secondDie;		
 	}
 	
 	LogGameTask.prototype.messages = function () {

@@ -110,7 +110,7 @@
 	
 	function finishTurn(self, state) {
 		return function () {
-		startTurn(self._choices, nextPlayer(state), self._gameState);
+			startTurn(self._choices, nextPlayer(state), self._gameState);
 		};
 	}
 	
