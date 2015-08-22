@@ -1,18 +1,53 @@
 (function() {
 	"use strict";
 	
+	var i18n = require('./i18n');
+	var precondition = require('./contract').precondition;
+	
 	exports.SQUARES = [
-		go(), estate('med', 0, 60), communityChest(), estate('baltic', 0, 60), incomeTax(),
-		railroad('reading'), estate('east', 1, 100), chance(), estate('vt', 1, 100), estate('conn', 1, 120),
+		go(),
+		estate('med', i18n.PROPERTY_MED, 0, 60),
+		communityChest(),
+		estate('baltic', i18n.PROPERTY_BALTIC, 0, 60),
+		incomeTax(),
+		railroad(i18n.RAILROAD_READING),
+		estate('east', i18n.PROPERTY_EAST, 1, 100),
+		chance(),
+		estate('vt', i18n.PROPERTY_VT, 1, 100),
+		estate('conn', i18n.PROPERTY_CONN, 1, 120),
 		
-		jail(), estate('charles', 2, 140), company('electric'), estate('us', 2, 140), estate('vn', 2, 160),
-		railroad('penn'), estate('jack', 3, 180), communityChest(), estate('tn', 3, 180), estate('ny', 3, 200),
+		jail(),
+		estate('charles', i18n.PROPERTY_CHARLES, 2, 140),
+		company('electric', i18n.COMPANY_ELECTRIC),
+		estate('us', i18n.PROPERTY_US, 2, 140),
+		estate('vn', i18n.PROPERTY_VN, 2, 160),
+		railroad(i18n.RAILROAD_PENN),
+		estate('jack', i18n.PROPERTY_JACK, 3, 180),
+		communityChest(),
+		estate('tn', i18n.PROPERTY_TN, 3, 180),
+		estate('ny', i18n.PROPERTY_NY, 3, 200),
 		
-		parking(), estate('kt', 4, 220), chance(), estate('in', 4, 220), estate('il', 4, 240),
-		railroad('b-o'), estate('at', 5, 260), estate('vr', 5, 260), company('water'), estate('marvin', 5, 280),
+		parking(),
+		estate('kt', i18n.PROPERTY_KT, 4, 220),
+		chance(),
+		estate('in', i18n.PROPERTY_IN, 4, 220),
+		estate('il', i18n.PROPERTY_IL, 4, 240),
+		railroad(i18n.RAILROAD_B_O),
+		estate('at', i18n.PROPERTY_AT, 5, 260),
+		estate('vr', i18n.PROPERTY_VR, 5, 260),
+		company('water', i18n.COMPANY_WATER),
+		estate('marvin', i18n.PROPERTY_MARVIN, 5, 280),
 		
-		goToJail(), estate('pa', 6, 300), estate('nc', 6, 300), communityChest(), estate('penn', 6, 320),
-		railroad('short'), chance(), estate('pk', 7, 350), luxuryTax(), estate('bw', 7, 400)
+		goToJail(),
+		estate('pa', i18n.PROPERTY_PA, 6, 300),
+		estate('nc', i18n.PROPERTY_NC, 6, 300),
+		communityChest(),
+		estate('penn', i18n.PROPERTY_PENN, 6, 320),
+		railroad(i18n.RAILROAD_SHORT),
+		chance(),
+		estate('pk', i18n.PROPERTY_PK, 7, 350),
+		luxuryTax(),
+		estate('bw', i18n.PROPERTY_BW, 7, 400)
 	];
 	
 	function go() {
@@ -46,49 +81,59 @@
 	function communityChest() {
 		return {
 			match: function (visitor) {
-				visitor['community-chest']();
+				visitor['community-chest'](i18n.COMMUNITY_CHEST);
 			}};
 	}
 	
 	function chance() {
 		return {
 			match: function (visitor) {
-				visitor['chance']();
+				visitor['chance'](i18n.CHANCE);
 			}};
 	}
 	
 	function incomeTax() {
 		return {
 			match: function (visitor) {
-				visitor['income-tax']();
+				visitor['income-tax'](i18n.INCOME_TAX);
 			}};
 	}
 	
 	function luxuryTax() {
 		return {
 			match: function (visitor) {
-				visitor['luxury-tax']();
+				visitor['luxury-tax'](i18n.LUXURY_TAX);
 			}};
 	}
 	
-	function company(id) {
+	function company(id, name) {
+		precondition(_.isString(id), 'Company must have an id');
+		precondition(_.isString(name), 'Company must have a name');
+		
 		return {
 			match: function (visitor) {
-				visitor['company'](id, 150);
+				visitor['company'](id, name, 150);
 			}};
 	}
 	
-	function railroad(id) {
+	function railroad(name) {
+		precondition(_.isString(name), 'Railroad must have a name');
+		
 		return {
 			match: function (visitor) {
-				visitor['railroad'](id, 200);
+				visitor['railroad'](name, 200);
 			}};
 	}
 	
-	function estate(id, group, price) {
+	function estate(id, name, group, price) {
+		precondition(_.isString(id), 'Property must have an id');
+		precondition(_.isString(name), 'Property must have a name');
+		precondition(_.isNumber(group), 'Property must have a group');
+		precondition(_.isNumber(price), 'Property must have a price');
+		
 		return {
 			match: function (visitor) {
-				visitor['estate'](id, group, price);
+				visitor['estate'](id, name, group, price);
 			}};
 	}
 }());

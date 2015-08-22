@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var precondition = require('./contract').precondition;
+	var i18n = require('./i18n');
 	
 	var Symbols = require('./symbols');
 	var TextWrapper = require('./text-wrapper');
@@ -84,17 +85,17 @@
 		square.match({
 			'estate': renderEstate(container),
 			'railroad': renderRailroad(container),
-			'community-chest': function () {
-				writeText(container, 'CAISSE COMMUNE', 20);
+			'community-chest': function (name) {
+				writeText(container, name, 20);
 			},
-			'chance': function () {
-				writeText(container, 'CHANCE', 20);
+			'chance': function (name) {
+				writeText(container, name, 20);
 			},
-			'income-tax': function () {
-				writeText(container, 'IMPÔT SUR LE REVENU', 20);
+			'income-tax': function (name) {
+				writeText(container, name, 20);
 			},
-			'luxury-tax': function () {
-				writeText(container, 'TAXE DE LUXE', 20);
+			'luxury-tax': function (name) {
+				writeText(container, name, 20);
 			},
 			'company': renderCompany(container),
 			'go': renderStart(container),
@@ -138,7 +139,7 @@
 	}
 	
 	function renderEstate(container) {
-		return function (id, group, price) {
+		return function (_, name, group, price) {
 			container.append('rect')
 				.attr({
 					width: SQUARE_WIDTH,
@@ -147,18 +148,18 @@
 					stroke: 'black'
 				});
 				
-			writeText(container, estateName(id), SQUARE_HEIGHT / 4 + 10);
+			writeText(container, name, SQUARE_HEIGHT / 4 + 10);
 			writePrice(container, price);
 		};
 	}
 	
 	function renderRailroad(container) {
-		return function (id, price) {
+		return function (name, price) {
 			container.append('g')
 				.attr('transform', 'scale(0.25) translate(50, 150)')
 				.html(Symbols.train());
 				
-			writeText(container, 'CHEMIN DE FER ' + railroadName(id), 20);
+			writeText(container, name, 20);
 			writePrice(container, price);
 		};
 	}
@@ -172,8 +173,8 @@
 	}
 	
 	function renderCompany(container) {
-		return function (id, price) {
-			writeText(container, companyName(id), 20);
+		return function (_, name, price) {
+			writeText(container, name, 20);
 			writePrice(container, price);
 		};
 	}
@@ -199,67 +200,14 @@
 		};
 	}
 	
-	function estateName(id) {
-		var names = {
-			'med': 'AVENUE DE LA MEDITERRANÉE',
-			'baltic': 'AVENUE DE LA BALTIQUE',
-			'east': "AVENUE DE L'ORIENT",
-			'vt': 'AVENUE VERMONT',
-			'conn': 'AVENUE CONNECTICUT',
-			'charles': 'PLACE ST-CHARLES',
-			'us': 'AVENUE DES ÉTATS-UNIS',
-			'vn': 'AVENUE VIRGINIE',
-			'jack': 'PLACE ST-JACQUES',
-			'tn': 'AVENUE TENNESSEE',
-			'ny': 'AVENUE NEW YORK',
-			'kt': 'AVENUE KENTUCKY',
-			'in': 'AVENUE INDIANA',
-			'il': 'AVENUE ILLINOIS',
-			'at': 'AVENUE ATLANTIQUE',
-			'vr': 'AVENUE VENTNOR',
-			'marvin': 'JARDINS MARVIN',
-			'pa': 'AVENUE PACIFIQUE',
-			'nc': 'AVENUE CAROLINE DU NORD',
-			'penn': 'AVENUE PENNSYLVANIE',
-			'pk': 'PLACE DU PARC',
-			'bw': 'PROMENADE'
-		};
-		
-		precondition(names[id], 'No name has been defined for estate : ' + id);
-		
-		return names[id];
-	}
-	
-	function companyName(id) {
-		var names = {
-			'water': 'AQUEDUC',
-			'electric': "COMPAGNIE D'ÉLECTRICITÉ"
-		};
-		
-		precondition(names[id], 'No name has been defined for company : ' + id);
-		
-		return names[id];
-	}
-	
-	function railroadName(id) {
-		var names = {
-			'reading': 'READING',
-			'penn': 'PENNSYLVANIE',
-			'b-o': 'B.& O.',
-			'short': 'PETIT RÉSEAU'
-		};
-		
-		precondition(names[id], 'No name has been defined for railroad : ' + id);
-		
-		return names[id];
-	}
-	
 	function writeText(container, text, y) {
-		TextWrapper.wrap(container, text, y, SQUARE_WIDTH);
+		TextWrapper.wrap(container, text.toUpperCase(), y, SQUARE_WIDTH);
 	}
 	
 	function writePrice(container, price) {
-		writeTextLine(container, 'PRIX ' + price + '$', SQUARE_HEIGHT - 20);
+		var priceString = i18n.PRICE_STRING
+			.replace('{price}', i18n.formatPrice(price));
+		writeTextLine(container, priceString, SQUARE_HEIGHT - 20);
 	}
 	
 	function writeTextLine(container, text, y) {

@@ -1,10 +1,12 @@
 (function() {
 	"use strict";
 	
+	var i18n = require('./i18n');
+	
 	exports.rollDice = function () {
 		return {
 			id: 'roll-dice',
-			name: 'Lancer les dés',
+			name: i18n.CHOICE_ROLL_DICE,
 			match: function (visitor) {
 				visitor['roll-dice']();
 			}
@@ -14,7 +16,7 @@
 	exports.finishTurn = function () {
 		return {
 			id: 'finish-turn',
-			name: 'Finir le tour',
+			name: i18n.CHOICE_FINISH_TURN,
 			match: function (visitor) {
 				visitor['finish-turn']();
 			}

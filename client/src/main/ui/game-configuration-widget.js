@@ -1,6 +1,7 @@
 (function() {
 	"use strict";
 	
+	var i18n = require('./i18n');
 	var precondition = require('./contract').precondition;
 	
 	exports.render = function (container, gameTask) {
@@ -11,16 +12,18 @@
 			.append('div')
 			.classed('monopoly-game-configuration', true);
 			
-		panel.append('h1').text('Monopoly - configuration de partie');
+		panel.append('h1').text(i18n.CONFIGURE_GAME_TITLE);
 		
 		var computerPlayersBox = panel.append('div');
-		computerPlayersBox.append('span').text('Joueurs IA : ');
+		computerPlayersBox.append('span').text(i18n.COMPUTER_PLAYERS_LABEL + ' : ');
 		computerPlayersBox.append('input').classed('computer-players', true);
 		var spinner = $('.computer-players');
 		spinner.spinner({ min: 1, max: 7 });
 		spinner.spinner('value', 1);
 		
-		panel.append('button').text('Commencer la partie')
+		panel.append('button')
+			.attr('id', 'btn-start-game')
+			.text(i18n.BUTTON_START_GAME)
 			.on('click', function () {
 				gameTask.startGame(players(spinner.spinner('value')));
 			});

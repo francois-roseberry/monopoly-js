@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var precondition =  require('./contract').precondition;
+	var i18n = require('./i18n');
 	
 	exports.render = function (container, gameState) {
 		precondition(container, 'Players widget requires a container to render into');
@@ -50,7 +51,7 @@
 				.append('span')
 				.classed('player-money', true)
 				.text(function (player) {
-					return player.money + ' $';
+					return i18n.formatPrice(player.money);
 				});
 		};
 	}

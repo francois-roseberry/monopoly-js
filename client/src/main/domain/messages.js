@@ -1,8 +1,10 @@
 (function() {
 	"use strict";
 	
+	var i18n = require('./i18n');
+	
 	exports.logDiceRoll = function (player, die1, die2) {
-		var message = '{player} a obtenu un {die1} et un {die2}'
+		var message = i18n.LOG_DICE_ROLL
 					.replace('{player}', player)
 					.replace('{die1}', die1)
 					.replace('{die2}', die2);
@@ -11,7 +13,7 @@
 	};
 	
 	exports.logDoubleDiceRoll = function (player, dice) {
-		var message = '{player} a obtenu un doublé de {dice}'
+		var message = i18n.LOG_DOUBLE_DICE_ROLL
 						.replace('{player}', player)
 						.replace('{dice}', dice);
 						

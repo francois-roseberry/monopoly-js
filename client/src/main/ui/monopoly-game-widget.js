@@ -7,6 +7,7 @@
 	var PlayersWidget = require('./players-widget');
 	var LogGameWidget = require('./log-game-widget');
 	
+	var i18n = require('./i18n');
 	var precondition = require('./contract').precondition;
 	
 	exports.render = function (container, playGameTask) {
@@ -21,7 +22,7 @@
 			.classed('monopoly-header', true)
 			.append('button')
 			.attr('id', 'new-game-button')
-			.text('Nouvelle partie')
+			.text(i18n.BUTTON_NEW_GAME)
 			.on('click', function () {
 				playGameTask.stop();
 			});
