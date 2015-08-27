@@ -23,7 +23,40 @@
 		this._rollDiceTaskCreated = new Rx.Subject();
 		this._logGameTask = LogGameTask.start(this);
 		
+		this._humanChoices = choicesForPlayerType(this, 'human');
+		
+		choicesForPlayerType(this, 'computer')
+			.subscribe(computerPlayer(this));
+		
 		startTurn(this, initialGameState(squares, players));
+	}
+	
+	function computerPlayer(self) {
+		return function (choices) {
+			if (choices.length > 0) {
+				Rx.Observable.timer(0).subscribe(function () {
+					self.makeChoice(choices[0]);
+				});
+			}
+		};
+	}
+	
+	function choicesForPlayerType(self, type) {
+		return self._choices.withLatestFrom(
+			self._gameState,
+			function (choices, state) {
+				return {
+					choices: choices,
+					playerType: state.players[state.currentPlayerIndex].type
+				};
+			})
+			.filter(function (choicesAndPlayerType) {
+				return choicesAndPlayerType.playerType === type;
+			})
+			.map(function (choicesAndPlayerType) {
+				return choicesAndPlayerType.choices;
+			})
+			.takeUntil(self._completed);
 	}
 	
 	function initialGameState(squares, players) {
@@ -48,12 +81,7 @@
 	
 	function startTurn(self, state) {
 		self._gameState.onNext(state);
-		var playerType = state.players[state.currentPlayerIndex].type;
-		if (playerType === 'human') {
-			self._choices.onNext([Choices.rollDice()]);
-		} else {
-			rollDice(self, state)();
-		}
+		self._choices.onNext([Choices.rollDice()]);
 	}
 	
 	PlayGameTask.prototype.messages = function () {
@@ -65,7 +93,7 @@
 	};
 	
 	PlayGameTask.prototype.choices = function () {
-		return this._choices.asObservable();
+		return this._humanChoices.asObservable();
 	};
 	
 	PlayGameTask.prototype.rollDiceTaskCreated = function () {
