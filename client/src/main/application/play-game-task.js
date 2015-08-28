@@ -5,6 +5,7 @@
 	var Choices = require('./choices');
 	var RollDiceTask = require('./roll-dice-task');
 	var LogGameTask = require('./log-game-task');
+	var HandleChoicesTask = require('./handle-choices-task');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -23,40 +24,18 @@
 		this._rollDiceTaskCreated = new Rx.Subject();
 		this._logGameTask = LogGameTask.start(this);
 		
-		this._humanChoices = choicesForPlayerType(this, 'human');
-		
-		choicesForPlayerType(this, 'computer')
-			.subscribe(computerPlayer(this));
+		this._handleChoicesTask = HandleChoicesTask.start(this);
+		listenForChoices(this);
 		
 		startTurn(this, initialGameState(squares, players));
 	}
 	
-	function computerPlayer(self) {
-		return function (choices) {
-			if (choices.length > 0) {
-				Rx.Observable.timer(0).subscribe(function () {
-					self.makeChoice(choices[0]);
-				});
-			}
-		};
-	}
-	
-	function choicesForPlayerType(self, type) {
-		return self._choices.withLatestFrom(
-			self._gameState,
-			function (choices, state) {
-				return {
-					choices: choices,
-					playerType: state.players[state.currentPlayerIndex].type
-				};
-			})
-			.filter(function (choicesAndPlayerType) {
-				return choicesAndPlayerType.playerType === type;
-			})
-			.map(function (choicesAndPlayerType) {
-				return choicesAndPlayerType.choices;
-			})
-			.takeUntil(self._completed);
+	function listenForChoices(self) {
+		self._handleChoicesTask.choiceMade()
+			.takeUntil(self._completed)
+			.subscribe(function (choice) {
+				self.makeChoice(choice);
+			});
 	}
 	
 	function initialGameState(squares, players) {
@@ -84,6 +63,10 @@
 		self._choices.onNext([Choices.rollDice()]);
 	}
 	
+	PlayGameTask.prototype.handleChoicesTask = function () {
+		return this._handleChoicesTask;
+	};
+	
 	PlayGameTask.prototype.messages = function () {
 		return this._logGameTask.messages();
 	};
@@ -93,7 +76,7 @@
 	};
 	
 	PlayGameTask.prototype.choices = function () {
-		return this._humanChoices.asObservable();
+		return this._choices.asObservable();
 	};
 	
 	PlayGameTask.prototype.rollDiceTaskCreated = function () {

@@ -14,7 +14,7 @@
 		var task;
 		
 		beforeEach(function (done) {
-			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
+			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS).handleChoicesTask();
 			GameChoicesWidget.render(domContext.rootElement, task);
 			
 			task.choices().take(1).subscribe(function (choices) {
@@ -31,8 +31,8 @@
 		});
 		
 		it('clicking on a choice sends an event in the task', function (done) {
-			task.rollDiceTaskCreated().take(1).subscribe(function (task) {
-				expect(task).to.not.eql(undefined);
+			task.choiceMade().take(1).subscribe(function (choice) {
+				expect(choice.id).to.eql(Choices.rollDice().id);
 			}, done, done);
 			
 			domContext.clickOn('[data-id=' + Choices.rollDice().id + ']');

@@ -3,20 +3,20 @@
 	
 	var precondition = require('./contract').precondition;
 	
-	exports.render = function(container, playGameTask) {
+	exports.render = function(container, handleChoicesTask) {
 		precondition(container, 'The game choices widget requires a container to render into');
-		precondition(playGameTask, 'The game choices widget requires a PlayGameTask');
+		precondition(handleChoicesTask, 'The game choices widget requires a HandleChoicesTask');
 		
 		var choicesContainer = d3.select(container[0])
 			.append('div')
 			.classed('monopoly-game-choices', true);
 		
-		playGameTask.choices().subscribe(function (choices) {
-			renderChoices(choicesContainer, playGameTask, choices);
+		handleChoicesTask.choices().subscribe(function (choices) {
+			renderChoices(choicesContainer, handleChoicesTask, choices);
 		});
 	};
 	
-	function renderChoices(choicesContainer, playGameTask, choices) {
+	function renderChoices(choicesContainer, handleChoicesTask, choices) {
 		var choiceButtons = choicesContainer
 			.selectAll('.monopoly-game-choices-item')
 			.data(choices);
@@ -32,7 +32,7 @@
 				return choice.name;
 			})
 			.on('click', function (choice) {
-				playGameTask.makeChoice(choice);
+				handleChoicesTask.makeChoice(choice);
 			});
 			
 		choiceButtons

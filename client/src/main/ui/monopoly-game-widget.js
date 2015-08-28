@@ -30,7 +30,7 @@
 		var centralComponentsContainer = panel.append('div')
 			.classed('monopoly-central-components', true);
 		
-		GameChoicesWidget.render($(centralComponentsContainer[0]), playGameTask);
+		GameChoicesWidget.render($(centralComponentsContainer[0]), playGameTask.handleChoicesTask());
 		LogGameWidget.render($(centralComponentsContainer[0]), playGameTask.messages());
 		BoardWidget.render($(panel[0]), playGameTask.gameState());
 		PlayersWidget.render($(panel[0]), playGameTask.gameState());
