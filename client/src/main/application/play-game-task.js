@@ -94,7 +94,6 @@
 	
 	PlayGameTask.prototype.makeChoice = function (choice) {
 		var self = this;
-		this._choices.onNext([]);
 		self._gameState.take(1).subscribe(function (state) {
 			choice.match({
 				'roll-dice': rollDice(self, state),

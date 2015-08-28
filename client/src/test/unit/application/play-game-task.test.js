@@ -50,7 +50,7 @@
 			
 				Rx.Observable.combineLatest(
 					task.gameState().skip(1).take(1),
-					task.choices().skip(2).take(1).map(toChoiceIds),
+					task.choices().skip(1).take(1).map(toChoiceIds),
 					
 					function (state, choices) {
 						newPosition = state.players[0].position;

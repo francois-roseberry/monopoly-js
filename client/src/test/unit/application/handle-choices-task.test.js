@@ -47,6 +47,14 @@
 			task.makeChoice(Choices.rollDice());
 		});
 		
+		it('sends an empty choices event to the human player when it makes a choice', function (done) {
+			task.makeChoice(Choices.rollDice());
+			
+			task.choices().take(1).subscribe(function (choices) {
+				expect(choices).to.eql([]);
+			}, done, done);
+		});
+		
 		function switchTurnToComputerPlayer() {
 			task.makeChoice(Choices.finishTurn());
 		}

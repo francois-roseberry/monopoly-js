@@ -6,7 +6,9 @@
 	exports.start = function (playGameTask) {
 		precondition(playGameTask, 'HandleChoicesTask requires a PlayGameTask');
 		
-		var humanChoices = choicesForPlayerType(playGameTask, 'human');
+		var humanChoices = new Rx.ReplaySubject(1);
+		choicesForPlayerType(playGameTask, 'human')
+			.subscribe(humanChoices);
 		
 		var task = new HandleChoicesTask(humanChoices);
 		
@@ -30,6 +32,7 @@
 	};
 	
 	HandleChoicesTask.prototype.makeChoice = function (choice) {
+		this._humanChoices.onNext([]);
 		this._choiceMade.onNext(choice);
 	};
 	
@@ -55,7 +58,7 @@
 		return function (choices) {
 			if (choices.length > 0) {
 				Rx.Observable.timer(0).subscribe(function () {
-					self.makeChoice(choices[0]);
+					self._choiceMade.onNext(choices[0]);
 				});
 			}
 		};
