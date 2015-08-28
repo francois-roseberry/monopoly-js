@@ -33,9 +33,7 @@
 	function listenForChoices(self) {
 		self._handleChoicesTask.choiceMade()
 			.takeUntil(self._completed)
-			.subscribe(function (choice) {
-				self.makeChoice(choice);
-			});
+			.subscribe(makeChoice(self));
 	}
 	
 	function initialGameState(squares, players) {
@@ -92,15 +90,16 @@
 		this._completed.onCompleted();
 	};
 	
-	PlayGameTask.prototype.makeChoice = function (choice) {
-		var self = this;
-		self._gameState.take(1).subscribe(function (state) {
-			choice.match({
-				'roll-dice': rollDice(self, state),
-				'finish-turn': finishTurn(self, state)
+	function makeChoice (self) {
+		return function (choice) {
+			self._gameState.take(1).subscribe(function (state) {
+				choice.match({
+					'roll-dice': rollDice(self, state),
+					'finish-turn': finishTurn(self, state)
+				});
 			});
-		});
-	};
+		};
+	}
 	
 	function rollDice(self, state) {
 		return function () {

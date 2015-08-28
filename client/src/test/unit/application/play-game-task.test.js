@@ -38,7 +38,7 @@
 				expect(task).to.not.eql(undefined);
 			}, done, done);
 			
-			task.makeChoice(Choices.rollDice());
+			task.handleChoicesTask().makeChoice(Choices.rollDice());
 		});
 		
 		describe('after dice have finished rolling', function () {
@@ -60,7 +60,7 @@
 					})
 					.subscribe(_.noop, done, done);
 				
-				task.makeChoice(Choices.rollDice());
+				task.handleChoicesTask().makeChoice(Choices.rollDice());
 			});
 			
 			it('send a game state event with the new position', function () {
@@ -73,7 +73,7 @@
 		});
 		
 		it('when finish-turn is chosen, sends the new game state with the next player', function (done) {
-			task.makeChoice(Choices.finishTurn());
+			task.handleChoicesTask().makeChoice(Choices.finishTurn());
 			
 			assertCurrentPlayerIsTheSecondOne(task.gameState(), done);
 		});
@@ -87,7 +87,7 @@
 		it('when moving past last square, wraps around the board', function (done) {
 			task = gameTaskWithCheatedDice(Board.SQUARES.length / 2 + 1);
 			
-			task.makeChoice(Choices.rollDice());
+			task.handleChoicesTask().makeChoice(Choices.rollDice());
 			
 			assertFirstPlayerPosition(task.gameState().skip(1), 2, done);
 		});
@@ -149,12 +149,12 @@
 		
 		function finishAllPlayerTurns(players, task) {
 			for (var i = 0; i < players.length; i++) {
-				task.makeChoice(Choices.finishTurn());
+				task.handleChoicesTask().makeChoice(Choices.finishTurn());
 			}
 		}
 		
 		function finishPlayerTurn() {
-			task.makeChoice(Choices.finishTurn());
+			task.handleChoicesTask().makeChoice(Choices.finishTurn());
 		}
 		
 		function assertCurrentPlayerIsTheFirstOne(gameState, done) {
