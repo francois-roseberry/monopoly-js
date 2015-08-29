@@ -10,20 +10,30 @@
 			task = ConfigureGameTask.start();
 		});
 		
-		it('at start, has 1 computer player', function () {
-			expect(task.getComputers()).to.eql(1);
+		it('at start, has 1 computer player', function (done) {
+			task.players().take(1).subscribe(function (players) {
+				expect(players).to.eql([
+					{ type: 'human' },
+					{ type: 'computer' }
+				]);
+			}, done, done);
 		});
 		
-		it('when starting game, sends a completed event with the players', function (done) {
-			task.completed().subscribe(function (players) {
+		it('when setting computer players, sends an event', function (done) {
+			task.setComputers(2);
+			
+			task.players().take(1).subscribe(function (players) {
 				expect(players).to.eql([
 					{ type: 'human' },
 					{ type: 'computer' },
 					{ type: 'computer' }
 				]);
 			}, done, done);
+		});
+		
+		it('when starting game, sends a completed event with the players', function (done) {
+			task.completed().subscribe(_.noop, done, done);
 			
-			task.setComputers(2);
 			task.startGame();
 		});
 	});

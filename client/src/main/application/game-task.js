@@ -16,9 +16,13 @@
 	
 	function configuringStatus(statusChanged) {
 		var task = ConfigureGameTask.start();
-		task.completed().subscribe(function (players) {
-			startGame(players, statusChanged);
-		});
+		task.completed()
+			.withLatestFrom(task.players(), function (_, players) {
+				return players;
+			})
+			.subscribe(function (players) {
+				startGame(players, statusChanged);
+			});
 		
 		return {
 			statusName: 'configuring',

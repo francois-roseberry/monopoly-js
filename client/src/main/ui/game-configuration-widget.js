@@ -19,9 +19,11 @@
 		computerPlayersBox.append('input').classed('computer-players', true);
 		var spinner = $('.computer-players');
 		spinner.spinner({ min: 1, max: 7 });
-		spinner.spinner('value', configureGameTask.getComputers());
-		spinner.on('spinchange', function (event) {
-			configureGameTask.setComputers(spinner.spinner('value'));
+		configureGameTask.players().take(1).subscribe(function (players) {
+			spinner.spinner('value', players.length - 1);
+			spinner.on('spinchange', function (event) {
+				configureGameTask.setComputers(spinner.spinner('value'));
+			});
 		});
 		
 		panel.append('button')

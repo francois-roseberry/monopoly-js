@@ -9,22 +9,22 @@
 	
 	function ConfigureGameTask() {
 		this._completed = new Rx.AsyncSubject();
-		this._computersCount = 1;
+		this._players = new Rx.BehaviorSubject(players(1));
 	}
 	
-	ConfigureGameTask.prototype.getComputers = function () {
-		return this._computersCount;
+	ConfigureGameTask.prototype.players = function () {
+		return this._players.asObservable();
 	};
 	
 	ConfigureGameTask.prototype.setComputers = function (count) {
 		precondition(_.isNumber(count) && count > 0 && count < 8,
 			'The number of computer players must be between 1 and 7');
 			
-		this._computersCount = count;
+		this._players.onNext(players(count));
 	};
 	
 	ConfigureGameTask.prototype.startGame = function () {
-		this._completed.onNext(players(this._computersCount));
+		this._completed.onNext(true);
 		this._completed.onCompleted();
 	};
 	
