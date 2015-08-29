@@ -37,11 +37,10 @@
 	};
 	
 	function choicesForPlayerType(playGameTask, type) {
-		return playGameTask._choices.withLatestFrom(
-			playGameTask._gameState,
-			function (choices, state) {
+		return playGameTask.gameState()
+			.map(function (state) {
 				return {
-					choices: choices,
+					choices: state.choices,
 					playerType: state.players[state.currentPlayerIndex].type
 				};
 			})

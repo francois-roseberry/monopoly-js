@@ -15,16 +15,12 @@
 			task = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS, { fastDice: true });
 		});
 		
-		it('at start, sends an event with the roll-dice choice', function (done) {
-			assertRollDiceChoice(task.choices(), done);
-		});
-		
 		it('at start, sends an event with the initial game state', function (done) {
 			assertInitialGameState(task.gameState(), done);
 		});
 		
-		it('when turn starts, sends the roll-dice-choice', function (done) {
-			assertRollDiceChoice(task.choices(), done);
+		it('when turn starts, sends the gameState with the roll-dice-choice', function (done) {
+			assertRollDiceChoice(task.gameState(), done);
 		});
 		
 		it('has a messages observable', function () {
@@ -56,17 +52,11 @@
 			beforeEach(function (done) {
 				task = gameTaskWithCheatedDice(1);
 			
-				Rx.Observable.combineLatest(
-					task.gameState().skip(1).take(1),
-					task.choices().skip(1).take(1).map(toChoiceIds),
-					
-					function (state, choices) {
+				task.gameState().skip(1).take(1)
+					.subscribe(function (state) {
 						newPosition = state.players[0].position;
-						newChoices = choices;
-						
-						return {};
-					})
-					.subscribe(_.noop, done, done);
+						newChoices = toChoiceIds(state.choices);
+					}, done, done);
 				
 				task.handleChoicesTask().makeChoice(Choices.rollDice());
 			});
@@ -100,12 +90,17 @@
 			assertFirstPlayerPosition(task.gameState().skip(1), 2, done);
 		});
 		
-		function assertRollDiceChoice(choices, done) {
-			choices.take(1)
+		function assertRollDiceChoice(gameState, done) {
+			gameState.take(1)
+				.map(onlyChoices)
 				.map(toChoiceIds)
 				.subscribe(function (choices) {
 					expect(choices).to.eql([Choices.rollDice().id]);
 				}, done, done);
+		}
+		
+		function onlyChoices(state) {
+			return state.choices;
 		}
 		
 		function gameTaskWithCheatedDice(dieValue) {
@@ -141,6 +136,7 @@
 					expect(['human', 'computer']).to.contain(player.type);
 				});
 				expect(state.currentPlayerIndex).to.eql(0);
+				expect(toChoiceIds(state.choices)).to.eql([Choices.rollDice().id]);
 			}, done, done);
 		}
 		

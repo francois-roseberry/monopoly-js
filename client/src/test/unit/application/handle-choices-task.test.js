@@ -17,12 +17,14 @@
 			task = HandleChoicesTask.start(playGameTask);
 		});
 		
-		it('sends the choices event when its playGameTask sends choices for a human player',
+		it('sends the choices event when its playGameTask sends game state for a human player',
 			function (done) {
-				playGameTask.choices().take(1).subscribe(function (choices) {
-					task.choices().take(1).subscribe(function (humanChoices) {
-						expect(humanChoices).to.eql(choices);
-					}, done, done);
+				playGameTask.gameState().take(1)
+					.map(onlyChoices)
+					.subscribe(function (choices) {
+						task.choices().take(1).subscribe(function (humanChoices) {
+							expect(toChoiceIds(humanChoices)).to.eql(toChoiceIds(choices));
+						}, done, done);
 				});
 			});
 			
@@ -30,10 +32,12 @@
 			function (done) {
 				switchTurnToComputerPlayer();
 				
-				playGameTask.choices().take(1).subscribe(function () {
-					task.choices().skip(1).take(1).subscribe(function () {
-						throw new Error('Should never be called');
-					}, done, done);
+				playGameTask.gameState().take(1)
+					.map(onlyChoices)
+					.subscribe(function () {
+						task.choices().skip(1).take(1).subscribe(function () {
+							throw new Error('Should never be called');
+						}, done, done);
 					
 					done();
 				});
@@ -57,6 +61,16 @@
 		
 		function switchTurnToComputerPlayer() {
 			task.makeChoice(Choices.finishTurn());
+		}
+		
+		function toChoiceIds(choices) {
+			return _.map(choices, function (choice) {
+					return choice.id;
+				});
+		}
+		
+		function onlyChoices(state) {
+			return state.choices;
 		}
 	});
 }());

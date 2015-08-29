@@ -20,7 +20,6 @@
 		this._gameState = new Rx.ReplaySubject(1);
 		this._options = options || { fastDice: false };
 		this._completed = new Rx.AsyncSubject();
-		this._choices = new Rx.ReplaySubject(1);
 		this._rollDiceTaskCreated = new Rx.Subject();
 		this._logGameTask = LogGameTask.start(this);
 		
@@ -40,7 +39,8 @@
 		return {
 			squares: squares,
 			players: forGame(players),
-			currentPlayerIndex: 0
+			currentPlayerIndex: 0,
+			choices: [Choices.rollDice()]
 		};
 	}
 	
@@ -58,7 +58,6 @@
 	
 	function startTurn(self, state) {
 		self._gameState.onNext(state);
-		self._choices.onNext([Choices.rollDice()]);
 	}
 	
 	PlayGameTask.prototype.handleChoicesTask = function () {
@@ -71,10 +70,6 @@
 	
 	PlayGameTask.prototype.gameState = function () {
 		return this._gameState.asObservable();
-	};
-	
-	PlayGameTask.prototype.choices = function () {
-		return this._choices.asObservable();
 	};
 	
 	PlayGameTask.prototype.rollDiceTaskCreated = function () {
@@ -113,8 +108,8 @@
 				.subscribe(function (dice) {
 					var newPosition = state.players[state.currentPlayerIndex].position + dice[0] + dice[1];
 					state.players[state.currentPlayerIndex].position = newPosition % state.squares.length;
-					self._gameState.onNext(state);
-					self._choices.onNext(choicesForSquare(state));				
+					state.choices = choicesForSquare(state);
+					self._gameState.onNext(state);			
 				});
 		};
 	}
@@ -133,7 +128,8 @@
 		return {
 			squares: state.squares,
 			players: state.players,
-			currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length
+			currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length,
+			choices: [Choices.rollDice()]
 		};
 	}
 }());
