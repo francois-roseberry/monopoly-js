@@ -40,7 +40,7 @@
 			squares: squares,
 			players: forGame(players),
 			currentPlayerIndex: 0,
-			choices: [Choices.rollDice()]
+			choices: newTurnChoices()
 		};
 	}
 	
@@ -129,7 +129,11 @@
 			squares: state.squares,
 			players: state.players,
 			currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length,
-			choices: [Choices.rollDice()]
+			choices: newTurnChoices()
 		};
+	}
+	
+	function newTurnChoices() {
+		return [Choices.rollDice()];
 	}
 }());
