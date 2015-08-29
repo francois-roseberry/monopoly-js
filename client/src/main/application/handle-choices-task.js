@@ -55,11 +55,7 @@
 	
 	function computerPlayer(self) {
 		return function (choices) {
-			if (choices.length > 0) {
-				Rx.Observable.timer(0).subscribe(function () {
-					self._choiceMade.onNext(choices[0]);
-				});
-			}
+			self._choiceMade.onNext(choices[0]);
 		};
 	}
 }());
