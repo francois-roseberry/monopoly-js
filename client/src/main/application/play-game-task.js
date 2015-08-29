@@ -36,23 +36,23 @@
 	}
 	
 	function initialGameState(squares, players) {
-		return {
+		return newState({
 			squares: squares,
 			players: forGame(players),
 			currentPlayerIndex: 0,
 			choices: newTurnChoices()
-		};
+		});
 	}
 	
 	function forGame(players) {
 		return _.map(players, function (player, index) {
-			return {
+			return newPlayer({
 				name: 'Joueur ' + (index + 1),
 				money: 1500,
 				position: 0,
 				color: PlayerColors[index],
 				type: player.type
-			};
+			});
 		});
 	}
 	
@@ -85,6 +85,48 @@
 		this._completed.onCompleted();
 	};
 	
+	function newPlayer(info) {
+		precondition(_.isString(info.name) && info.name !== '', 'Player requires a name');
+		precondition(_.isNumber(info.money) && info.money >= 0, 'Player requires an amount of money');
+		precondition(_.isNumber(info.position) && info.position >= 0, 'Player requires a position');
+		precondition(_.isString(info.color) && info.color !== '', 'Player requires a color');
+		precondition(_.isString(info.type) && validPlayerType(info.type), 'Player requires a valid type');
+		
+		return {
+			name: info.name,
+			money: info.money,
+			position: info.position,
+			color: info.color,
+			type: info.type
+		};
+	}
+	
+	function validPlayerType(type) {
+		return type === 'human' || type === 'computer';
+	}
+	
+	function newState(info) {
+		precondition(_.isArray(info.squares) && info.squares.length === 40,
+			'GameState requires an array of squares');
+		precondition(_.isArray(info.players) && info.players.length >= 2,
+			'GameState requires an array of players');
+		precondition(_.isNumber(info.currentPlayerIndex) && validIndex(info.players, info.currentPlayerIndex),
+			'GameState requires the index of the current player');
+		precondition(_.isArray(info.choices) && info.choices.length > 0,
+			'GameState requires an array of choices');
+		
+		return {
+			squares: info.squares,
+			players: info.players,
+			currentPlayerIndex: info.currentPlayerIndex,
+			choices: info.choices
+		};
+	}
+	
+	function validIndex(array, index) {
+		return index >= 0 && index < array.length;
+	}
+	
 	function makeChoice (self) {
 		return function (choice) {
 			self._gameState.take(1).subscribe(function (state) {
@@ -106,10 +148,7 @@
 			self._rollDiceTaskCreated.onNext(task);
 			task.diceRolled().last()
 				.subscribe(function (dice) {
-					var newPosition = state.players[state.currentPlayerIndex].position + dice[0] + dice[1];
-					state.players[state.currentPlayerIndex].position = newPosition % state.squares.length;
-					state.choices = choicesForSquare(state);
-					self._gameState.onNext(state);			
+					self._gameState.onNext(movePlayer(state, dice));			
 				});
 		};
 	}
@@ -124,13 +163,36 @@
 		};
 	}
 	
+	function movePlayer(state, dice) {
+		var newPlayers = _.map(state.players, function (player, index) {
+			if (index === state.currentPlayerIndex) {
+				return newPlayer({
+					name: player.name,
+					money: player.money,
+					position: (player.position + dice[0] + dice[1]) % state.squares.length,
+					color: player.color,
+					type: player.type
+				});
+			}
+			
+			return player;
+		});
+		
+		return newState({
+			squares: state.squares,
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex,
+			choices: choicesForSquare(state)
+		});
+	}
+	
 	function nextPlayer(state) {
-		return {
+		return newState({
 			squares: state.squares,
 			players: state.players,
 			currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length,
 			choices: newTurnChoices()
-		};
+		});
 	}
 	
 	function newTurnChoices() {
