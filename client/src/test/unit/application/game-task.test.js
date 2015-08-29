@@ -4,13 +4,19 @@
 	var Board = require('./board');
 	var GameTask = require('./game-task');
 	
-	var testPlayers = require('./test-players');
-	
 	describe('A Game task', function () {
+		var configureGameTask;
 		var task;
 		
-		beforeEach(function () {
+		beforeEach(function (done) {
 			task = GameTask.start();
+			task.statusChanged().take(1).subscribe(function (status) {
+				status.match({
+					'configuring': function (task) {
+						configureGameTask = task;
+					}
+				});
+			}, done, done);
 		});
 		
 		it('send a configuring status at start', function (done) {
@@ -19,8 +25,8 @@
 			}, done, done);
 		});
 		
-		it('send a playing status when starting game with board and players', function (done) {
-			task.startGame(testPlayers.PLAYERS);
+		it('send a playing status when its configure game task is completed', function (done) {
+			configureGameTask.startGame();
 			
 			task.statusChanged().take(1).subscribe(function (status) {
 				expect(status.statusName).to.eql('playing');
@@ -28,24 +34,15 @@
 					'playing': function (playGameTask) {
 						playGameTask.gameState().take(1).subscribe(function (state) {
 							expect(state.squares).to.eql(Board.SQUARES);
-							expect(state.players.length).to.eql(testPlayers.PLAYERS.length);
+							expect(state.players.length).to.eql(configureGameTask.getComputers().length + 1);
 						});
 					}
 				});
 			}, done, done);
 		});
 		
-		it('never sends two playing statuses in a row', function () {
-			task.statusChanged().skip(2).take(1).subscribe(function (status) {
-				throw new Error('should never send a second playing status');
-			});
-			
-			task.startGame(testPlayers.PLAYERS);
-			task.startGame(testPlayers.PLAYERS);
-		});
-		
 		it('sends a configuring status when its play game task is completed', function (done) {
-			task.startGame(testPlayers.PLAYERS);
+			configureGameTask.startGame();
 			
 			task.statusChanged().take(1).subscribe(function (status) {
 				status.match({
@@ -55,7 +52,7 @@
 				});
 			});
 			
-			task.statusChanged().take(1).subscribe(function (status) {
+			task.statusChanged().skip(1).take(1).subscribe(function (status) {
 				expect(status.statusName).to.eql('configuring');
 			}, done, done);
 		});

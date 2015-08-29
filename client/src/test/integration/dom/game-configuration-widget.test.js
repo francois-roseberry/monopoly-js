@@ -2,7 +2,7 @@
 	"use strict";
 	
 	var GameConfigurationWidget = require('./game-configuration-widget');
-	var GameTask = require('./game-task');
+	var ConfigureGameTask = require('./configure-game-task');
 	
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
@@ -10,7 +10,7 @@
 		var task;
 		
 		beforeEach(function () {
-			task = GameTask.start();
+			task = ConfigureGameTask.start();
 			GameConfigurationWidget.render(domContext.rootElement, task);
 		});
 		
@@ -30,12 +30,10 @@
 			domContext.assertOneOf('.btn-start-game');
 		});
 		
-		it('clicking the start game button starts a game', function () {
+		it('clicking the start game button completes the game configuration task', function (done) {
 			domContext.clickOn('.btn-start-game');
 			
-			task.statusChanged().subscribe(function (status) {
-				expect(status.statusName).to.eql('playing');
-			});
+			task.completed().subscribe(_.noop, done, done);
 		});
 	});
 }());

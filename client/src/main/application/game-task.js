@@ -3,50 +3,52 @@
 	
 	var Board = require('./board');
 	var PlayGameTask = require('./play-game-task');
-	
-	var precondition = require('./contract').precondition;
+	var ConfigureGameTask = require('./configure-game-task');
 	
 	exports.start = function () {
 		return new GameTask();
 	};
 
 	function GameTask() {
-		this._statusChanged = new Rx.BehaviorSubject(configuringStatus());
+		this._statusChanged = new Rx.ReplaySubject(1);
+		this._statusChanged.onNext(configuringStatus(this._statusChanged));
 	}
 	
-	function configuringStatus() {
+	function configuringStatus(statusChanged) {
+		var task = ConfigureGameTask.start();
+		task.completed().subscribe(function (players) {
+			startGame(players, statusChanged);
+		});
+		
 		return {
 			statusName: 'configuring',
 			match: function (visitor) {
-				visitor.configuring();
+				visitor.configuring(task);
 			}
 		};
 	}
 	
-	function playingStatus(players, self) {
+	function playingStatus(players, statusChanged) {
+		var task = PlayGameTask.start(Board.SQUARES, players);
+		task.completed().subscribe(function () {
+			newGame(statusChanged);
+		});
+				
 		return {
 			statusName: 'playing',
 			match: function (visitor) {
-				var task = PlayGameTask.start(Board.SQUARES, players);
-				var statusChanged = self._statusChanged;
-				task.completed().subscribe(function () {
-					statusChanged.onNext(configuringStatus());
-				});
 				visitor.playing(task);
 			}
 		};
 	}
 	
-	GameTask.prototype.startGame = function (players) {
-		precondition(_.isArray(players), 'Game task requires the list of players to start the game');
-		
-		var self = this;
-		this._statusChanged.take(1).subscribe(function (status) {
-			if (status.statusName === 'configuring') {
-				self._statusChanged.onNext(playingStatus(players, self));
-			}
-		});
-	};
+	function newGame(statusChanged) {
+		statusChanged.onNext(configuringStatus(statusChanged));
+	}
+	
+	function startGame(players, statusChanged) {
+		statusChanged.onNext(playingStatus(players, statusChanged));
+	}
 	
 	GameTask.prototype.statusChanged = function () {
 		return this._statusChanged.asObservable();

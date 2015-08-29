@@ -13,21 +13,21 @@
 		gameTask.statusChanged().subscribe(function (status) {
 			d3.select(container[0]).selectAll('*').remove();
 			status.match({
-				'configuring': renderGameConfiguration(container, gameTask),
+				'configuring': renderGameConfiguration(container),
 				'playing' : renderGame(container)
 			});
 		});
 	};
 	
-	function renderGameConfiguration(container, gameTask) {
-		return function () {
-			GameConfigurationWidget.render(container, gameTask);
+	function renderGameConfiguration(container) {
+		return function (configureGameTask) {
+			GameConfigurationWidget.render(container, configureGameTask);
 		};
 	}
 	
 	function renderGame(container) {
-		return function (gameTask) {
-			MonopolyGameWidget.render(container, gameTask);
+		return function (playGameTask) {
+			MonopolyGameWidget.render(container, playGameTask);
 		};
 	}
 }());

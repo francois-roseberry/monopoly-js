@@ -4,7 +4,6 @@
 	var GameWidget = require('./game-widget');
 	var GameTask = require('./game-task');
 	
-	var testPlayers = require('./test-players');
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
 	describeInDom('A Game widget', function (domContext) {
@@ -22,7 +21,13 @@
 			
 		it('renders the monopoly game widget in the given container ' +
 			'when its game task send the playing status', function () {
-				task.startGame(testPlayers.PLAYERS);
+				task.statusChanged().take(1).subscribe(function (status) {
+					status.match({
+						'configuring': function (task) {
+							task.startGame();
+						}
+					});
+				});
 				
 				domContext.assertOneOf('.monopoly-game');
 				domContext.assertNothingOf('.monopoly-game-configuration');
