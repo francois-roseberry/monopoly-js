@@ -23,8 +23,16 @@
 			assertInitialGameState(task.gameState(), done);
 		});
 		
+		it('when turn starts, sends the roll-dice-choice', function (done) {
+			assertRollDiceChoice(task.choices(), done);
+		});
+		
 		it('has a messages observable', function () {
 			expect(task.messages()).to.not.be(undefined);
+		});
+		
+		it('has a HandleChoicesTask', function () {
+			expect(task.handleChoicesTask()).to.not.be(undefined);
 		});
 		
 		it('stopping the task sends an event', function (done) {
@@ -92,17 +100,6 @@
 			assertFirstPlayerPosition(task.gameState().skip(1), 2, done);
 		});
 		
-		it('when turn starts and player is human, sends the roll-dice-choice', function (done) {
-			assertRollDiceChoice(task.choices(), done);
-		});
-		
-		it('when turn starts and player is computer, creates a rollDiceTask', function (done) {
-			task.rollDiceTaskCreated().take(1).subscribe(_.noop, done, done);
-			
-			// The second player is a computer
-			finishPlayerTurn();
-		});
-		
 		function assertRollDiceChoice(choices, done) {
 			choices.take(1)
 				.map(toChoiceIds)
@@ -151,10 +148,6 @@
 			for (var i = 0; i < players.length; i++) {
 				task.handleChoicesTask().makeChoice(Choices.finishTurn());
 			}
-		}
-		
-		function finishPlayerTurn() {
-			task.handleChoicesTask().makeChoice(Choices.finishTurn());
 		}
 		
 		function assertCurrentPlayerIsTheFirstOne(gameState, done) {
