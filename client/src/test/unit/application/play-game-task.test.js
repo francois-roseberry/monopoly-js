@@ -12,7 +12,7 @@
 		var task;
 		
 		beforeEach(function () {
-			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS, { fastDice: true });
+			task = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS, { fastDice: true });
 		});
 		
 		it('at start, sends an event with the roll-dice choice', function (done) {
@@ -85,7 +85,7 @@
 		});
 		
 		it('when moving past last square, wraps around the board', function (done) {
-			task = gameTaskWithCheatedDice(Board.SQUARES.length / 2 + 1);
+			task = gameTaskWithCheatedDice(Board.squares().length / 2 + 1);
 			
 			task.handleChoicesTask().makeChoice(Choices.rollDice());
 			
@@ -112,7 +112,7 @@
 		}
 		
 		function gameTaskWithCheatedDice(dieValue) {
-			return PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS, { 
+			return PlayGameTask.start(Board.squares(), testPlayers.PLAYERS, { 
 				fastDice: true,
 				dieFunction: function () {
 					return dieValue;
@@ -134,7 +134,7 @@
 		
 		function assertInitialGameState(gameState, done) {
 			gameState.take(1).subscribe(function (state) {
-				expect(state.squares).to.eql(Board.SQUARES);
+				expect(state.squares.length).to.eql(Board.squares().length);
 				expect(state.players.length).to.eql(testPlayers.PLAYERS.length);
 				_.each(state.players, function (player, index) {
 					expect(player.name).to.eql('Joueur ' + (index + 1));

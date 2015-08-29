@@ -13,7 +13,7 @@
 		var task;
 		
 		beforeEach(function () {
-			playGameTask = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS, { fastDice: true });
+			playGameTask = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS, { fastDice: true });
 			task = HandleChoicesTask.start(playGameTask);
 		});
 		

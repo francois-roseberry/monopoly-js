@@ -33,7 +33,7 @@
 				status.match({
 					'playing': function (playGameTask) {
 						playGameTask.gameState().take(1).subscribe(function (state) {
-							expect(state.squares).to.eql(Board.SQUARES);
+							expect(state.squares).to.eql(Board.squares());
 							expect(state.players.length).to.eql(configureGameTask.getComputers().length + 1);
 						});
 					}

@@ -12,7 +12,7 @@
 		var task;
 		
 		beforeEach(function () {
-			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
+			task = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS);
 			MonopolyGameWidget.render(domContext.rootElement, task);
 		});
 		

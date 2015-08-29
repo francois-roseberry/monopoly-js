@@ -10,7 +10,7 @@
 	
 	describeInDom('A Players widget', function (domContext) {
 		beforeEach(function () {
-			var task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS);
+			var task = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS);
 			PlayersWidget.render(domContext.rootElement, task.gameState());
 		});
 		

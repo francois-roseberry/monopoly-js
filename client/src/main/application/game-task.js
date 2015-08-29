@@ -29,7 +29,7 @@
 	}
 	
 	function playingStatus(players, statusChanged) {
-		var task = PlayGameTask.start(Board.SQUARES, players);
+		var task = PlayGameTask.start(Board.squares(), players);
 		task.completed().subscribe(function () {
 			newGame(statusChanged);
 		});

@@ -4,51 +4,53 @@
 	var i18n = require('./i18n');
 	var precondition = require('./contract').precondition;
 	
-	exports.SQUARES = [
-		go(),
-		estate('med', i18n.PROPERTY_MED, 0, 60),
-		communityChest(),
-		estate('baltic', i18n.PROPERTY_BALTIC, 0, 60),
-		incomeTax(),
-		railroad(i18n.RAILROAD_READING),
-		estate('east', i18n.PROPERTY_EAST, 1, 100),
-		chance(),
-		estate('vt', i18n.PROPERTY_VT, 1, 100),
-		estate('conn', i18n.PROPERTY_CONN, 1, 120),
-		
-		jail(),
-		estate('charles', i18n.PROPERTY_CHARLES, 2, 140),
-		company('electric', i18n.COMPANY_ELECTRIC),
-		estate('us', i18n.PROPERTY_US, 2, 140),
-		estate('vn', i18n.PROPERTY_VN, 2, 160),
-		railroad(i18n.RAILROAD_PENN),
-		estate('jack', i18n.PROPERTY_JACK, 3, 180),
-		communityChest(),
-		estate('tn', i18n.PROPERTY_TN, 3, 180),
-		estate('ny', i18n.PROPERTY_NY, 3, 200),
-		
-		parking(),
-		estate('kt', i18n.PROPERTY_KT, 4, 220),
-		chance(),
-		estate('in', i18n.PROPERTY_IN, 4, 220),
-		estate('il', i18n.PROPERTY_IL, 4, 240),
-		railroad(i18n.RAILROAD_B_O),
-		estate('at', i18n.PROPERTY_AT, 5, 260),
-		estate('vr', i18n.PROPERTY_VR, 5, 260),
-		company('water', i18n.COMPANY_WATER),
-		estate('marvin', i18n.PROPERTY_MARVIN, 5, 280),
-		
-		goToJail(),
-		estate('pa', i18n.PROPERTY_PA, 6, 300),
-		estate('nc', i18n.PROPERTY_NC, 6, 300),
-		communityChest(),
-		estate('penn', i18n.PROPERTY_PENN, 6, 320),
-		railroad(i18n.RAILROAD_SHORT),
-		chance(),
-		estate('pk', i18n.PROPERTY_PK, 7, 350),
-		luxuryTax(),
-		estate('bw', i18n.PROPERTY_BW, 7, 400)
-	];
+	exports.squares = function () {
+		return [
+			go(),
+			estate('med', i18n.PROPERTY_MED, 0, 60),
+			communityChest(),
+			estate('baltic', i18n.PROPERTY_BALTIC, 0, 60),
+			incomeTax(),
+			railroad(i18n.RAILROAD_READING),
+			estate('east', i18n.PROPERTY_EAST, 1, 100),
+			chance(),
+			estate('vt', i18n.PROPERTY_VT, 1, 100),
+			estate('conn', i18n.PROPERTY_CONN, 1, 120),
+			
+			jail(),
+			estate('charles', i18n.PROPERTY_CHARLES, 2, 140),
+			company('electric', i18n.COMPANY_ELECTRIC),
+			estate('us', i18n.PROPERTY_US, 2, 140),
+			estate('vn', i18n.PROPERTY_VN, 2, 160),
+			railroad(i18n.RAILROAD_PENN),
+			estate('jack', i18n.PROPERTY_JACK, 3, 180),
+			communityChest(),
+			estate('tn', i18n.PROPERTY_TN, 3, 180),
+			estate('ny', i18n.PROPERTY_NY, 3, 200),
+			
+			parking(),
+			estate('kt', i18n.PROPERTY_KT, 4, 220),
+			chance(),
+			estate('in', i18n.PROPERTY_IN, 4, 220),
+			estate('il', i18n.PROPERTY_IL, 4, 240),
+			railroad(i18n.RAILROAD_B_O),
+			estate('at', i18n.PROPERTY_AT, 5, 260),
+			estate('vr', i18n.PROPERTY_VR, 5, 260),
+			company('water', i18n.COMPANY_WATER),
+			estate('marvin', i18n.PROPERTY_MARVIN, 5, 280),
+			
+			goToJail(),
+			estate('pa', i18n.PROPERTY_PA, 6, 300),
+			estate('nc', i18n.PROPERTY_NC, 6, 300),
+			communityChest(),
+			estate('penn', i18n.PROPERTY_PENN, 6, 320),
+			railroad(i18n.RAILROAD_SHORT),
+			chance(),
+			estate('pk', i18n.PROPERTY_PK, 7, 350),
+			luxuryTax(),
+			estate('bw', i18n.PROPERTY_BW, 7, 400)
+		];
+	};
 	
 	function go() {
 		return {

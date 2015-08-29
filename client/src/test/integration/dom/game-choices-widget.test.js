@@ -14,7 +14,7 @@
 		var task;
 		
 		beforeEach(function (done) {
-			task = PlayGameTask.start(Board.SQUARES, testPlayers.PLAYERS).handleChoicesTask();
+			task = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS).handleChoicesTask();
 			GameChoicesWidget.render(domContext.rootElement, task);
 			
 			task.choices().take(1).subscribe(function (choices) {
