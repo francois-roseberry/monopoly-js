@@ -2,11 +2,10 @@
 	"use strict";
 	
 	var Choices = require('./choices');
-	var Board = require('./board');
 	var GameChoicesWidget = require('./game-choices-widget');
 	var PlayGameTask = require('./play-game-task');
 	
-	var testPlayers = require('./test-players');
+	var testData = require('./test-data');
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
 	describeInDom('A game choices widget', function (domContext) {
@@ -14,7 +13,7 @@
 		var task;
 		
 		beforeEach(function (done) {
-			task = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS).handleChoicesTask();
+			task = PlayGameTask.start(testData.gameConfiguration()).handleChoicesTask();
 			GameChoicesWidget.render(domContext.rootElement, task);
 			
 			task.choices().take(1).subscribe(function (choices) {

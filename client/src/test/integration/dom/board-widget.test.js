@@ -5,13 +5,13 @@
 	var BoardWidget = require('./board-widget');
 	var PlayGameTask = require('./play-game-task');
 	
-	var testPlayers = require('./test-players');
+	var testData = require('./test-data');
 	var describeInDom = require('./dom-fixture').describeInDom;
 		
 	describeInDom('A Board Widget', function (domContext) {
 		var task;
 		beforeEach(function () {
-			task = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS);
+			task = PlayGameTask.start(testData.gameConfiguration());
 			BoardWidget.render(domContext.rootElement, task.gameState());
 		});
 		
@@ -28,7 +28,7 @@
 		});
 		
 		it('renders a token for each player', function () {
-			domContext.assertElementCount('.player-token', testPlayers.PLAYERS.length);
+			domContext.assertElementCount('.player-token', testData.players().length);
 		});
 	});
 }());

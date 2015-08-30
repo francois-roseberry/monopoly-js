@@ -1,16 +1,15 @@
 (function() {
 	"use strict";
 	
-	var Board = require('./board');
 	var PlayersWidget = require('./players-widget');
 	var PlayGameTask = require('./play-game-task');
 	
-	var testPlayers = require('./test-players');
+	var testData = require('./test-data');
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
 	describeInDom('A Players widget', function (domContext) {
 		beforeEach(function () {
-			var task = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS);
+			var task = PlayGameTask.start(testData.gameConfiguration());
 			PlayersWidget.render(domContext.rootElement, task.gameState());
 		});
 		
@@ -19,19 +18,19 @@
 		});
 		
 		it('renders a pane for each player', function () {
-			domContext.assertElementCount('.player-panel', testPlayers.PLAYERS.length);
+			domContext.assertElementCount('.player-panel', testData.players().length);
 		});
 		
 		it('renders the player tokens', function () {
-			domContext.assertElementCount('.player-panel > .player-panel-token', testPlayers.PLAYERS.length);
+			domContext.assertElementCount('.player-panel > .player-panel-token', testData.players().length);
 		});
 		
 		it('renders the player names', function () {
-			domContext.assertElementCount('.player-panel > .player-name', testPlayers.PLAYERS.length);
+			domContext.assertElementCount('.player-panel > .player-name', testData.players().length);
 		});
 		
 		it('renders the player amounts', function () {
-			domContext.assertElementCount('.player-panel > .player-money', testPlayers.PLAYERS.length);
+			domContext.assertElementCount('.player-panel > .player-money', testData.players().length);
 		});
 	});
 }());

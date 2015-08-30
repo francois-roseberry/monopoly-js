@@ -3,17 +3,16 @@
 	
 	var PlayGameTask = require('./play-game-task');
 	var HandleChoicesTask = require('./handle-choices-task');
-	var Board = require('./board');
 	var Choices = require('./choices');
 	
-	var testPlayers = require('./test-players');
+	var testData = require('./test-data');
 	
 	describe('A HandleChoicesTask', function () {
 		var playGameTask;
 		var task;
 		
 		beforeEach(function () {
-			playGameTask = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS, { fastDice: true });
+			playGameTask = PlayGameTask.start(testData.gameConfiguration());
 			task = HandleChoicesTask.start(playGameTask);
 		});
 		

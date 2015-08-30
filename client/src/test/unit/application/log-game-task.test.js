@@ -3,18 +3,17 @@
 	
 	var PlayGameTask = require('./play-game-task');
 	var LogGameTask = require('./log-game-task');
-	var Board = require('./board');
 	var Choices = require('./choices');
 	var Messages = require('./messages');
 	
-	var testPlayers = require('./test-players');
+	var testData = require('./test-data');
 	
 	describe('The log game task', function () {
 		var gameTask;
 		var logTask;
 		
 		beforeEach(function () {
-			gameTask = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS, { fastDice: true });
+			gameTask = PlayGameTask.start(testData.gameConfiguration());
 			logTask = LogGameTask.start(gameTask);
 		});
 		

@@ -6,13 +6,13 @@
 	var PlayerColors = require('./player-colors').colors();
 	var Choices = require('./choices');
 	
-	var testPlayers = require('./test-players');
+	var testData = require('./test-data');
 	
 	describe('The PlayGame task', function () {
 		var task;
 		
 		beforeEach(function () {
-			task = PlayGameTask.start(Board.squares(), testPlayers.PLAYERS, { fastDice: true });
+			task = PlayGameTask.start(testData.gameConfiguration());
 		});
 		
 		it('at start, sends an event with the initial game state', function (done) {
@@ -77,7 +77,7 @@
 		});
 		
 		it('when all players have finished their turn, the first one plays again', function (done) {
-			finishAllPlayerTurns(testPlayers.PLAYERS, task);
+			finishAllPlayerTurns(task);
 			
 			assertCurrentPlayerIsTheFirstOne(task.gameState(), done);
 		});
@@ -104,12 +104,12 @@
 		}
 		
 		function gameTaskWithCheatedDice(dieValue) {
-			return PlayGameTask.start(Board.squares(), testPlayers.PLAYERS, { 
+			return PlayGameTask.start({ squares: Board.squares(), players: testData.players(), options: { 
 				fastDice: true,
 				dieFunction: function () {
 					return dieValue;
 				}
-			});
+			}});
 		}
 		
 		function assertFirstPlayerPosition(gameState, position, done) {
@@ -127,7 +127,7 @@
 		function assertInitialGameState(gameState, done) {
 			gameState.take(1).subscribe(function (state) {
 				expect(state.squares().length).to.eql(Board.squares().length);
-				expect(state.players().length).to.eql(testPlayers.PLAYERS.length);
+				expect(state.players().length).to.eql(testData.players().length);
 				_.each(state.players(), function (player, index) {
 					expect(player.name()).to.eql('Joueur ' + (index + 1));
 					expect(player.money()).to.eql(1500);
@@ -140,8 +140,8 @@
 			}, done, done);
 		}
 		
-		function finishAllPlayerTurns(players, task) {
-			for (var i = 0; i < players.length; i++) {
+		function finishAllPlayerTurns(task) {
+			for (var i = 0; i < testData.players().length; i++) {
 				task.handleChoicesTask().makeChoice(Choices.finishTurn());
 			}
 		}

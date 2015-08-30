@@ -9,16 +9,20 @@
 	
 	var precondition = require('./contract').precondition;
 	
-	exports.start = function (squares, players, options) {
-		precondition(_.isArray(squares), 'PlayGameTask requires a list of squares');
-		precondition(_.isArray(players), 'PlayGameTask requires a list of players');
+	exports.start = function (/*squares, players, options*/gameConfiguration) {
+		precondition(_.isArray(gameConfiguration.squares),
+			'PlayGameTask requires a configuration with a list of squares');
+		precondition(_.isArray(gameConfiguration.players),
+			'PlayGameTask requires a configuration with a list of players');
+		precondition(gameConfiguration.options,
+			'PlayGameTask requires a configuration with an options object');
 		
-		return new PlayGameTask(squares, players, options);
+		return new PlayGameTask(gameConfiguration);
 	};
 	
-	function PlayGameTask(squares, players, options) {
+	function PlayGameTask(gameConfiguration) {
 		this._gameState = new Rx.ReplaySubject(1);
-		this._options = options || { fastDice: false };
+		this._options = gameConfiguration.options;
 		this._completed = new Rx.AsyncSubject();
 		this._rollDiceTaskCreated = new Rx.Subject();
 		this._logGameTask = LogGameTask.start(this);
@@ -26,7 +30,7 @@
 		this._handleChoicesTask = HandleChoicesTask.start(this);
 		listenForChoices(this);
 		
-		startTurn(this, initialGameState(squares, players));
+		startTurn(this, initialGameState(gameConfiguration.squares, gameConfiguration.players));
 	}
 	
 	function listenForChoices(self) {
@@ -107,7 +111,7 @@
 	
 	function newState(info) {
 		precondition(_.isArray(info.squares) && info.squares.length === 40,
-			'GameState requires an array of squares');
+			'GameState requires an array of 40 squares');
 		precondition(_.isArray(info.players) && info.players.length >= 2,
 			'GameState requires an array of players');
 		precondition(_.isNumber(info.currentPlayerIndex) && validIndex(info.players, info.currentPlayerIndex),
