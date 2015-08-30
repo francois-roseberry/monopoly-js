@@ -7,7 +7,7 @@
 		var task;
 		
 		beforeEach(function () {
-		task = RollDiceTask.start({ fast: true });
+			task = RollDiceTask.start({ fast: true });
 		});
 		
 		it('diceRolled observable completes', function (done) {

@@ -93,11 +93,11 @@
 		precondition(_.isString(info.type) && validPlayerType(info.type), 'Player requires a valid type');
 		
 		return {
-			name: info.name,
-			money: info.money,
-			position: info.position,
-			color: info.color,
-			type: info.type
+			name: function () { return info.name; },
+			money: function () { return info.money; },
+			position: function () { return info.position; },
+			color: function () { return info.color; },
+			type: function () { return info.type; }
 		};
 	}
 	
@@ -116,10 +116,10 @@
 			'GameState requires an array of choices');
 		
 		return {
-			squares: info.squares,
-			players: info.players,
-			currentPlayerIndex: info.currentPlayerIndex,
-			choices: info.choices
+			squares: function () { return info.squares; },
+			players: function () { return info.players; },
+			currentPlayerIndex: function () { return info.currentPlayerIndex; },
+			choices: function () { return info.choices; }
 		};
 	}
 	
@@ -164,14 +164,14 @@
 	}
 	
 	function movePlayer(state, dice) {
-		var newPlayers = _.map(state.players, function (player, index) {
-			if (index === state.currentPlayerIndex) {
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
 				return newPlayer({
-					name: player.name,
-					money: player.money,
-					position: (player.position + dice[0] + dice[1]) % state.squares.length,
-					color: player.color,
-					type: player.type
+					name: player.name(),
+					money: player.money(),
+					position: (player.position() + dice[0] + dice[1]) % state.squares().length,
+					color: player.color(),
+					type: player.type()
 				});
 			}
 			
@@ -179,18 +179,18 @@
 		});
 		
 		return newState({
-			squares: state.squares,
+			squares: state.squares(),
 			players: newPlayers,
-			currentPlayerIndex: state.currentPlayerIndex,
+			currentPlayerIndex: state.currentPlayerIndex(),
 			choices: choicesForSquare(state)
 		});
 	}
 	
 	function nextPlayer(state) {
 		return newState({
-			squares: state.squares,
-			players: state.players,
-			currentPlayerIndex: (state.currentPlayerIndex + 1) % state.players.length,
+			squares: state.squares(),
+			players: state.players(),
+			currentPlayerIndex: (state.currentPlayerIndex() + 1) % state.players().length,
 			choices: newTurnChoices()
 		});
 	}

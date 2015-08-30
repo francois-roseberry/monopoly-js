@@ -46,7 +46,7 @@
 		return {
 			firstDie : dice[0],
 			secondDie: dice[1],
-			player: state.players[state.currentPlayerIndex].name
+			player: state.players()[state.currentPlayerIndex()].name()
 		};
 	}
 	

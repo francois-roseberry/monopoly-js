@@ -18,7 +18,7 @@
 	function renderPlayerPanels(container) {
 		return function (state) {
 			var panels = container.selectAll('.player-panel')
-				.data(state.players)
+				.data(state.players())
 				.enter()
 				.append('div')
 				.classed('player-panel', true);
@@ -36,7 +36,7 @@
 					cy: 6,
 					r: 6,
 					fill: function (player) {
-						return player.color;
+						return player.color();
 					}
 				});
 				
@@ -44,14 +44,14 @@
 				.append('span')
 				.classed('player-name', true)
 				.text(function (player) {
-					return player.name;
+					return player.name();
 				});
 				
 			panels
 				.append('span')
 				.classed('player-money', true)
 				.text(function (player) {
-					return i18n.formatPrice(player.money);
+					return i18n.formatPrice(player.money());
 				});
 		};
 	}

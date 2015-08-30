@@ -70,7 +70,7 @@
 		}
 		
 		function onlyChoices(state) {
-			return state.choices;
+			return state.choices();
 		}
 	});
 }());

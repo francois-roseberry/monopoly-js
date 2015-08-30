@@ -54,8 +54,8 @@
 			
 				task.gameState().skip(1).take(1)
 					.subscribe(function (state) {
-						newPosition = state.players[0].position;
-						newChoices = toChoiceIds(state.choices);
+						newPosition = state.players()[0].position();
+						newChoices = toChoiceIds(state.choices());
 					}, done, done);
 				
 				task.handleChoicesTask().makeChoice(Choices.rollDice());
@@ -100,7 +100,7 @@
 		}
 		
 		function onlyChoices(state) {
-			return state.choices;
+			return state.choices();
 		}
 		
 		function gameTaskWithCheatedDice(dieValue) {
@@ -114,7 +114,7 @@
 		
 		function assertFirstPlayerPosition(gameState, position, done) {
 			gameState.take(1).subscribe(function (state) {
-				expect(state.players[0].position).to.eql(position);
+				expect(state.players()[0].position()).to.eql(position);
 			}, done, done);
 		}
 		
@@ -126,17 +126,17 @@
 		
 		function assertInitialGameState(gameState, done) {
 			gameState.take(1).subscribe(function (state) {
-				expect(state.squares.length).to.eql(Board.squares().length);
-				expect(state.players.length).to.eql(testPlayers.PLAYERS.length);
-				_.each(state.players, function (player, index) {
-					expect(player.name).to.eql('Joueur ' + (index + 1));
-					expect(player.money).to.eql(1500);
-					expect(player.position).to.eql(0);
-					expect(player.color).to.eql(PlayerColors[index]);
-					expect(['human', 'computer']).to.contain(player.type);
+				expect(state.squares().length).to.eql(Board.squares().length);
+				expect(state.players().length).to.eql(testPlayers.PLAYERS.length);
+				_.each(state.players(), function (player, index) {
+					expect(player.name()).to.eql('Joueur ' + (index + 1));
+					expect(player.money()).to.eql(1500);
+					expect(player.position()).to.eql(0);
+					expect(player.color()).to.eql(PlayerColors[index]);
+					expect(['human', 'computer']).to.contain(player.type());
 				});
-				expect(state.currentPlayerIndex).to.eql(0);
-				expect(toChoiceIds(state.choices)).to.eql([Choices.rollDice().id]);
+				expect(state.currentPlayerIndex()).to.eql(0);
+				expect(toChoiceIds(state.choices())).to.eql([Choices.rollDice().id]);
 			}, done, done);
 		}
 		
@@ -156,7 +156,7 @@
 		
 		function assertCurrentPlayerIndex(gameState, index, done) {
 			gameState.take(1).subscribe(function (state) {
-				expect(state.currentPlayerIndex).to.eql(index);
+				expect(state.currentPlayerIndex()).to.eql(index);
 			}, done, done);
 		}
 	});

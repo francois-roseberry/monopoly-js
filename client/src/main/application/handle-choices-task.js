@@ -38,17 +38,11 @@
 	
 	function choicesForPlayerType(playGameTask, type) {
 		return playGameTask.gameState()
+			.filter(function (state) {
+				return state.players()[state.currentPlayerIndex()].type() === type;
+			})
 			.map(function (state) {
-				return {
-					choices: state.choices,
-					playerType: state.players[state.currentPlayerIndex].type
-				};
-			})
-			.filter(function (choicesAndPlayerType) {
-				return choicesAndPlayerType.playerType === type;
-			})
-			.map(function (choicesAndPlayerType) {
-				return choicesAndPlayerType.choices;
+				return state.choices();
 			})
 			.takeUntil(playGameTask.completed());
 	}

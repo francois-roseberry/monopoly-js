@@ -31,7 +31,7 @@
 	
 	function renderSquares(container) {
 		return function (state) {
-			var rows = squaresToRows(state.squares);
+			var rows = squaresToRows(state.squares());
 			
 			var squares = container.selectAll('.monopoly-row')
 				.data(rows)
@@ -61,13 +61,13 @@
 				
 			squares
 				.each(function (square) {
-					renderSquare(d3.select(this), square, state.players);
+					renderSquare(d3.select(this), square, state.players());
 				});
 				
 			container.selectAll('.monopoly-square')
 				.data(state.squares)
 				.each(function (square, index) {
-					renderPlayerTokens(d3.select(this), index, state.players);
+					renderPlayerTokens(d3.select(this), index, state.players());
 				});
 			};
 	}
@@ -107,7 +107,7 @@
 	
 	function renderPlayerTokens(container, squareIndex, players) {
 		var playersOnSquare = _.filter(players, function (player) {
-			return player.position === squareIndex;
+			return player.position() === squareIndex;
 		});
 		
 		var tokens = container.selectAll('.player-token')
@@ -131,7 +131,7 @@
 			
 		tokens.attr(
 			'fill', function (player) {
-				return player.color;
+				return player.color();
 			}
 		);
 			
