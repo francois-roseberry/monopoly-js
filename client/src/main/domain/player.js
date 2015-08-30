@@ -44,4 +44,14 @@
 	Player.prototype.type = function () {
 		return this._type;
 	};
+	
+	Player.prototype.move = function(dice, squareCount) {
+		return exports.newPlayer({
+					name: this.name(),
+					money: this.money(),
+					position: (this.position() + dice[0] + dice[1]) % squareCount,
+					color: this.color(),
+					type: this.type()
+				});
+	};
 }());
