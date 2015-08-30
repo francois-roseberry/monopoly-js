@@ -65,7 +65,7 @@
 				});
 				
 			container.selectAll('.monopoly-square')
-				.data(state.squares)
+				.data(state.squares())
 				.each(function (square, index) {
 					renderPlayerTokens(d3.select(this), index, state.players());
 				});
