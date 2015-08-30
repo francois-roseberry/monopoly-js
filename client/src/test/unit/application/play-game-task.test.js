@@ -82,14 +82,6 @@
 			assertCurrentPlayerIsTheFirstOne(task.gameState(), done);
 		});
 		
-		it('when moving past last square, wraps around the board', function (done) {
-			task = gameTaskWithCheatedDice(Board.squares().length / 2 + 1);
-			
-			task.handleChoicesTask().makeChoice(Choices.rollDice());
-			
-			assertFirstPlayerPosition(task.gameState().skip(1), 2, done);
-		});
-		
 		function assertRollDiceChoice(gameState, done) {
 			gameState.take(1)
 				.map(onlyChoices)
@@ -110,12 +102,6 @@
 					return dieValue;
 				}
 			}});
-		}
-		
-		function assertFirstPlayerPosition(gameState, position, done) {
-			gameState.take(1).subscribe(function (state) {
-				expect(state.players()[0].position()).to.eql(position);
-			}, done, done);
 		}
 		
 		function toChoiceIds(choices) {
