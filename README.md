@@ -26,6 +26,17 @@ play -> config [label="New game"];
 }
 )
 
-Game states
+Game states (when the application is in the "Playing game" state)
 
-// TODO
+![Alt text](http://g.gravizo.com/g?
+digraph G {
+start [shape=box];
+turnStart [label="Turn start"];
+turnEnd [label="Turn end"]
+start -> turnStart;
+turnStart-> turnEnd[label="Roll dice"];
+turnEnd-> turnStart[label="Finish turn"];
+}
+)
+
+Note : there is no final state, since there is no way to possibly lose money yet. Hence, no winner or loser possible. Will be added later
