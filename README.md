@@ -13,7 +13,7 @@ This setup is not tested on non-Windows systems and therefore I don't know if th
 
 #Game Design Outline
 
-Application states
+**Application states**
 
 ![Alt text](http://g.gravizo.com/g?
 digraph G {
@@ -26,7 +26,7 @@ play -> config [label="New game"];
 }
 )
 
-Game states (when the application is in the "Playing game" state)
+**Game states** (when the application is in the "Playing game" state)
 
 ![Alt text](http://g.gravizo.com/g?
 digraph G {
