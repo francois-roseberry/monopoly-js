@@ -10,3 +10,22 @@ Run 'grunt background'. While it runs, open another terminal and run 'grunt chec
 Note: grunt runs karma on windows using git bash, so it must be in the path. Logically, at this point Git Bash should be installed, since you just pulled the sources from GitHub. But be sure to put Git Bash in the path (installation option in 'Git for Windows' installer)
 
 This setup is not tested on non-Windows systems and therefore I don't know if this works.
+
+#Game Design Outline
+
+Application states
+
+<img src='http://g.gravizo.com/g?
+digraph G {
+start [shape=box];
+config [label="Configuring game"];
+play [label="Playing game"]
+start -> config;
+config -> play [label="Start game"];
+play -> config [label="New game"];
+}
+'>
+
+Game states
+
+// TODO
