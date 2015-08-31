@@ -15,7 +15,7 @@ This setup is not tested on non-Windows systems and therefore I don't know if th
 
 Application states
 
-<img src='http://g.gravizo.com/g?
+![Alt text](http://g.gravizo.com/g?
 digraph G {
 start [shape=box];
 config [label="Configuring game"];
@@ -24,7 +24,7 @@ start -> config;
 config -> play [label="Start game"];
 play -> config [label="New game"];
 }
-'>
+)
 
 Game states
 
