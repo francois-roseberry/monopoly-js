@@ -27,7 +27,9 @@ play -> config [label="New game"];
 )
 
 **Game states**
+
 (when the application is in the "Playing game" state)
+
 Arrow represents choices
 
 ![Alt text](http://g.gravizo.com/g?
@@ -42,7 +44,9 @@ turnEnd-> turnStart[label="Finish turn"];
 )
 
 Choices effects on the game state :
+
 Roll dice : move player on the board
+
 Finish turn : switch to next player
 
 Note : there is no final state, since there is no way to possibly lose money yet. Hence, no winner or loser possible. Will be added later
