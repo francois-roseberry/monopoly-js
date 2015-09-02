@@ -76,13 +76,21 @@
 		this._completed.onCompleted();
 	};
 	
-	function makeChoice (self) {
+	function makeChoice(self) {
 		return function (choice) {
-			self._gameState.take(1).subscribe(function (state) {
-				choice.match({
-					'roll-dice': rollDice(self, state),
-					'finish-turn': finishTurn(self, state)
-				});
+			self._gameState.take(1)
+				.flatMap(computeNextState(self, choice))
+				.subscribe(function (state) {
+					self._gameState.onNext(state);
+				});			
+		};
+	}
+	
+	function computeNextState(self, choice) {
+		return function (state) {
+			return choice.match({
+				'roll-dice': rollDice(self, state),
+				'finish-turn': finishTurn(state)
 			});
 		};
 	}
@@ -95,16 +103,16 @@
 			});
 			
 			self._rollDiceTaskCreated.onNext(task);
-			task.diceRolled().last()
-				.subscribe(function (dice) {
-					self._gameState.onNext(movePlayer(state, dice));			
+			return task.diceRolled().last()
+				.map(function (dice) {
+					return movePlayer(state, dice);
 				});
 		};
 	}
 	
-	function finishTurn(self, state) {
+	function finishTurn(state) {
 		return function () {
-			startTurn(self, nextPlayer(state));
+			return Rx.Observable.of(nextPlayer(state));
 		};
 	}
 	

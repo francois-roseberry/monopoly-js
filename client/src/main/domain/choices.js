@@ -8,7 +8,7 @@
 			id: 'roll-dice',
 			name: i18n.CHOICE_ROLL_DICE,
 			match: function (visitor) {
-				visitor['roll-dice']();
+				return visitor['roll-dice']();
 			}
 		};
 	};
@@ -18,7 +18,7 @@
 			id: 'finish-turn',
 			name: i18n.CHOICE_FINISH_TURN,
 			match: function (visitor) {
-				visitor['finish-turn']();
+				return visitor['finish-turn']();
 			}
 		};
 	};
