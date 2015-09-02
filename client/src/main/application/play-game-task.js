@@ -1,8 +1,6 @@
 (function() {
 	"use strict";
 	
-	var PlayerColors = require('./player-colors').colors();
-	var Choices = require('./choices');
 	var RollDiceTask = require('./roll-dice-task');
 	var LogGameTask = require('./log-game-task');
 	var HandleChoicesTask = require('./handle-choices-task');
@@ -11,7 +9,7 @@
 	
 	var precondition = require('./contract').precondition;
 	
-	exports.start = function (/*squares, players, options*/gameConfiguration) {
+	exports.start = function (gameConfiguration) {
 		precondition(_.isArray(gameConfiguration.squares),
 			'PlayGameTask requires a configuration with a list of squares');
 		precondition(_.isArray(gameConfiguration.players),
@@ -42,23 +40,10 @@
 	}
 	
 	function initialGameState(squares, players) {
-		return GameState.newState({
+		return GameState.turnStartState({
 			squares: squares,
-			players: forGame(players),
-			currentPlayerIndex: 0,
-			choices: newTurnChoices()
-		});
-	}
-	
-	function forGame(players) {
-		return _.map(players, function (player, index) {
-			return Player.newPlayer({
-				name: 'Joueur ' + (index + 1),
-				money: 1500,
-				position: 0,
-				color: PlayerColors[index],
-				type: player.type
-			});
+			players: Player.newPlayers(players),
+			currentPlayerIndex: 0
 		});
 	}
 	
@@ -117,10 +102,6 @@
 		};
 	}
 	
-	function choicesForSquare(state) {
-		return [Choices.finishTurn()];
-	}
-	
 	function finishTurn(self, state) {
 		return function () {
 			startTurn(self, nextPlayer(state));
@@ -136,24 +117,18 @@
 			return player;
 		});
 		
-		return GameState.newState({
+		return GameState.turnEndState({
 			squares: state.squares(),
 			players: newPlayers,
-			currentPlayerIndex: state.currentPlayerIndex(),
-			choices: choicesForSquare(state)
+			currentPlayerIndex: state.currentPlayerIndex()
 		});
 	}
 	
 	function nextPlayer(state) {
-		return GameState.newState({
+		return GameState.turnStartState({
 			squares: state.squares(),
 			players: state.players(),
-			currentPlayerIndex: (state.currentPlayerIndex() + 1) % state.players().length,
-			choices: newTurnChoices()
+			currentPlayerIndex: (state.currentPlayerIndex() + 1) % state.players().length
 		});
-	}
-	
-	function newTurnChoices() {
-		return [Choices.rollDice()];
 	}
 }());

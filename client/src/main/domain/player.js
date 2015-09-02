@@ -1,9 +1,23 @@
 (function() {
 	"use strict";
 	
+	var PlayerColors = require('./player-colors').colors();
+	
 	var precondition = require('./contract').precondition;
 	
-	exports.newPlayer = function (info) {
+	exports.newPlayers = function (playerConfigurations) {
+		return _.map(playerConfigurations, function (playerConfiguration, index) {
+			return newPlayer({
+				name: 'Joueur ' + (index + 1),
+				money: 1500,
+				position: 0,
+				color: PlayerColors[index],
+				type: playerConfiguration.type
+			});
+		});
+	};
+	
+	function newPlayer (info) {
 		precondition(_.isString(info.name) && info.name !== '', 'Player requires a name');
 		precondition(_.isNumber(info.money) && info.money >= 0, 'Player requires an amount of money');
 		precondition(_.isNumber(info.position) && info.position >= 0, 'Player requires a position');
@@ -11,7 +25,7 @@
 		precondition(_.isString(info.type) && validPlayerType(info.type), 'Player requires a valid type');
 		
 		return new Player(info);
-	};
+	}
 	
 	function validPlayerType(type) {
 		return type === 'human' || type === 'computer';
@@ -46,7 +60,7 @@
 	};
 	
 	Player.prototype.move = function(dice, squareCount) {
-		return exports.newPlayer({
+		return newPlayer({
 					name: this.name(),
 					money: this.money(),
 					position: (this.position() + dice[0] + dice[1]) % squareCount,

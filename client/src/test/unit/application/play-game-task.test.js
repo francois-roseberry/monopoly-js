@@ -46,27 +46,25 @@
 		});
 		
 		describe('after dice have finished rolling', function () {
-			var newPosition;
-			var newChoices;
+			var newState;
 			
 			beforeEach(function (done) {
 				task = gameTaskWithCheatedDice(1);
 			
 				task.gameState().skip(1).take(1)
 					.subscribe(function (state) {
-						newPosition = state.players()[0].position();
-						newChoices = toChoiceIds(state.choices());
+						newState = state;
 					}, done, done);
 				
 				task.handleChoicesTask().makeChoice(Choices.rollDice());
 			});
 			
-			it('send a game state event with the new position', function () {
-				expect(newPosition).to.eql(2);
+			it('position changes', function () {
+				expect(newState.players()[0].position()).to.eql(2);
 			});
 			
-			it('send a choices event with the finish-turn choice', function () {
-				expect(newChoices).to.eql([Choices.finishTurn().id]);
+			it('offer the finish-turn choice', function () {
+				expect(toChoiceIds(newState.choices())).to.eql([Choices.finishTurn().id]);
 			});
 		});
 		
@@ -96,7 +94,7 @@
 		}
 		
 		function gameTaskWithCheatedDice(dieValue) {
-			return PlayGameTask.start({ squares: Board.squares(), players: testData.players(), options: { 
+			return PlayGameTask.start({ squares: Board.squares(), players: testData.playersConfiguration(), options: { 
 				fastDice: true,
 				dieFunction: function () {
 					return dieValue;
@@ -113,7 +111,7 @@
 		function assertInitialGameState(gameState, done) {
 			gameState.take(1).subscribe(function (state) {
 				expect(state.squares().length).to.eql(Board.squares().length);
-				expect(state.players().length).to.eql(testData.players().length);
+				expect(state.players().length).to.eql(testData.playersConfiguration().length);
 				_.each(state.players(), function (player, index) {
 					expect(player.name()).to.eql('Joueur ' + (index + 1));
 					expect(player.money()).to.eql(1500);
@@ -127,7 +125,7 @@
 		}
 		
 		function finishAllPlayerTurns(task) {
-			for (var i = 0; i < testData.players().length; i++) {
+			for (var i = 0; i < testData.playersConfiguration().length; i++) {
 				task.handleChoicesTask().makeChoice(Choices.finishTurn());
 			}
 		}

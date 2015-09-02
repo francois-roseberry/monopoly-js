@@ -28,7 +28,7 @@
 		});
 		
 		it('renders a token for each player', function () {
-			domContext.assertElementCount('.player-token', testData.players().length);
+			domContext.assertElementCount('.player-token', testData.playersConfiguration().length);
 		});
 	});
 }());

@@ -1,30 +1,52 @@
 (function() {
 	"use strict";
 	
+	var Choices = require('./choices');
+	
 	var precondition = require('./contract').precondition;
 	
-	exports.newState = function (info) {
+	exports.turnStartState = function (info) {
+		validateInfo(info);
+			
+		var choices = newTurnChoices();
+		
+		return new GameState(info, choices);
+	};
+	
+	function newTurnChoices() {
+		return [Choices.rollDice()];
+	}
+	
+	exports.turnEndState = function (info) {
+		validateInfo(info);
+			
+		var choices = choicesForSquare(info);
+		
+		return new GameState(info, choices);
+	};
+	
+	function choicesForSquare(info) {
+		return [Choices.finishTurn()];
+	}
+	
+	function validateInfo(info) {
 		precondition(_.isArray(info.squares) && info.squares.length === 40,
 			'GameState requires an array of 40 squares');
 		precondition(_.isArray(info.players) && info.players.length >= 2,
-			'GameState requires an array of players');
+			'GameState requires an array of at least 2 players');
 		precondition(_.isNumber(info.currentPlayerIndex) && validIndex(info.players, info.currentPlayerIndex),
 			'GameState requires the index of the current player');
-		precondition(_.isArray(info.choices) && info.choices.length > 0,
-			'GameState requires an array of choices');
-		
-		return new GameState(info);
-	};
+	}
 	
 	function validIndex(array, index) {
 		return index >= 0 && index < array.length;
 	}
 	
-	function GameState(info) {
+	function GameState(info, choices) {
 		this._squares = info.squares;
 		this._players = info.players;
 		this._currentPlayerIndex = info.currentPlayerIndex;
-		this._choices = info.choices;
+		this._choices = choices;
 	}
 	
 	GameState.prototype.squares = function () {

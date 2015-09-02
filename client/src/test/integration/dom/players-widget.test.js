@@ -18,19 +18,20 @@
 		});
 		
 		it('renders a pane for each player', function () {
-			domContext.assertElementCount('.player-panel', testData.players().length);
+			domContext.assertElementCount('.player-panel', testData.playersConfiguration().length);
 		});
 		
 		it('renders the player tokens', function () {
-			domContext.assertElementCount('.player-panel > .player-panel-token', testData.players().length);
+			domContext.assertElementCount('.player-panel > .player-panel-token',
+				testData.playersConfiguration().length);
 		});
 		
 		it('renders the player names', function () {
-			domContext.assertElementCount('.player-panel > .player-name', testData.players().length);
+			domContext.assertElementCount('.player-panel > .player-name', testData.playersConfiguration().length);
 		});
 		
 		it('renders the player amounts', function () {
-			domContext.assertElementCount('.player-panel > .player-money', testData.players().length);
+			domContext.assertElementCount('.player-panel > .player-money', testData.playersConfiguration().length);
 		});
 	});
 }());
