@@ -10,3 +10,43 @@ Run 'grunt background'. While it runs, open another terminal and run 'grunt chec
 Note: grunt runs karma on windows using git bash, so it must be in the path. Logically, at this point Git Bash should be installed, since you just pulled the sources from GitHub. But be sure to put Git Bash in the path (installation option in 'Git for Windows' installer)
 
 This setup is not tested on non-Windows systems and therefore I don't know if this works.
+
+#Game Design Outline
+
+**Application states**
+
+![Alt text](http://g.gravizo.com/g?
+digraph G {
+start [shape=box];
+config [label="Configuring game"];
+play [label="Playing game"]
+start -> config;
+config -> play [label="Start game"];
+play -> config [label="New game"];
+}
+)
+
+**Game states**
+
+(when the application is in the "Playing game" state)
+
+Arrow represents choices
+
+![Alt text](http://g.gravizo.com/g?
+digraph G {
+start [shape=box];
+turnStart [label="Turn start"];
+turnEnd [label="Turn end"]
+start -> turnStart;
+turnStart-> turnEnd[label="Roll dice"];
+turnEnd-> turnStart[label="Finish turn"];
+}
+)
+
+Choices effects on the game state :
+
+Roll dice : move player on the board
+
+Finish turn : switch to next player
+
+Note : there is no final state, since there is no way to possibly lose money yet. Hence, no winner or loser possible. Will be added later
