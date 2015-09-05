@@ -27,13 +27,58 @@
 				currentPlayerIndex: 0
 			});
 			
-			expect(toChoiceIds(state.choices())).to.contain(Choices.finishTurn().id);
+			expect(toChoiceIds(state.choices())).to.eql([Choices.finishTurn().id]);
+		});
+		
+		it('when current player is on an estate, offers to buy it', function () {
+			var state = GameState.turnEndState({
+				squares: Board.squares(),
+				players: playerOnEstate(),
+				currentPlayerIndex: 0
+			});
+			
+			expect(toChoiceIds(state.choices())).to.eql([Choices.finishTurn().id, Choices.buyProperty().id]);
+		});
+		
+		it('when current player is on a railroad, offers to buy it', function () {
+			var state = GameState.turnEndState({
+				squares: Board.squares(),
+				players: playerOnRailroad(),
+				currentPlayerIndex: 0
+			});
+			
+			expect(toChoiceIds(state.choices())).to.eql([Choices.finishTurn().id, Choices.buyProperty().id]);
+		});
+		
+		it('when current player is on a company, offers to buy it', function () {
+			var state = GameState.turnEndState({
+				squares: Board.squares(),
+				players: playerOnCompany(),
+				currentPlayerIndex: 0
+			});
+			
+			expect(toChoiceIds(state.choices())).to.eql([Choices.finishTurn().id, Choices.buyProperty().id]);
 		});
 	});
 	
+	function playerOnEstate() {
+		var players = testData.players();
+		return [players[0].move([0, 1], 40), players[1], players[2]];
+	}
+	
+	function playerOnRailroad() {
+		var players = testData.players();
+		return [players[0].move([0, 5], 40), players[1], players[2]];
+	}
+	
+	function playerOnCompany() {
+		var players = testData.players();
+		return [players[0].move([0, 12], 40), players[1], players[2]];
+	}
+	
 	function toChoiceIds(choices) {
 		return _.map(choices, function (choice) {
-				return choice.id;
-			});
+			return choice.id;
+		});
 	}
 }());

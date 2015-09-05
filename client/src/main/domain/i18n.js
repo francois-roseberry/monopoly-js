@@ -11,6 +11,7 @@
 	// Choices
 	exports.CHOICE_ROLL_DICE = 'Lancer les dés';
 	exports.CHOICE_FINISH_TURN = 'Terminer le tour';
+	exports.CHOICE_BUY_PROPERTY = 'Acheter {property} pour {price}';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';

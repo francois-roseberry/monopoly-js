@@ -26,7 +26,24 @@
 	};
 	
 	function choicesForSquare(info) {
-		return [Choices.finishTurn()];
+		var choices = [Choices.finishTurn()];
+		
+		var currentPlayer = info.players[info.currentPlayerIndex];
+		info.squares[currentPlayer.position()].match({
+			'estate': function (id, name, group, price) { choices.push(Choices.buyProperty(name, price)); },
+			'railroad': function (name, price) { choices.push(Choices.buyProperty(name, price)); },
+			'company': function (id, name, price) { choices.push(Choices.buyProperty(name, price)); },
+			'chance': _.noop,
+			'community-chest': _.noop,
+			'go': _.noop,
+			'jail': _.noop,
+			'go-to-jail': _.noop,
+			'parking': _.noop,
+			'income-tax': _.noop,
+			'luxury-tax': _.noop
+		});
+			
+		return choices;
 	}
 	
 	function validateInfo(info) {
