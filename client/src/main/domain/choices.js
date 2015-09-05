@@ -28,7 +28,7 @@
 			id: 'buy-property',
 			name: i18n.CHOICE_BUY_PROPERTY.replace('{property}', name).replace('{price}', i18n.formatPrice(price)),
 			match: function (visitor) {
-				return visitor['buy-property'];
+				return visitor['buy-property'](name, price);
 			}
 		};
 	};

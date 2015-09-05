@@ -90,7 +90,8 @@
 		return function (state) {
 			return choice.match({
 				'roll-dice': rollDice(self, state),
-				'finish-turn': finishTurn(state)
+				'finish-turn': finishTurn(state),
+				'buy-property': buyProperty(state)
 			});
 		};
 	}
@@ -112,8 +113,30 @@
 	
 	function finishTurn(state) {
 		return function () {
-			return Rx.Observable.of(nextPlayer(state));
+			return Rx.Observable.return(nextPlayer(state));
 		};
+	}
+	
+	function buyProperty(state) {
+		return function (name, price) {
+			return Rx.Observable.return(transferOwnership(state, price));
+		};
+	}
+	
+	function transferOwnership(state, price) {
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.buyProperty(price);
+			}
+			
+			return player;
+		});
+		
+		return GameState.turnEndState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex()
+		});
 	}
 	
 	function movePlayer(state, dice) {

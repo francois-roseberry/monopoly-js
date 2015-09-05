@@ -25,5 +25,13 @@
 			
 			expect(movedPlayer.position()).to.eql(1);
 		});
+		
+		it('substract the price when buying property', function () {
+			var price = 200;
+			
+			var newPlayer = players[0].buyProperty(price);
+			
+			expect(newPlayer.money()).to.eql(players[0].money() - price);
+		});
 	});
 }());

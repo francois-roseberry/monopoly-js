@@ -49,7 +49,10 @@
 				
 			panels
 				.append('span')
-				.classed('player-money', true)
+				.classed('player-money', true);
+				
+			d3.selectAll('.player-money')
+				.data(state.players())
 				.text(function (player) {
 					return i18n.formatPrice(player.money());
 				});

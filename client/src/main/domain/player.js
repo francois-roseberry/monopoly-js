@@ -59,13 +59,29 @@
 		return this._type;
 	};
 	
-	Player.prototype.move = function(dice, squareCount) {
+	Player.prototype.move = function (dice, squareCount) {
+		precondition(_.isArray(dice) && dice.length === 2 && _.isNumber(dice[0]) && _.isNumber(dice[1]),
+			'Moving a player requires a dice with two numbers');
+		
 		return newPlayer({
-					name: this.name(),
-					money: this.money(),
-					position: (this.position() + dice[0] + dice[1]) % squareCount,
-					color: this.color(),
-					type: this.type()
-				});
+			name: this.name(),
+			money: this.money(),
+			position: (this.position() + dice[0] + dice[1]) % squareCount,
+			color: this.color(),
+			type: this.type()
+		});
+	};
+	
+	Player.prototype.buyProperty = function (price) {
+		precondition(_.isNumber(price) && this.money() > price,
+			'Buying a property requires the player to have enough money');
+		
+		return newPlayer({
+			name: this.name(),
+			money: this.money() - price,
+			position: this.position(),
+			color: this.color(),
+			type: this.type()
+		});
 	};
 }());

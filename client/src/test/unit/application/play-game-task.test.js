@@ -80,6 +80,13 @@
 			assertCurrentPlayerIsTheFirstOne(task.gameState(), done);
 		});
 		
+		it('when buy-property is chosen, current player loses money', function () {
+			var price = 200;
+			task.handleChoicesTask().makeChoice(Choices.buyProperty('', price));
+			
+			assertCurrentPlayerHasLostMoney(task.gameState(), price);
+		});
+		
 		function assertRollDiceChoice(gameState, done) {
 			gameState.take(1)
 				.map(onlyChoices)
@@ -142,6 +149,12 @@
 			gameState.take(1).subscribe(function (state) {
 				expect(state.currentPlayerIndex()).to.eql(index);
 			}, done, done);
+		}
+		
+		function assertCurrentPlayerHasLostMoney(gameState, amount) {
+			gameState.take(1).subscribe(function (state) {
+				expect(state.players()[state.currentPlayerIndex()].money()).to.eql(1500 - amount);
+			});
 		}
 	});
 }());
