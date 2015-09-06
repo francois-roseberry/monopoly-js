@@ -1,7 +1,7 @@
 # Monopoly-js
 Implementation of the Monopoly game in javascript, rendering done with D3
 
-Far from complete, right now players alternate and roll the dice. That's it. Not very exciting but at least the main game flow is operational.
+Far from complete, right now players alternate, roll the dice and buy properties. That's it. Not very exciting but at least the main game flow is operational.
 
 To setup the project after downloading the sources, install node.js, then run 'npm install' both in the project directory and in the client/ subdirectory. After, the 'grunt' command should be available to build from that directory.
 
@@ -40,13 +40,20 @@ turnEnd [label="Turn end"]
 start -> turnStart;
 turnStart-> turnEnd[label="Roll dice"];
 turnEnd-> turnStart[label="Finish turn"];
+turnEnd -> turnEnd[label="Buy property"];
 }
 )
 
-Choices effects on the game state :
+**Conditional choices**
+
+On the turn-end-state, the choice of buying a property is offered only if current player is on a property, property is not owned, and player has enough money.
+
+**Choices effects on the game state**
 
 Roll dice : move player on the board
 
 Finish turn : switch to next player
+
+Buy property : property where current player is is bought by current player and his money is reduced by its price
 
 Note : there is no final state, since there is no way to possibly lose money yet. Hence, no winner or loser possible. Will be added later
