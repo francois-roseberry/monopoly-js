@@ -13,7 +13,8 @@
 		var task = new HandleChoicesTask(humanChoices);
 		
 		choicesForPlayerType(playGameTask, 'computer')
-			.subscribe(computerPlayer(task));
+			.map(computerPlayer)
+			.subscribe(applyChoice(task));
 			
 		return task;
 	};
@@ -47,9 +48,15 @@
 			.takeUntil(playGameTask.completed());
 	}
 	
-	function computerPlayer(self) {
-		return function (choices) {
-			self._choiceMade.onNext(choices[0]);
+	function computerPlayer(choices) {
+		return choices[0];
+	}
+	
+	function applyChoice(task) {
+		return function (choice) {
+			Rx.Observable.timer(0).subscribe(function () {
+				task._choiceMade.onNext(choice);
+			});
 		};
 	}
 }());
