@@ -9,7 +9,7 @@
 	var TextWrapper = require('./text-wrapper');
 	
 	var SQUARE_WIDTH = 90;
-	var SQUARE_HEIGHT = 140;
+	var SQUARE_HEIGHT = 130;
 	var SQUARES_PER_ROW = 10;
 	
 	exports.render = function (container, gameState) {
@@ -168,7 +168,7 @@
 	function renderStart(container) {
 		return function () {
 			container.append('g')
-				.attr('transform', 'scale(0.9) translate(6, 130)')
+				.attr('transform', 'scale(0.8) translate(6, 130)')
 				.html(Symbols.arrow());
 		};
 	}
@@ -208,7 +208,7 @@
 	function writePrice(container, price) {
 		var priceString = i18n.PRICE_STRING
 			.replace('{price}', i18n.formatPrice(price));
-		writeTextLine(container, priceString, SQUARE_HEIGHT - 12);
+		writeTextLine(container, priceString, SQUARE_HEIGHT - 8);
 	}
 	
 	function writeTextLine(container, text, y) {
