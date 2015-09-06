@@ -1,13 +1,15 @@
 .monopoly-players {
 	float: left;
-	padding-top: 20px;
+	padding-left: 10px;
 }
 
 .player-panel {
-	display: inline;
 	border : 1px solid black;
+	border-radius: 4px;
 	padding: 5px;
-	margin-right: 10px;
+	margin-bottom: 10px;
+	width: 300px;
+	box-sizing: content-box;
 }
 
 .player-panel-token {
@@ -16,9 +18,22 @@
 
 .player-name {
 	text-align: left;
-	margin-right: 40px;
 }
 
 .player-money {
+	float: right;
 	text-align: right;
+}
+
+.player-properties {
+	padding-top: 6px;
+}
+
+.player-property {
+	border-radius: 4px;
+	padding: 1px;
+	text-align: center;
+	color: white;
+	text-shadow: 1px 1px black;
+	margin-bottom: 2px;
 }

@@ -7,13 +7,19 @@
 	
 	var testData = require('./test-data');
 	
+	describe('Any game state', function () {
+		it('can retrieve a property by its id', function () {
+			var state = turnStartState();
+			
+			expect(state.propertyById('rr-reading').match({
+				'railroad': function (id) { return id; }
+			})).to.eql('rr-reading');
+		});
+	});
+	
 	describe('A turnStart state', function () {
 		it('offers the roll-dice choice', function () {
-			var state = GameState.turnStartState({
-				squares: Board.squares(),
-				players: testData.players(),
-				currentPlayerIndex: 0
-			});
+			var state = turnStartState();
 			
 			expect(toChoiceIds(state.choices())).to.contain(Choices.rollDice().id);
 		});
@@ -79,6 +85,14 @@
 	function toChoiceIds(choices) {
 		return _.map(choices, function (choice) {
 			return choice.id;
+		});
+	}
+	
+	function turnStartState() {
+		return GameState.turnStartState({
+			squares: Board.squares(),
+			players: testData.players(),
+			currentPlayerIndex: 0
 		});
 	}
 }());

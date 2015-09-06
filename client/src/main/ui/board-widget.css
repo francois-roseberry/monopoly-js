@@ -1,6 +1,5 @@
 .monopoly-board {
-	left: 100px;
-	display: block;
+	float: left;
 }
 
 .square {

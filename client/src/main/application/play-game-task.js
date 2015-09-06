@@ -118,15 +118,15 @@
 	}
 	
 	function buyProperty(state) {
-		return function (name, price) {
-			return Rx.Observable.return(transferOwnership(state, price));
+		return function (id, price) {
+			return Rx.Observable.return(transferOwnership(state, id, price));
 		};
 	}
 	
-	function transferOwnership(state, price) {
+	function transferOwnership(state, id, price) {
 		var newPlayers = _.map(state.players(), function (player, index) {
 			if (index === state.currentPlayerIndex()) {
-				return player.buyProperty(price);
+				return player.buyProperty(id, price);
 			}
 			
 			return player;

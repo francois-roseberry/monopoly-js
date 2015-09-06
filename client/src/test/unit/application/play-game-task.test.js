@@ -82,7 +82,7 @@
 		
 		it('when buy-property is chosen, current player loses money', function () {
 			var price = 200;
-			task.handleChoicesTask().makeChoice(Choices.buyProperty('', price));
+			task.handleChoicesTask().makeChoice(Choices.buyProperty('', '', price));
 			
 			assertCurrentPlayerHasLostMoney(task.gameState(), price);
 		});

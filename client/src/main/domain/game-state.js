@@ -30,17 +30,10 @@
 		
 		var currentPlayer = info.players[info.currentPlayerIndex];
 		info.squares[currentPlayer.position()].match({
-			'estate': function (id, name, group, price) { choices.push(Choices.buyProperty(name, price)); },
-			'railroad': function (name, price) { choices.push(Choices.buyProperty(name, price)); },
-			'company': function (id, name, price) { choices.push(Choices.buyProperty(name, price)); },
-			'chance': _.noop,
-			'community-chest': _.noop,
-			'go': _.noop,
-			'jail': _.noop,
-			'go-to-jail': _.noop,
-			'parking': _.noop,
-			'income-tax': _.noop,
-			'luxury-tax': _.noop
+			'estate': function (id, name, group, price) { choices.push(Choices.buyProperty(id, name, price)); },
+			'railroad': function (id, name, price) { choices.push(Choices.buyProperty(id, name, price)); },
+			'company': function (id, name, price) { choices.push(Choices.buyProperty(id, name, price)); },
+			_: _.noop
 		});
 			
 		return choices;
@@ -80,5 +73,22 @@
 	
 	GameState.prototype.choices = function () {
 		return this._choices;
+	};
+	
+	GameState.prototype.propertyById = function (propertyId) {
+		var match = _.find(this._squares, function (square) {
+			return square.match({
+				'estate': function (id) { return id === propertyId; },
+				'railroad': function (id) { return id === propertyId; },
+				'company': function (id) { return id === propertyId; },
+				_: function () { return false; }
+			});
+		});
+		
+		if (match === null) {
+			throw new Error('Could not find property with id : ' + propertyId);
+		}
+		
+		return match;
 	};
 }());

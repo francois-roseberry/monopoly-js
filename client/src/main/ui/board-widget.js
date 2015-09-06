@@ -3,6 +3,7 @@
 	
 	var precondition = require('./contract').precondition;
 	var i18n = require('./i18n');
+	var groupColors = require('./group-colors').color;
 	
 	var Symbols = require('./symbols');
 	var TextWrapper = require('./text-wrapper');
@@ -144,7 +145,7 @@
 				.attr({
 					width: SQUARE_WIDTH,
 					height: SQUARE_HEIGHT / 5,
-					fill: groupColor(group),
+					fill: groupColors(group),
 					stroke: 'black'
 				});
 				
@@ -154,7 +155,7 @@
 	}
 	
 	function renderRailroad(container) {
-		return function (name, price) {
+		return function (_, name, price) {
 			container.append('g')
 				.attr('transform', 'scale(0.25) translate(50, 150)')
 				.html(Symbols.train());
@@ -233,13 +234,5 @@
 		precondition(transforms[rowIndex], 'No transform has been defined for row ' + rowIndex);
 		
 		return transforms[rowIndex];
-	}
-	
-	function groupColor(groupIndex) {
-		var colors = ['midnightblue', 'lightskyblue', 'mediumvioletred', 'orange', 'red', 'yellow', 'green', 'blue'];
-		
-		precondition(colors[groupIndex], 'No color has been defined for group ' + groupIndex);
-		
-		return colors[groupIndex];
 	}
 }());
