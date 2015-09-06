@@ -18,17 +18,15 @@
 			.append('div')
 			.classed('monopoly-game', true);
 			
-		panel.append('div')
-			.classed('monopoly-header', true)
-			.append('button')
-			.attr('id', 'new-game-button')
-			.text(i18n.BUTTON_NEW_GAME)
-			.on('click', function () {
-				playGameTask.stop();
-			});
-			
 		var centralComponentsContainer = panel.append('div')
 			.classed('monopoly-central-components', true);
+			
+		centralComponentsContainer.append('button')
+			.attr('id', 'new-game-button')
+			.text(i18n.BUTTON_NEW_GAME)
+			.on('click', function() {
+				playGameTask.stop();
+			});
 		
 		GameChoicesWidget.render($(centralComponentsContainer[0]), playGameTask.handleChoicesTask());
 		LogGameWidget.render($(centralComponentsContainer[0]), playGameTask.messages());

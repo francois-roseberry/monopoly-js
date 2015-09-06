@@ -1,7 +1,7 @@
 .game-log-console {
 	position: absolute;
-	top: 100px;
-	width: 300px;
+	top: 400px;
+	width: 500px;
 	height: 200px;
 	overflow-y: auto;
 }

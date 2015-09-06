@@ -1,11 +1,5 @@
-.monopoly-header {
-	border-bottom: 1px solid black;
-	padding-bottom: 4px;
-	margin-bottom: 4px;
-}
-
 .monopoly-central-components {
 	position: absolute;
-	top: 500px;
-	left: 300px;
+	top: 200px;
+	left: 200px;
 }
