@@ -168,7 +168,7 @@
 	function renderStart(container) {
 		return function () {
 			container.append('g')
-				.attr('transform', 'translate(6, 130)')
+				.attr('transform', 'scale(0.9) translate(6, 130)')
 				.html(Symbols.arrow());
 		};
 	}
