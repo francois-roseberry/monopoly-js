@@ -8,8 +8,8 @@
 	var Symbols = require('./symbols');
 	var TextWrapper = require('./text-wrapper');
 	
-	var SQUARE_WIDTH = 90;
-	var SQUARE_HEIGHT = 130;
+	var SQUARE_WIDTH = 80;
+	var SQUARE_HEIGHT = 110;
 	var SQUARES_PER_ROW = 10;
 	
 	exports.render = function (container, gameState) {
@@ -87,16 +87,16 @@
 			'estate': renderEstate(container),
 			'railroad': renderRailroad(container),
 			'community-chest': function (name) {
-				writeText(container, name, 20);
+				writeText(container, name, 14);
 			},
 			'chance': function (name) {
-				writeText(container, name, 20);
+				writeText(container, name, 14);
 			},
 			'income-tax': function (name) {
-				writeText(container, name, 20);
+				writeText(container, name, 14);
 			},
 			'luxury-tax': function (name) {
-				writeText(container, name, 20);
+				writeText(container, name, 14);
 			},
 			'company': renderCompany(container),
 			'go': renderStart(container),
@@ -157,10 +157,10 @@
 	function renderRailroad(container) {
 		return function (_, name, price) {
 			container.append('g')
-				.attr('transform', 'scale(0.25) translate(50, 150)')
+				.attr('transform', 'scale(0.2) translate(50, 150)')
 				.html(Symbols.train());
 				
-			writeText(container, name, 20);
+			writeText(container, name, 14);
 			writePrice(container, price);
 		};
 	}
@@ -168,14 +168,14 @@
 	function renderStart(container) {
 		return function () {
 			container.append('g')
-				.attr('transform', 'scale(0.8) translate(6, 130)')
+				.attr('transform', 'scale(0.7) translate(4, 130)')
 				.html(Symbols.arrow());
 		};
 	}
 	
 	function renderCompany(container) {
 		return function (_, name, price) {
-			writeText(container, name, 20);
+			writeText(container, name, 14);
 			writePrice(container, price);
 		};
 	}
