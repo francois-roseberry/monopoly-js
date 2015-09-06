@@ -65,6 +65,16 @@
 			
 			expect(toChoiceIds(state.choices())).to.eql([Choices.finishTurn().id, Choices.buyProperty().id]);
 		});
+		
+		it('when current player is on a property that is owned, does not offer to buy it', function () {
+			var state = GameState.turnEndState({
+				squares: Board.squares(),
+				players: playerOnOwnedEstate(),
+				currentPlayerIndex: 0
+			});
+			
+			expect(toChoiceIds(state.choices())).to.eql([Choices.finishTurn().id]);
+		});
 	});
 	
 	function playerOnEstate() {
@@ -80,6 +90,11 @@
 	function playerOnCompany() {
 		var players = testData.players();
 		return [players[0].move([0, 12], 40), players[1], players[2]];
+	}
+	
+	function playerOnOwnedEstate() {
+		var players = testData.players();
+		return [players[0].move([0, 1], 40).buyProperty('med', 1), players[1], players[2]];
 	}
 	
 	function toChoiceIds(choices) {

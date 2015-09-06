@@ -30,13 +30,33 @@
 		
 		var currentPlayer = info.players[info.currentPlayerIndex];
 		info.squares[currentPlayer.position()].match({
-			'estate': function (id, name, group, price) { choices.push(Choices.buyProperty(id, name, price)); },
-			'railroad': function (id, name, price) { choices.push(Choices.buyProperty(id, name, price)); },
-			'company': function (id, name, price) { choices.push(Choices.buyProperty(id, name, price)); },
+			'estate': function (id, name, group, price) {
+				if (!isOwned(info.players, id)) {
+					choices.push(Choices.buyProperty(id, name, price));
+				}
+			},
+			'railroad': function (id, name, price) {
+				if (!isOwned(info.players, id)) {
+					choices.push(Choices.buyProperty(id, name, price));
+				}
+			},
+			'company': function (id, name, price) {
+				if (!isOwned(info.players, id)) {
+					choices.push(Choices.buyProperty(id, name, price));
+				}
+			},
 			_: _.noop
 		});
 			
 		return choices;
+	}
+	
+	function isOwned(players, propertyId) {
+		return _.some(players, function (player) {
+			return _.some(player.properties(), function (property) {
+				return property === propertyId;
+			});
+		});
 	}
 	
 	function validateInfo(info) {
