@@ -8,8 +8,8 @@
 	var Symbols = require('./symbols');
 	var TextWrapper = require('./text-wrapper');
 	
-	var SQUARE_WIDTH = 100;
-	var SQUARE_HEIGHT = 160;
+	var SQUARE_WIDTH = 90;
+	var SQUARE_HEIGHT = 140;
 	var SQUARES_PER_ROW = 10;
 	
 	exports.render = function (container, gameState) {
@@ -208,7 +208,7 @@
 	function writePrice(container, price) {
 		var priceString = i18n.PRICE_STRING
 			.replace('{price}', i18n.formatPrice(price));
-		writeTextLine(container, priceString, SQUARE_HEIGHT - 20);
+		writeTextLine(container, priceString, SQUARE_HEIGHT - 12);
 	}
 	
 	function writeTextLine(container, text, y) {

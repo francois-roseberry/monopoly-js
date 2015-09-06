@@ -6,7 +6,7 @@
 			.attr({
 				x: 0,
 				y: y,
-				'font-size': 10
+				'font-size': 9
 			});
 			
 		var words = text.split(' ');
