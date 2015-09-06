@@ -140,7 +140,7 @@
 	}
 	
 	function renderEstate(container) {
-		return function (_, name, group, price) {
+		return function (_, name, price, group) {
 			container.append('rect')
 				.attr({
 					width: SQUARE_WIDTH,

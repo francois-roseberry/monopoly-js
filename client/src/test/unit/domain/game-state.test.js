@@ -21,61 +21,83 @@
 		it('offers the roll-dice choice', function () {
 			var state = turnStartState();
 			
-			expect(toChoiceIds(state.choices())).to.contain(Choices.rollDice().id);
+			assertChoices(state, [Choices.rollDice().id]);
 		});
 	});
 	
 	describe('A turnEnd state', function () {
 		it('offers the finish-turn choice', function () {
-			var state = GameState.turnEndState({
-				squares: Board.squares(),
-				players: testData.players(),
-				currentPlayerIndex: 0
-			});
+			var state = turnEndStateAtStartPosition();
 			
-			expect(toChoiceIds(state.choices())).to.eql([Choices.finishTurn().id]);
+			assertChoices(state, [Choices.finishTurn().id]);
 		});
 		
 		it('when current player is on an estate, offers to buy it', function () {
-			var state = GameState.turnEndState({
-				squares: Board.squares(),
-				players: playerOnEstate(),
-				currentPlayerIndex: 0
-			});
+			var state = turnEndStateOnEstate();
 			
-			expect(toChoiceIds(state.choices())).to.eql([Choices.finishTurn().id, Choices.buyProperty().id]);
+			assertChoices(state, [Choices.buyProperty().id, Choices.finishTurn().id]);
 		});
 		
 		it('when current player is on a railroad, offers to buy it', function () {
-			var state = GameState.turnEndState({
-				squares: Board.squares(),
-				players: playerOnRailroad(),
-				currentPlayerIndex: 0
-			});
+			var state = turnEndStateOnRailroad();
 			
-			expect(toChoiceIds(state.choices())).to.eql([Choices.finishTurn().id, Choices.buyProperty().id]);
+			assertChoices(state, [Choices.buyProperty().id, Choices.finishTurn().id]);
 		});
 		
 		it('when current player is on a company, offers to buy it', function () {
-			var state = GameState.turnEndState({
-				squares: Board.squares(),
-				players: playerOnCompany(),
-				currentPlayerIndex: 0
-			});
+			var state = turnEndStateOnCompany();
 			
-			expect(toChoiceIds(state.choices())).to.eql([Choices.finishTurn().id, Choices.buyProperty().id]);
+			assertChoices(state, [Choices.buyProperty().id, Choices.finishTurn().id]);
 		});
 		
 		it('when current player is on a property that is owned, does not offer to buy it', function () {
-			var state = GameState.turnEndState({
-				squares: Board.squares(),
-				players: playerOnOwnedEstate(),
-				currentPlayerIndex: 0
-			});
+			var state = turnEndStateOnOwnedEstate();
 			
-			expect(toChoiceIds(state.choices())).to.eql([Choices.finishTurn().id]);
+			assertChoices(state, [Choices.finishTurn().id]);
+		});
+		
+		it('when current player is on a property that is too expensive, does not offer to buy it', function () {
+			var state = turnEndStateBrokeOnEstate();
+			
+			assertChoices(state, [Choices.finishTurn().id]);
 		});
 	});
+	
+	function assertChoices(state, choiceIds) {
+		expect(toChoiceIds(state.choices())).to.eql(choiceIds);
+	}
+	
+	function turnEndStateAtStartPosition() {
+		return turnEndStateWithPlayers(testData.players());
+	}
+	
+	function turnEndStateOnEstate() {
+		return turnEndStateWithPlayers(playerOnEstate());
+	}
+	
+	function turnEndStateOnRailroad() {
+		return turnEndStateWithPlayers(playerOnRailroad());
+	}
+	
+	function turnEndStateOnCompany() {
+		return turnEndStateWithPlayers(playerOnCompany());
+	}
+	
+	function turnEndStateOnOwnedEstate() {
+		return turnEndStateWithPlayers(playerOnOwnedEstate());
+	}
+	
+	function turnEndStateBrokeOnEstate() {
+		return turnEndStateWithPlayers(playerBrokeOnEstate());
+	}
+	
+	function turnEndStateWithPlayers(players) {
+		return GameState.turnEndState({
+			squares: Board.squares(),
+			players: players,
+			currentPlayerIndex: 0
+		});
+	}
 	
 	function playerOnEstate() {
 		var players = testData.players();
@@ -95,6 +117,11 @@
 	function playerOnOwnedEstate() {
 		var players = testData.players();
 		return [players[0].move([0, 1], 40).buyProperty('med', 1), players[1], players[2]];
+	}
+	
+	function playerBrokeOnEstate() {
+		var players = testData.players();
+		return [players[0].buyProperty('vn', players[0].money() - 1).move([0, 1], 40), players[1], players[2]];
 	}
 	
 	function toChoiceIds(choices) {

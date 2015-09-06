@@ -20,35 +20,42 @@
 	exports.turnEndState = function (info) {
 		validateInfo(info);
 			
-		var choices = choicesForSquare(info);
+		var choices = turnEndChoices(info);
 		
 		return new GameState(info, choices);
 	};
 	
-	function choicesForSquare(info) {
-		var choices = [Choices.finishTurn()];
-		
+	function turnEndChoices(info) {
 		var currentPlayer = info.players[info.currentPlayerIndex];
-		info.squares[currentPlayer.position()].match({
-			'estate': function (id, name, group, price) {
-				if (!isOwned(info.players, id)) {
-					choices.push(Choices.buyProperty(id, name, price));
-				}
-			},
-			'railroad': function (id, name, price) {
-				if (!isOwned(info.players, id)) {
-					choices.push(Choices.buyProperty(id, name, price));
-				}
-			},
-			'company': function (id, name, price) {
-				if (!isOwned(info.players, id)) {
-					choices.push(Choices.buyProperty(id, name, price));
-				}
-			},
-			_: _.noop
-		});
+		var currentSquare = info.squares[currentPlayer.position()];
+		var choices = choicesForSquare(currentSquare, info.players, currentPlayer);
+		
+		choices.push(Choices.finishTurn());
 			
 		return choices;
+	}
+	
+	function choicesForSquare(square, players, currentPlayer) {
+		return square.match({
+			'estate': choicesForProperty(players, currentPlayer),
+			'railroad': choicesForProperty(players, currentPlayer),
+			'company': choicesForProperty(players, currentPlayer),
+			_: noChoices
+		});
+	}
+	
+	function noChoices() {
+		return [];
+	}
+	
+	function choicesForProperty(players, currentPlayer) {
+		return function (id, name, price) {
+			if (!isOwned(players, id) && currentPlayer.money() > price) {
+				return [Choices.buyProperty(id, name, price)];
+			}
+			
+			return [];
+		};
 	}
 	
 	function isOwned(players, propertyId) {

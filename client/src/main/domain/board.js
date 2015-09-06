@@ -125,7 +125,7 @@
 		precondition(_.isNumber(price), 'Property must have a price');
 		
 		return {
-			match: match('estate', [id, name, group, price])
+			match: match('estate', [id, name, price, group])
 		};
 	}
 	
