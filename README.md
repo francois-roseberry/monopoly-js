@@ -44,9 +44,11 @@ turnEnd -> turnEnd[label="Buy property"];
 }
 )
 
+**Conditional choices**
+
 On the turn-end-state, the choice of buying a property is offered only if current player is on a property, property is not owned, and player has enough money.
 
-Choices effects on the game state :
+**Choices effects on the game state**
 
 Roll dice : move player on the board
 
