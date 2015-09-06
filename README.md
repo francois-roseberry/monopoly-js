@@ -1,7 +1,13 @@
-# Monopoly-js
+h1. Monopoly-js
 Implementation of the Monopoly game in javascript, rendering done with D3
 
 Far from complete, right now players alternate, roll the dice and buy properties. That's it. Not very exciting but at least the main game flow is operational.
+
+h2. Screenshot
+
+!https://raw.githubusercontent.com/francois-roseberry/monopoly-js/gh-pages/screenshots/in-game.png!
+
+h2. Development setup
 
 To setup the project after downloading the sources, install node.js, then run 'npm install' both in the project directory and in the client/ subdirectory. After, the 'grunt' command should be available to build from that directory.
 
@@ -11,7 +17,7 @@ Note: grunt runs karma on windows using git bash, so it must be in the path. Log
 
 This setup is not tested on non-Windows systems and therefore I don't know if this works.
 
-#Game Design Outline
+h2. Game Design Outline
 
 **Application states**
 
