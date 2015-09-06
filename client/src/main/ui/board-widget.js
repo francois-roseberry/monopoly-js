@@ -8,8 +8,8 @@
 	var Symbols = require('./symbols');
 	var TextWrapper = require('./text-wrapper');
 	
-	var SQUARE_WIDTH = 80;
-	var SQUARE_HEIGHT = 110;
+	var SQUARE_WIDTH = 78;
+	var SQUARE_HEIGHT = 100;
 	var SQUARES_PER_ROW = 10;
 	
 	exports.render = function (container, gameState) {
@@ -157,7 +157,7 @@
 	function renderRailroad(container) {
 		return function (_, name, price) {
 			container.append('g')
-				.attr('transform', 'scale(0.2) translate(50, 150)')
+				.attr('transform', 'scale(0.2) translate(50, 140)')
 				.html(Symbols.train());
 				
 			writeText(container, name, 14);
@@ -168,7 +168,7 @@
 	function renderStart(container) {
 		return function () {
 			container.append('g')
-				.attr('transform', 'scale(0.7) translate(4, 130)')
+				.attr('transform', 'scale(0.6) translate(6, 134)')
 				.html(Symbols.arrow());
 		};
 	}

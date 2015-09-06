@@ -27,7 +27,7 @@
 				tspan
 					.text(line.join(" "))
 					.attr("x", (width - tspan.node().getComputedTextLength()) / 2)
-					.attr("dy", lineNumber * lineHeight + "em");
+					.attr("dy", (lineNumber > 0 ? 1 : 0) * lineHeight + "em");
 				line = [];
 
 				lineNumber += 1;
@@ -42,7 +42,7 @@
 			tspan
 				.text(line.join(" "))
 				.attr("x", (width - tspan.node().getComputedTextLength()) / 2)
-				.attr("dy", lineNumber * lineHeight + "em");
+				.attr("dy", (lineNumber > 0 ? 1 : 0) * lineHeight + "em");
 		}
     };
 }());
