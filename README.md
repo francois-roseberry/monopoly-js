@@ -6,7 +6,11 @@ Far from complete, right now players alternate, roll the dice and buy properties
 # Screenshot
 
 ![In-game screenshot]
-(https://raw.githubusercontent.com/francois-roseberry/monopoly-js/gh-pages/screenshots/in-game.png)
+(http://francois-roseberry.github.io/monopoly-js/screenshots/in-game.png)
+
+# Demo
+
+http://francois-roseberry.github.io/monopoly-js/demo/
 
 # Development setup
 
