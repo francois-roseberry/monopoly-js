@@ -1005,6 +1005,7 @@
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
 	exports.LOG_DOUBLE_DICE_ROLL = '{player} rolled a double of {dice}';
+	exports.LOG_PROPERTY_BOUGHT = '{player} bought {property}';
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -1071,6 +1072,7 @@
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';
 	exports.LOG_DOUBLE_DICE_ROLL = '{player} a obtenu un doublé de {dice}';
+	exports.LOG_PROPERTY_BOUGHT = '{player} a acheté {property}';
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -1183,6 +1185,12 @@
 			.subscribe(function (dice) {
 				messages.onNext(diceMessage(dice));
 			});
+			
+		onPropertyBought(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (info) {
+				messages.onNext(Messages.logPropertyBought(info.player, info.property));
+			});
 	}
 	
 	function diceMessage(dice) {
@@ -1200,6 +1208,59 @@
 					playGameTask.gameState(),
 					combineDiceAndState);
 			});
+	}
+	
+	function onPropertyBought(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState()
+			.distinctUntilChanged(function (state) {
+				return _.reduce(state.players(), function (sum, player) {
+					return player.properties().length + sum;
+				}, 0);
+			}))
+			.map(function (states) {
+				var player = states.previous.players()[states.current.currentPlayerIndex()];
+				var newProperty = findNewProperty(states);	
+				var propertyName = nameOfProperty(newProperty);
+				
+				return {
+					player: player.name(),
+					property: propertyName
+				};
+			});
+	}
+	
+	function findNewProperty(states) {
+		var previousProperties = states.previous.players()[states.current.currentPlayerIndex()].properties();
+		var currentProperties = states.current.players()[states.current.currentPlayerIndex()].properties();
+		
+		var newPropertyId = _.filter(currentProperties, function (id) {
+			return !_.contains(previousProperties, id);
+		})[0];
+		return states.current.propertyById(newPropertyId);
+	}
+	
+	function nameOfProperty(property) {
+		return property.match({
+			'estate': function (id, name) { return name; },
+			'railroad': function (id, name) { return name; },
+			'company': function (id, name) { return name; }
+		});
+	}
+	
+	function combineWithPrevious(observable) {
+		var previous;
+		var subject = new Rx.Subject();
+		observable.subscribe(function (current) {
+			if (previous) {
+				subject.onNext({
+					previous: previous,
+					current: current
+				});
+			}
+			previous = current;
+		}, subject, subject);
+		
+		return subject.asObservable();
 	}
 	
 	function combineDiceAndState(dice, state) {
@@ -1233,7 +1294,7 @@
 				.classed('game-log-message', true)
 				.text(log.message())
 				.style('opacity', 0)
-				.transition().delay(200).style("opacity", 1);
+				.transition().duration(600).style("opacity", 1);
 		});
 	};
 }());
@@ -1258,6 +1319,14 @@
 						.replace('{dice}', dice);
 						
 		return new Log('double-dice-roll', message);
+	};
+	
+	exports.logPropertyBought = function (player, property) {
+		var message = i18n.LOG_PROPERTY_BOUGHT
+						.replace('{player}', player)
+						.replace('{property}', property);
+						
+		return new Log('property-bought', message);
 	};
 	
 	exports.simpleLog = function () {
@@ -1652,7 +1721,8 @@
 			
 		panels
 			.append('span')
-			.classed('player-money', true);
+			.classed('player-money', true)
+			.attr('data-ui', 0);
 			
 		panels.append('div')
 			.classed('player-properties', true);
@@ -1680,6 +1750,15 @@
 	function updatePlayerPanels(selection, state) {
 		selection
 			.select('.player-money')
+			.attr('data-ui', function (player) {
+				var element = d3.select(this);
+				var previousMoney = element.attr('data-ui');
+				if (previousMoney > player.money()) {
+					element.style('color', 'red');
+					element.transition().duration(700).style('color', 'black');
+				}
+				return player.money();
+			})
 			.text(function (player) {
 				return i18n.formatPrice(player.money());
 			});
