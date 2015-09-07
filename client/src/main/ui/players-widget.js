@@ -47,7 +47,8 @@
 			
 		panels
 			.append('span')
-			.classed('player-money', true);
+			.classed('player-money', true)
+			.attr('data-ui', 0);
 			
 		panels.append('div')
 			.classed('player-properties', true);
@@ -75,6 +76,15 @@
 	function updatePlayerPanels(selection, state) {
 		selection
 			.select('.player-money')
+			.attr('data-ui', function (player) {
+				var element = d3.select(this);
+				var previousMoney = element.attr('data-ui');
+				if (previousMoney > player.money()) {
+					element.style('color', 'red');
+					element.transition().duration(700).style('color', 'black');
+				}
+				return player.money();
+			})
 			.text(function (player) {
 				return i18n.formatPrice(player.money());
 			});

@@ -16,7 +16,7 @@
 				.classed('game-log-message', true)
 				.text(log.message())
 				.style('opacity', 0)
-				.transition().delay(200).style("opacity", 1);
+				.transition().duration(600).style("opacity", 1);
 		});
 	};
 }());
