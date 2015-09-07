@@ -3,7 +3,7 @@
 	"use strict";
 	
 	var precondition = require('./contract').precondition;
-	var i18n = require('./i18n');
+	var i18n = require('./i18n').i18n();
 	var groupColors = require('./group-colors').color;
 	
 	var Symbols = require('./symbols');
@@ -237,11 +237,11 @@
 		return transforms[rowIndex];
 	}
 }());
-},{"./contract":6,"./group-colors":14,"./i18n":16,"./symbols":26,"./text-wrapper":27}],2:[function(require,module,exports){
+},{"./contract":6,"./group-colors":14,"./i18n":18,"./symbols":28,"./text-wrapper":29}],2:[function(require,module,exports){
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n');
+	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
 	exports.squares = function () {
@@ -379,7 +379,7 @@
 		};
 	}
 }());
-},{"./contract":6,"./i18n":16}],3:[function(require,module,exports){
+},{"./contract":6,"./i18n":18}],3:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -406,7 +406,7 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n');
+	var i18n = require('./i18n').i18n();
 	
 	exports.rollDice = function () {
 		return {
@@ -438,7 +438,7 @@
 		};
 	};
 }());
-},{"./i18n":16}],5:[function(require,module,exports){
+},{"./i18n":18}],5:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -658,7 +658,7 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n');
+	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
 	exports.render = function (container, configureGameTask) {
@@ -691,7 +691,7 @@
 			});
 	};
 }());
-},{"./contract":6,"./i18n":16}],11:[function(require,module,exports){
+},{"./contract":6,"./i18n":18}],11:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -875,7 +875,7 @@
 		return this._statusChanged.asObservable();
 	};
 }());
-},{"./board":2,"./configure-game-task":5,"./play-game-task":21}],13:[function(require,module,exports){
+},{"./board":2,"./configure-game-task":5,"./play-game-task":23}],13:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -909,7 +909,7 @@
 		};
 	}
 }());
-},{"./contract":6,"./game-configuration-widget":10,"./monopoly-game-widget":20}],14:[function(require,module,exports){
+},{"./contract":6,"./game-configuration-widget":10,"./monopoly-game-widget":22}],14:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -990,6 +990,72 @@
 (function() {
 	"use strict";
 	
+	exports.CONFIGURE_GAME_TITLE = 'Monopoly - game configuration';
+	exports.COMPUTER_PLAYERS_LABEL = 'Computer players';
+	
+	// Buttons
+	exports.BUTTON_NEW_GAME = 'New game';
+	exports.BUTTON_START_GAME = 'Start game';
+	
+	// Choices
+	exports.CHOICE_ROLL_DICE = 'Roll the dice';
+	exports.CHOICE_FINISH_TURN = 'Finish turn';
+	exports.CHOICE_BUY_PROPERTY = 'Buy {property} for {price}';
+	
+	// Log messages
+	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
+	exports.LOG_DOUBLE_DICE_ROLL = '{player} rolled a double of {dice}';
+	
+	// Squares
+	exports.CHANCE = 'Chance';
+	exports.COMMUNITY_CHEST = 'Community Chest';
+	exports.INCOME_TAX = 'Income Tax';
+	exports.LUXURY_TAX = 'Luxury Tax';
+	
+	exports.COMPANY_WATER = 'Water Works';
+	exports.COMPANY_ELECTRIC = "Electric Company";
+	
+	exports.RAILROAD_READING = 'Reading Railroad';
+	exports.RAILROAD_PENN = 'Pennsylvania Railroad';
+	exports.RAILROAD_B_O = 'B.& O. Railroad';
+	exports.RAILROAD_SHORT = 'Short line';
+	
+	exports.PROPERTY_MED = 'Mediterranean Avenue';
+	exports.PROPERTY_BALTIC = 'Baltic Avenue';
+	exports.PROPERTY_EAST = "Oriental Avenue";
+	exports.PROPERTY_VT = 'Vermont Avenue';
+	exports.PROPERTY_CONN = 'Connecticut Avenue';
+	exports.PROPERTY_CHARLES = 'St.Charles Place';
+	exports.PROPERTY_US = 'States Avenue';
+	exports.PROPERTY_VN = 'Virginia Avenue';
+	exports.PROPERTY_JACK = 'St.James Place';
+	exports.PROPERTY_TN = 'Tennessee Avenue';
+	exports.PROPERTY_NY = 'New York Avenue';
+	exports.PROPERTY_KT = 'Kentucky Avenue';
+	exports.PROPERTY_IN = 'Indiana Avenue';
+	exports.PROPERTY_IL = 'Illinois Avenue';
+	exports.PROPERTY_AT = 'Atlantic Avenue';
+	exports.PROPERTY_VR = 'Ventnor Avenue';
+	exports.PROPERTY_MARVIN = 'Marvin Gardens';
+	exports.PROPERTY_PA = 'Pacific Avenue';
+	exports.PROPERTY_NC = 'North Carolina Avenue';
+	exports.PROPERTY_PENN = 'Pennsylvania Avenue';
+	exports.PROPERTY_PK = 'Park Place';
+	exports.PROPERTY_BW = 'Boardwalk';
+	
+	// Player name
+	exports.DEFAULT_PLAYER_NAME = 'Player {index}';
+	
+	// Price formatting
+	exports.PRICE_STRING = 'PRICE {price}';
+	exports.formatPrice = function (price) {
+		return '$' + price;
+	};
+}());
+},{}],17:[function(require,module,exports){
+(function() {
+	"use strict";
+	
 	exports.CONFIGURE_GAME_TITLE = 'Monopoly - configuration de partie';
 	exports.COMPUTER_PLAYERS_LABEL = 'Joueurs IA';
 	
@@ -1043,13 +1109,55 @@
 	exports.PROPERTY_PK = 'Place du parc';
 	exports.PROPERTY_BW = 'Promenade';
 	
+	// Player name
+	exports.DEFAULT_PLAYER_NAME = 'Joueur {index}';
+	
 	// Price formatting
 	exports.PRICE_STRING = 'PRIX {price}';
 	exports.formatPrice = function (price) {
 		return price + ' $';
 	};
 }());
-},{}],17:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
+(function () {
+    'use strict';
+    var frenchString = require('./i18n.fr');
+    var englishString = require('./i18n.en');
+
+    var ENGLISH_INDICATOR = 'en';
+    var FRENCH_INDICATOR = 'fr';
+
+    var navigatorLanguageTag = navigator.language || navigator.userLanguage;
+    setApplicationLanguage(navigatorLanguageTag.toLowerCase());
+
+    exports.i18n = function () {
+        var currentLanguage = null;
+
+        if (navigatorIsEnglish()) {
+            currentLanguage = englishString;
+        }
+        else if (navigatorIsFrench()) {
+            currentLanguage = frenchString;
+        } else {
+            //Default
+            currentLanguage = englishString;
+        }
+        return currentLanguage;
+    };
+
+    function navigatorIsFrench() {
+        return window.applicationLanguage.indexOf(FRENCH_INDICATOR) > -1;
+    }
+
+    function navigatorIsEnglish() {
+        return window.applicationLanguage.indexOf(ENGLISH_INDICATOR) > -1;
+    }
+
+    function setApplicationLanguage(applicationLanguage){
+        window.applicationLanguage = applicationLanguage;
+    }
+}());
+},{"./i18n.en":16,"./i18n.fr":17}],19:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1106,7 +1214,7 @@
 		return this._messages.asObservable();
 	};
 }());
-},{"./contract":6,"./messages":19}],18:[function(require,module,exports){
+},{"./contract":6,"./messages":21}],20:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1121,17 +1229,19 @@
 			.classed('game-log-console', true);
 			
 		messages.subscribe(function (log) {
-			console.append('span')
+			console.insert('span', '.game-log-message')
 				.classed('game-log-message', true)
-				.text(log.message());
+				.text(log.message())
+				.style('opacity', 0)
+				.transition().delay(200).style("opacity", 1);
 		});
 	};
 }());
-},{"./contract":6}],19:[function(require,module,exports){
+},{"./contract":6}],21:[function(require,module,exports){
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n');
+	var i18n = require('./i18n').i18n();
 	
 	exports.logDiceRoll = function (player, die1, die2) {
 		var message = i18n.LOG_DICE_ROLL
@@ -1167,7 +1277,7 @@
 		return this._message;
 	};
 }());
-},{"./i18n":16}],20:[function(require,module,exports){
+},{"./i18n":18}],22:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1177,7 +1287,7 @@
 	var PlayersWidget = require('./players-widget');
 	var LogGameWidget = require('./log-game-widget');
 	
-	var i18n = require('./i18n');
+	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
 	exports.render = function (container, playGameTask) {
@@ -1209,7 +1319,7 @@
 	};
 }());
 
-},{"./board-widget":1,"./contract":6,"./dice-widget":7,"./game-choices-widget":9,"./i18n":16,"./log-game-widget":18,"./players-widget":24}],21:[function(require,module,exports){
+},{"./board-widget":1,"./contract":6,"./dice-widget":7,"./game-choices-widget":9,"./i18n":18,"./log-game-widget":20,"./players-widget":26}],23:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1375,7 +1485,7 @@
 		});
 	}
 }());
-},{"./contract":6,"./game-state":11,"./handle-choices-task":15,"./log-game-task":17,"./player":23,"./roll-dice-task":25}],22:[function(require,module,exports){
+},{"./contract":6,"./game-state":11,"./handle-choices-task":15,"./log-game-task":19,"./player":25,"./roll-dice-task":27}],24:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1385,19 +1495,20 @@
 		];
 	};
 }());
-},{}],23:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var PlayerColors = require('./player-colors').colors();
 	
 	var precondition = require('./contract').precondition;
+	var i18n = require('./i18n').i18n();
 	
 	exports.newPlayers = function (playerConfigurations) {
 		return _.map(playerConfigurations, function (playerConfiguration, index) {
 			return newPlayer({
 				id: 'player' + index,
-				name: 'Joueur ' + (index + 1),
+				name: i18n.DEFAULT_PLAYER_NAME.replace('{index}', index + 1),
 				money: 1500,
 				position: 0,
 				color: PlayerColors[index],
@@ -1491,12 +1602,12 @@
 		});
 	};
 }());
-},{"./contract":6,"./player-colors":22}],24:[function(require,module,exports){
+},{"./contract":6,"./i18n":18,"./player-colors":24}],26:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var precondition =  require('./contract').precondition;
-	var i18n = require('./i18n');
+	var i18n = require('./i18n').i18n();
 	
 	var groupColors = require('./group-colors').color;
 	
@@ -1630,7 +1741,7 @@
 		});
 	}
 }());
-},{"./contract":6,"./group-colors":14,"./i18n":16}],25:[function(require,module,exports){
+},{"./contract":6,"./group-colors":14,"./i18n":18}],27:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1665,7 +1776,7 @@
 		return this._diceRolled.asObservable();
 	};
 }());
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1696,7 +1807,7 @@
 			'L 136 10 L 140 18 L 124 18 L 120 13 L 20 13 L 20 20 Z">';
 	};
 }());
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 (function () {
     'use strict';
 
