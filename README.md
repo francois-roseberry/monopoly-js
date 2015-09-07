@@ -62,10 +62,10 @@ On the turn-end-state, the choice of buying a property is offered only if curren
 **Choices effects on the game state**
 
 * Roll dice
-  ** move player on the board
+  * move player on the board
 * Finish turn
-  ** switch to next player
+  * switch to next player
 * Buy property
-  ** property where current player is is bought by current player and his money is reduced by its price
+  * property where current player is is bought by current player and his money is reduced by its price
 
 *Note : there is no final state, since there is no way to possibly lose money yet. Hence, no winner or loser possible. Will be added later*
