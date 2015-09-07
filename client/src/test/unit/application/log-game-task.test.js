@@ -20,19 +20,25 @@
 		it('when dice finishes rolling, sends a message', function (done) {
 			gameTask.rollDiceTaskCreated().take(1).subscribe(function (task) {
 				task.diceRolled().last().subscribe(function () {
-					assertLogged(done);
+					assertLogged([
+						Messages.logDiceRoll().id(),
+						Messages.logDoubleDiceRoll().id()
+					], done);
 				});
 			});
 			
 			gameTask.handleChoicesTask().makeChoice(Choices.rollDice());
 		});
 		
-		function assertLogged(done) {
+		it('when player buys property, sends a message', function (done) {
+			assertLogged([Messages.logPropertyBought().id()], done);
+			
+			gameTask.handleChoicesTask().makeChoice(Choices.buyProperty('rr-reading', '', 20));
+		});
+		
+		function assertLogged(logs, done) {
 			logTask.messages().take(1).subscribe(function (log) {
-				expect([
-					Messages.logDiceRoll().id(),
-					Messages.logDoubleDiceRoll().id()
-				]).to.contain(log.id());
+				expect(logs).to.contain(log.id());
 			}, done, done);
 		}
 	});

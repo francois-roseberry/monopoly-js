@@ -23,6 +23,12 @@
 			.subscribe(function (dice) {
 				messages.onNext(diceMessage(dice));
 			});
+			
+		onPropertyBought(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (info) {
+				messages.onNext(Messages.logPropertyBought(info.player, info.property));
+			});
 	}
 	
 	function diceMessage(dice) {
@@ -40,6 +46,59 @@
 					playGameTask.gameState(),
 					combineDiceAndState);
 			});
+	}
+	
+	function onPropertyBought(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState()
+			.distinctUntilChanged(function (state) {
+				return _.reduce(state.players(), function (sum, player) {
+					return player.properties().length + sum;
+				}, 0);
+			}))
+			.map(function (states) {
+				var player = states.previous.players()[states.current.currentPlayerIndex()];
+				var newProperty = findNewProperty(states);	
+				var propertyName = nameOfProperty(newProperty);
+				
+				return {
+					player: player.name(),
+					property: propertyName
+				};
+			});
+	}
+	
+	function findNewProperty(states) {
+		var previousProperties = states.previous.players()[states.current.currentPlayerIndex()].properties();
+		var currentProperties = states.current.players()[states.current.currentPlayerIndex()].properties();
+		
+		var newPropertyId = _.filter(currentProperties, function (id) {
+			return !_.contains(previousProperties, id);
+		})[0];
+		return states.current.propertyById(newPropertyId);
+	}
+	
+	function nameOfProperty(property) {
+		return property.match({
+			'estate': function (id, name) { return name; },
+			'railroad': function (id, name) { return name; },
+			'company': function (id, name) { return name; }
+		});
+	}
+	
+	function combineWithPrevious(observable) {
+		var previous;
+		var subject = new Rx.Subject();
+		observable.subscribe(function (current) {
+			if (previous) {
+				subject.onNext({
+					previous: previous,
+					current: current
+				});
+			}
+			previous = current;
+		}, subject, subject);
+		
+		return subject.asObservable();
 	}
 	
 	function combineDiceAndState(dice, state) {

@@ -20,6 +20,14 @@
 		return new Log('double-dice-roll', message);
 	};
 	
+	exports.logPropertyBought = function (player, property) {
+		var message = i18n.LOG_PROPERTY_BOUGHT
+						.replace('{player}', player)
+						.replace('{property}', property);
+						
+		return new Log('property-bought', message);
+	};
+	
 	exports.simpleLog = function () {
 		return new Log('simple', 'A message');
 	};

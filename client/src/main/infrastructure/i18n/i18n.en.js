@@ -16,6 +16,7 @@
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
 	exports.LOG_DOUBLE_DICE_ROLL = '{player} rolled a double of {dice}';
+	exports.LOG_PROPERTY_BOUGHT = '{player} bought {property}';
 	
 	// Squares
 	exports.CHANCE = 'Chance';
