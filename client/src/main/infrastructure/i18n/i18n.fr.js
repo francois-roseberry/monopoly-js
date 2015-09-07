@@ -54,6 +54,9 @@
 	exports.PROPERTY_PK = 'Place du parc';
 	exports.PROPERTY_BW = 'Promenade';
 	
+	// Player name
+	exports.DEFAULT_PLAYER_NAME = 'Joueur {index}';
+	
 	// Price formatting
 	exports.PRICE_STRING = 'PRIX {price}';
 	exports.formatPrice = function (price) {

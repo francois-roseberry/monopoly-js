@@ -7,7 +7,7 @@
 	var PlayersWidget = require('./players-widget');
 	var LogGameWidget = require('./log-game-widget');
 	
-	var i18n = require('./i18n');
+	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
 	exports.render = function (container, playGameTask) {

@@ -2,7 +2,7 @@
 	"use strict";
 	
 	var precondition = require('./contract').precondition;
-	var i18n = require('./i18n');
+	var i18n = require('./i18n').i18n();
 	var groupColors = require('./group-colors').color;
 	
 	var Symbols = require('./symbols');

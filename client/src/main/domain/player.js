@@ -4,12 +4,13 @@
 	var PlayerColors = require('./player-colors').colors();
 	
 	var precondition = require('./contract').precondition;
+	var i18n = require('./i18n').i18n();
 	
 	exports.newPlayers = function (playerConfigurations) {
 		return _.map(playerConfigurations, function (playerConfiguration, index) {
 			return newPlayer({
 				id: 'player' + index,
-				name: 'Joueur ' + (index + 1),
+				name: i18n.DEFAULT_PLAYER_NAME.replace('{index}', index + 1),
 				money: 1500,
 				position: 0,
 				color: PlayerColors[index],

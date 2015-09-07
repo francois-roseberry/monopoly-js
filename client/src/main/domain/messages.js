@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n');
+	var i18n = require('./i18n').i18n();
 	
 	exports.logDiceRoll = function (player, die1, die2) {
 		var message = i18n.LOG_DICE_ROLL
