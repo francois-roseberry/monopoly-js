@@ -12,9 +12,11 @@
 			.classed('game-log-console', true);
 			
 		messages.subscribe(function (log) {
-			console.append('span')
+			console.insert('span', '.game-log-message')
 				.classed('game-log-message', true)
-				.text(log.message());
+				.text(log.message())
+				.style('opacity', 0)
+				.transition().delay(200).style("opacity", 1);
 		});
 	};
 }());
