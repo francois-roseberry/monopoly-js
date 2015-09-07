@@ -11,7 +11,7 @@ Far from complete, right now players alternate, roll the dice and buy properties
 ## Demo
 
 [Click here and enjoy !](http://francois-roseberry.github.io/monopoly-js/demo/)
-UI is available in english and french, depending on your browser language. Other languages will default to english.
+UI is available in english and french, depending on your browser language. Other languages will default to english. Monopoly board is the one we have in US/Canada.
 
 ## Development setup
 
