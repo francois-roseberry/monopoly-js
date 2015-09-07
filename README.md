@@ -66,6 +66,7 @@ On the turn-end-state, the choice of buying a property is offered only if curren
 * Finish turn
   * switch to next player
 * Buy property
-  * property where current player is is bought by current player and his money is reduced by its price
+  * property is added to the player's owned properties list
+  * player's money is reduced by property price
 
 *Note : there is no final state, since there is no way to possibly lose money yet. Hence, no winner or loser possible. Will be added later*
