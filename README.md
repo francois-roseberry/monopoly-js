@@ -71,3 +71,59 @@ On the turn-end-state, the choice of buying a property is offered only if curren
   * player's money is reduced by property price
 
 *Note : there is no final state, since there is no way to possibly lose money yet. Hence, no winner or loser possible. Will be added later*
+
+![Alt text](http://g.gravizo.com/g?
+@startuml
+
+scale 1.2
+title Game flowchart
+
+(*) -->[set first player as current] "<b>Move</b>
+					advance current player dy dice" as move
+
+--> if "On property?" then
+	-->[yes] if "Owned?" then
+		-right->[no] if "Enough money?" then
+			-up->[no] "<b>Finish turn</b>
+					set next player as current" as finish_turn
+		else
+			-right->[yes] if "Want to buy?" then
+				-right->[yes] "<b>Buy property</b>
+						substract property price from current player's money
+						add property to current players's properties"
+				-up-> finish_turn
+			else
+				-up->[no] finish_turn
+			endif
+		endif
+	else
+		partition TODO {
+			-down->[yes] if "By Player ?" then
+				-right->[yes] "It's all good, you're <b>home</b>
+					Have a beer" as home
+			else
+				-down->[no] "Calculate rent"
+				-down-> if "Enough money?" then
+					-right->[yes] "<b>Cha-ching</b>
+							make player pay the rent\nto owner"
+					-up-> finish_turn
+				else
+					-down->[no] "<b>Bankruptcy</b>
+						remove current player from game"
+					-right-> if "At least 2 players left?" then
+						-right->[no] (*)
+					else
+						-up->[yes] finish_turn
+					endif
+				endif
+			endif
+		}
+		home -up-> finish_turn
+	endif
+else
+	-right->[no] finish_turn
+	-up-> move
+endif
+
+@enduml
+)
