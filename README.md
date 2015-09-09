@@ -38,36 +38,9 @@ play -> config [label="New game"];
 }
 )
 
-**Game states**
+... and for when the application is in the "Playing game" state :
 
-(when the application is in the "Playing game" state)
+![Game flowchart]
+(http://francois-roseberry.github.io/monopoly-js/doc/game-flowchart.png)
 
-Arrow represents choices
-
-![Game states](http://g.gravizo.com/g?
-digraph G {
-start [shape=box];
-turnStart [label="Turn start"];
-turnEnd [label="Turn end"]
-start -> turnStart;
-turnStart-> turnEnd[label="Roll dice"];
-turnEnd-> turnStart[label="Finish turn"];
-turnEnd -> turnEnd[label="Buy property"];
-}
-)
-
-**Conditional choices**
-
-On the turn-end-state, the choice of buying a property is offered only if current player is on a property, property is not owned, and player has enough money.
-
-**Choices effects on the game state**
-
-* Roll dice
-  * move player on the board
-* Finish turn
-  * switch to next player
-* Buy property
-  * property is added to the player's owned properties list
-  * player's money is reduced by property price
-
-*Note : there is no final state, since there is no way to possibly lose money yet. Hence, no winner or loser possible. Will be added later*
+As you can see, it still misses many features to make it a standard game of monopoly. They will be implemented later.
