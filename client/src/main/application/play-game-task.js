@@ -142,7 +142,7 @@
 				squares: state.squares(),
 				players: newPlayers,
 				currentPlayerIndex: state.currentPlayerIndex()
-			});
+			}, true);
 			
 			return Rx.Observable.of(newState);
 		};

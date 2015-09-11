@@ -82,6 +82,27 @@
 			
 			assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
 		});
+		
+		it('when current player is on estate owned by other player, but already paid, ' +
+			'does not offer to pay the rent', function () {
+			var state = turnEndStateOnEstateOwnedByOtherButAlreadyPaid();
+			
+			assertChoices(state, [Choices.finishTurn().id]);
+		});
+		
+		it('when current player is on railroad owned by other player, but already paid, ' +
+			'does offer to pay the rent', function () {
+			var state = turnEndStateOnRailroadOwnedByOtherButAlreadyPaid();
+			
+			assertChoices(state, [Choices.finishTurn().id]);
+		});
+		
+		it('when current player is on company owned by other player, but already paid, ' +
+			'does not offer to pay the rent', function () {
+			var state = turnEndStateOnCompanyOwnedByOtherButAlreadyPaid();
+			
+			assertChoices(state, [Choices.finishTurn().id]);
+		});
 	});
 	
 	function assertChoices(state, choiceIds) {
@@ -124,12 +145,24 @@
 		return turnEndStateWithPlayers(playerOnCompanyOwnedByOther());
 	}
 	
-	function turnEndStateWithPlayers(players) {
+	function turnEndStateOnEstateOwnedByOtherButAlreadyPaid() {
+		return turnEndStateWithPlayers(playerOnEstateOwnedByOther(), true);
+	}
+	
+	function turnEndStateOnRailroadOwnedByOtherButAlreadyPaid() {
+		return turnEndStateWithPlayers(playerOnRailroadOwnedByOther(), true);
+	}
+	
+	function turnEndStateOnCompanyOwnedByOtherButAlreadyPaid() {
+		return turnEndStateWithPlayers(playerOnCompanyOwnedByOther(), true);
+	}
+	
+	function turnEndStateWithPlayers(players, paid) {
 		return GameState.turnEndState({
 			squares: Board.squares(),
 			players: players,
 			currentPlayerIndex: 0
-		});
+		}, paid);
 	}
 	
 	function playerOnEstate() {

@@ -17,27 +17,27 @@
 		return [Choices.rollDice()];
 	}
 	
-	exports.turnEndState = function (info) {
+	exports.turnEndState = function (info, paid) {
 		validateInfo(info);
 			
-		var choices = turnEndChoices(info);
+		var choices = turnEndChoices(info, paid || false);
 		
 		return new GameState(info, choices);
 	};
 	
-	function turnEndChoices(info) {
+	function turnEndChoices(info, paid) {
 		var currentPlayer = info.players[info.currentPlayerIndex];
 		var currentSquare = info.squares[currentPlayer.position()];
-		var choices = choicesForSquare(currentSquare, info.players, currentPlayer);
+		var choices = choicesForSquare(currentSquare, info.players, currentPlayer, paid);
 			
 		return choices;
 	}
 	
-	function choicesForSquare(square, players, currentPlayer) {
+	function choicesForSquare(square, players, currentPlayer, paid) {
 		return square.match({
-			'estate': choicesForProperty(players, currentPlayer),
-			'railroad': choicesForProperty(players, currentPlayer),
-			'company': choicesForProperty(players, currentPlayer),
+			'estate': choicesForProperty(players, currentPlayer, paid),
+			'railroad': choicesForProperty(players, currentPlayer, paid),
+			'company': choicesForProperty(players, currentPlayer, paid),
 			_: onlyFinishTurn
 		});
 	}
@@ -46,11 +46,11 @@
 		return [Choices.finishTurn()];
 	}
 	
-	function choicesForProperty(players, currentPlayer) {
+	function choicesForProperty(players, currentPlayer, paid) {
 		return function (id, name, price) {
 			var owner = getOwner(players, id);
 			
-			if (owner && owner.id() !== currentPlayer.id()) {
+			if (!paid && owner && owner.id() !== currentPlayer.id()) {
 				return [Choices.payRent(20, owner.id(), owner.name())];
 			}
 			
