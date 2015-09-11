@@ -62,46 +62,48 @@
 			assertChoices(state, [Choices.finishTurn().id]);
 		});
 		
-		it('when current player is on estate owned by other player, offers to pay the rent', function () {
-			var state = turnEndStateOnEstateOwnedByOther();
-			var secondPlayer = testData.players()[1];
+		describe('when current player is on property owned by other player, offers to pay the rent', function () {
+			it('if that property is an estate', function () {
+				var state = turnEndStateOnEstateOwnedByOther();
+				var secondPlayer = testData.players()[1];
+				
+				assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
+			});
 			
-			assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
+			it('if that property is a railroad', function () {
+				var state = turnEndStateOnRailroadOwnedByOther();
+				var secondPlayer = testData.players()[1];
+				
+				assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
+			});
+			
+			it('if that property is a company', function () {
+				var state = turnEndStateOnCompanyOwnedByOther();
+				var secondPlayer = testData.players()[1];
+				
+				assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
+			});
 		});
 		
-		it('when current player is on railroad owned by other player, offers to pay the rent', function () {
-			var state = turnEndStateOnRailroadOwnedByOther();
-			var secondPlayer = testData.players()[1];
+		describe('when current player is on property owned by other player, but already paid, ' +
+			'does not offer to pay the rent again', function () {
+			it('if that property is an estate', function () {
+				var state = turnEndStateOnEstateOwnedByOtherButAlreadyPaid();
+				
+				assertChoices(state, [Choices.finishTurn().id]);
+			});
 			
-			assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
-		});
-		
-		it('when current player is on company owned by other player, offers to pay the rent', function () {
-			var state = turnEndStateOnCompanyOwnedByOther();
-			var secondPlayer = testData.players()[1];
+			it('if that property is a railroad', function () {
+				var state = turnEndStateOnRailroadOwnedByOtherButAlreadyPaid();
+				
+				assertChoices(state, [Choices.finishTurn().id]);
+			});
 			
-			assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
-		});
-		
-		it('when current player is on estate owned by other player, but already paid, ' +
-			'does not offer to pay the rent', function () {
-			var state = turnEndStateOnEstateOwnedByOtherButAlreadyPaid();
-			
-			assertChoices(state, [Choices.finishTurn().id]);
-		});
-		
-		it('when current player is on railroad owned by other player, but already paid, ' +
-			'does offer to pay the rent', function () {
-			var state = turnEndStateOnRailroadOwnedByOtherButAlreadyPaid();
-			
-			assertChoices(state, [Choices.finishTurn().id]);
-		});
-		
-		it('when current player is on company owned by other player, but already paid, ' +
-			'does not offer to pay the rent', function () {
-			var state = turnEndStateOnCompanyOwnedByOtherButAlreadyPaid();
-			
-			assertChoices(state, [Choices.finishTurn().id]);
+			it('if that property is a company', function () {
+				var state = turnEndStateOnCompanyOwnedByOtherButAlreadyPaid();
+				
+				assertChoices(state, [Choices.finishTurn().id]);
+			});
 		});
 	});
 	
