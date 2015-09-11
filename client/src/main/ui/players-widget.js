@@ -24,6 +24,8 @@
 				
 			createPlayerPanels(panelSelection);
 			updatePlayerPanels(panelSelection, state);
+			
+			panelSelection.exit().remove();
 		};
 	}
 	

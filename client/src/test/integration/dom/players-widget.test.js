@@ -52,6 +52,12 @@
 				'.player-panel[data-ui=' + playerId + '] .player-property[data-ui=' + propertyId + ']');
 		});
 		
+		it('when a player is removed from the game, its panel is removed too', function () {
+			task.handleChoicesTask().makeChoice(Choices.goBankrupt());
+			
+			domContext.assertElementCount('.player-panel', testData.playersConfiguration().length - 1);
+		});
+		
 		function firstPlayerId(gameState) {
 			var playerId;
 			gameState.take(1).subscribe(function (state) {
