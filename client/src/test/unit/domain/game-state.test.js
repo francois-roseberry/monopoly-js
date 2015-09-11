@@ -35,19 +35,19 @@
 		it('when current player is on an estate, offers to buy it', function () {
 			var state = turnEndStateOnEstate();
 			
-			assertChoices(state, [Choices.buyProperty().id, Choices.finishTurn().id]);
+			assertChoices(state, [Choices.buyProperty('med','',1).id, Choices.finishTurn().id]);
 		});
 		
 		it('when current player is on a railroad, offers to buy it', function () {
 			var state = turnEndStateOnRailroad();
 			
-			assertChoices(state, [Choices.buyProperty().id, Choices.finishTurn().id]);
+			assertChoices(state, [Choices.buyProperty('rr-reading','',1).id, Choices.finishTurn().id]);
 		});
 		
 		it('when current player is on a company, offers to buy it', function () {
 			var state = turnEndStateOnCompany();
 			
-			assertChoices(state, [Choices.buyProperty().id, Choices.finishTurn().id]);
+			assertChoices(state, [Choices.buyProperty('electric','',1).id, Choices.finishTurn().id]);
 		});
 		
 		it('when current player is on a property that is owned, does not offer to buy it', function () {
@@ -60,6 +60,27 @@
 			var state = turnEndStateBrokeOnEstate();
 			
 			assertChoices(state, [Choices.finishTurn().id]);
+		});
+		
+		it('when current player is on estate owned by other player, offers to pay the rent', function () {
+			var state = turnEndStateOnEstateOwnedByOther();
+			var secondPlayer = testData.players()[1];
+			
+			assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
+		});
+		
+		it('when current player is on railroad owned by other player, offers to pay the rent', function () {
+			var state = turnEndStateOnRailroadOwnedByOther();
+			var secondPlayer = testData.players()[1];
+			
+			assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
+		});
+		
+		it('when current player is on company owned by other player, offers to pay the rent', function () {
+			var state = turnEndStateOnCompanyOwnedByOther();
+			var secondPlayer = testData.players()[1];
+			
+			assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
 		});
 	});
 	
@@ -89,6 +110,18 @@
 	
 	function turnEndStateBrokeOnEstate() {
 		return turnEndStateWithPlayers(playerBrokeOnEstate());
+	}
+	
+	function turnEndStateOnEstateOwnedByOther() {
+		return turnEndStateWithPlayers(playerOnEstateOwnedByOther());
+	}
+	
+	function turnEndStateOnRailroadOwnedByOther() {
+		return turnEndStateWithPlayers(playerOnRailroadOwnedByOther());
+	}
+	
+	function turnEndStateOnCompanyOwnedByOther() {
+		return turnEndStateWithPlayers(playerOnCompanyOwnedByOther());
 	}
 	
 	function turnEndStateWithPlayers(players) {
@@ -122,6 +155,21 @@
 	function playerBrokeOnEstate() {
 		var players = testData.players();
 		return [players[0].buyProperty('vn', players[0].money() - 1).move([0, 1], 40), players[1], players[2]];
+	}
+	
+	function playerOnEstateOwnedByOther() {
+		var players = testData.players();
+		return [players[0].move([0, 1], 40), players[1].buyProperty('med', 1), players[2]];
+	}
+	
+	function playerOnRailroadOwnedByOther() {
+		var players = testData.players();
+		return [players[0].move([0, 5], 40), players[1].buyProperty('rr-reading', 1), players[2]];
+	}
+	
+	function playerOnCompanyOwnedByOther() {
+		var players = testData.players();
+		return [players[0].move([0, 12], 40), players[1].buyProperty('electric', 1), players[2]];
 	}
 	
 	function toChoiceIds(choices) {

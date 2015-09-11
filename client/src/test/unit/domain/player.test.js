@@ -47,5 +47,29 @@
 				expect(newPlayer.properties()).to.eql(players[0].properties().concat([PROPERTY_ID]));
 			});
 		});
+		
+		it('substracts the money when paying it', function () {
+			var amount = 100;
+			var newPlayer = players[0].pay(amount);
+			
+			expect(newPlayer.money()).to.eql(1500 - amount);
+		});
+		
+		it('cannot pay enough money to fall at 0', function () {
+			var amount = 1500;
+			
+			var pay = function () {
+				players[0].pay(amount);
+			};
+			
+			expect(pay).to.throwError();
+		});
+		
+		it('adds the money when earning it', function () {
+			var amount = 100;
+			var newPlayer = players[0].earn(amount);
+			
+			expect(newPlayer.money()).to.eql(1500 + amount);
+		});
 	});
 }());

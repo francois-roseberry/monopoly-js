@@ -12,6 +12,7 @@
 	exports.CHOICE_ROLL_DICE = 'Roll the dice';
 	exports.CHOICE_FINISH_TURN = 'Finish turn';
 	exports.CHOICE_BUY_PROPERTY = 'Buy {property} for {price}';
+	exports.CHOICE_PAY_RENT = 'Pay {rent} to {toPlayer}';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';

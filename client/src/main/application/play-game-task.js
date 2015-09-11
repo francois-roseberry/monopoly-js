@@ -91,7 +91,8 @@
 			return choice.match({
 				'roll-dice': rollDice(self, state),
 				'finish-turn': finishTurn(state),
-				'buy-property': buyProperty(state)
+				'buy-property': buyProperty(state),
+				'pay-rent': payRent(state)
 			});
 		};
 	}
@@ -120,6 +121,30 @@
 	function buyProperty(state) {
 		return function (id, price) {
 			return Rx.Observable.return(transferOwnership(state, id, price));
+		};
+	}
+	
+	function payRent(state) {
+		return function (rent, toPlayerId) {
+			var newPlayers = _.map(state.players(), function (player, index) {
+				if (index === state.currentPlayerIndex()) {
+					return player.pay(rent);
+				}
+				
+				if (player.id() === toPlayerId) {
+					return player.earn(rent);
+				}
+				
+				return player;
+			});
+			
+			var newState = GameState.turnEndState({
+				squares: state.squares(),
+				players: newPlayers,
+				currentPlayerIndex: state.currentPlayerIndex()
+			});
+			
+			return Rx.Observable.of(newState);
 		};
 	}
 	

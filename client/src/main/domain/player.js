@@ -103,4 +103,32 @@
 			properties: this.properties().concat([id])
 		});
 	};
+	
+	Player.prototype.pay = function (amount) {
+		precondition(_.isNumber(amount) && amount > 0,
+			'Player requires an amount to pay, that is greater than 0');
+			
+		precondition(this.money() > amount, 'Player does not have enough money to pay ' + amount);
+		
+		return playerWithAdditionalMoney(this, -amount);
+	};
+	
+	Player.prototype.earn = function (amount) {
+		precondition(_.isNumber(amount) && amount > 0,
+			'Player requires an amount to earn, that is greater than 0');
+		
+		return playerWithAdditionalMoney(this, amount);
+	};
+	
+	function playerWithAdditionalMoney(player, amount) {
+		return newPlayer({
+			id: player.id(),
+			name: player.name(),
+			money: player.money() + amount,
+			position: player.position(),
+			color: player.color(),
+			type: player.type(),
+			properties: player.properties()
+		});
+	}
 }());

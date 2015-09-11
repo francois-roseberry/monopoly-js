@@ -80,12 +80,29 @@
 			assertCurrentPlayerIsTheFirstOne(task.gameState(), done);
 		});
 		
-		it('when buy-property is chosen, current player loses money', function () {
+		it('when buy-property is chosen, current player loses money', function (done) {
 			var price = 200;
 			task.handleChoicesTask().makeChoice(Choices.buyProperty('rr-reading', '', price));
 			
-			assertCurrentPlayerHasLostMoney(task.gameState(), price);
+			assertCurrentPlayerHasLostMoney(task.gameState(), price, done);
 		});
+		
+		it('when pay-rent is chosen, transfer the rent from current player to owner', function (done) {
+			var rent = 100;
+			var owner = getSecondPlayer(task.gameState());
+			task.handleChoicesTask().makeChoice(Choices.payRent(rent, owner.id(), owner.name()));
+			
+			assertCurrentPlayerHasPaidToOwner(task.gameState(), rent, 1, done);
+		});
+		
+		function getSecondPlayer(gameState) {
+			var player;
+			gameState.take(1)
+				.subscribe(function (state) {
+					player = state.players()[1];
+				});
+			return player;
+		}
 		
 		function assertRollDiceChoice(gameState, done) {
 			gameState.take(1)
@@ -151,10 +168,17 @@
 			}, done, done);
 		}
 		
-		function assertCurrentPlayerHasLostMoney(gameState, amount) {
+		function assertCurrentPlayerHasLostMoney(gameState, amount, done) {
 			gameState.take(1).subscribe(function (state) {
 				expect(state.players()[state.currentPlayerIndex()].money()).to.eql(1500 - amount);
-			});
+			}, done, done);
+		}
+		
+		function assertCurrentPlayerHasPaidToOwner(gameState, amount, ownerIndex, done) {
+			gameState.take(1).subscribe(function (state) {
+				expect(state.players()[state.currentPlayerIndex()].money()).to.eql(1500 - amount);
+				expect(state.players()[1].money()).to.eql(1500 + amount);
+			}, done, done);
 		}
 	});
 }());

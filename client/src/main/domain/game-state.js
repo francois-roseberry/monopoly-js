@@ -29,8 +29,6 @@
 		var currentPlayer = info.players[info.currentPlayerIndex];
 		var currentSquare = info.squares[currentPlayer.position()];
 		var choices = choicesForSquare(currentSquare, info.players, currentPlayer);
-		
-		choices.push(Choices.finishTurn());
 			
 		return choices;
 	}
@@ -40,26 +38,32 @@
 			'estate': choicesForProperty(players, currentPlayer),
 			'railroad': choicesForProperty(players, currentPlayer),
 			'company': choicesForProperty(players, currentPlayer),
-			_: noChoices
+			_: onlyFinishTurn
 		});
 	}
 	
-	function noChoices() {
-		return [];
+	function onlyFinishTurn() {
+		return [Choices.finishTurn()];
 	}
 	
 	function choicesForProperty(players, currentPlayer) {
 		return function (id, name, price) {
-			if (!isOwned(players, id) && currentPlayer.money() > price) {
-				return [Choices.buyProperty(id, name, price)];
+			var owner = getOwner(players, id);
+			
+			if (owner && owner.id() !== currentPlayer.id()) {
+				return [Choices.payRent(20, owner.id(), owner.name())];
 			}
 			
-			return [];
+			if (!owner && currentPlayer.money() > price) {
+				return [Choices.buyProperty(id, name, price), Choices.finishTurn()];
+			}
+			
+			return [Choices.finishTurn()];
 		};
 	}
 	
-	function isOwned(players, propertyId) {
-		return _.some(players, function (player) {
+	function getOwner(players, propertyId) {
+		return _.find(players, function (player) {
 			return _.some(player.properties(), function (property) {
 				return property === propertyId;
 			});
