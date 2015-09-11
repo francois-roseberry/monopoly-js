@@ -51,4 +51,14 @@
 			}
 		};
 	};
+	
+	exports.goBankrupt = function () {
+		return {
+			id: 'go-bankrupt',
+			name: i18n.CHOICE_GO_BANKRUPT,
+			match: function (visitor) {
+				return visitor['go-bankrupt']();
+			}
+		};
+	};
 }());

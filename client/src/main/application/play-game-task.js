@@ -92,7 +92,8 @@
 				'roll-dice': rollDice(self, state),
 				'finish-turn': finishTurn(state),
 				'buy-property': buyProperty(state),
-				'pay-rent': payRent(state)
+				'pay-rent': payRent(state),
+				'go-bankrupt': goBankrupt(state)
 			});
 		};
 	}
@@ -144,7 +145,25 @@
 				currentPlayerIndex: state.currentPlayerIndex()
 			}, true);
 			
-			return Rx.Observable.of(newState);
+			return Rx.Observable.return(newState);
+		};
+	}
+	
+	function goBankrupt(state) {
+		return function () {
+			var newPlayers = _.filter(state.players(), function (player, index) {
+				return index !== state.currentPlayerIndex();
+			});
+			
+			var newPlayerIndex = state.currentPlayerIndex() % newPlayers.length;
+			
+			var newState = GameState.turnStartState({
+				squares: state.squares(),
+				players: newPlayers,
+				currentPlayerIndex: newPlayerIndex
+			}, true);
+			
+			return Rx.Observable.return(newState);
 		};
 	}
 	

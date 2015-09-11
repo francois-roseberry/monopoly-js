@@ -51,7 +51,12 @@
 			var owner = getOwner(players, id);
 			
 			if (!paid && owner && owner.id() !== currentPlayer.id()) {
-				return [Choices.payRent(20, owner.id(), owner.name())];
+				var rent = 25;
+				if (currentPlayer.money() <= rent) {
+					return [Choices.goBankrupt()];
+				}
+				
+				return [Choices.payRent(rent, owner.id(), owner.name())];
 			}
 			
 			if (!owner && currentPlayer.money() > price) {

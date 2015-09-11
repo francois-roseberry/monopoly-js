@@ -95,6 +95,20 @@
 			assertCurrentPlayerHasPaidToOwner(task.gameState(), rent, 1, done);
 		});
 		
+		it('when going bankrupt is chosen, current player is removed from game', function (done) {
+			task.handleChoicesTask().makeChoice(Choices.goBankrupt());
+			
+			assertPlayerHasBeenRemovedFromTheGame(task.gameState(), testData.players()[0].id(), done);
+		});
+		
+		it('when the last player in the list goes bankrupt, current player becomes the first one', function (done) {
+			switchToLastPlayerTurn(task);
+			
+			task.handleChoicesTask().makeChoice(Choices.goBankrupt());
+			
+			assertCurrentPlayerIsTheFirstOne(task.gameState(), done);
+		});
+		
 		function getSecondPlayer(gameState) {
 			var player;
 			gameState.take(1)
@@ -154,6 +168,12 @@
 			}
 		}
 		
+		function switchToLastPlayerTurn(task) {
+			for (var i = 0; i < testData.playersConfiguration().length - 1; i++) {
+				task.handleChoicesTask().makeChoice(Choices.finishTurn());
+			}
+		}
+		
 		function assertCurrentPlayerIsTheFirstOne(gameState, done) {
 			assertCurrentPlayerIndex(gameState, 0, done);
 		}
@@ -178,6 +198,15 @@
 			gameState.take(1).subscribe(function (state) {
 				expect(state.players()[state.currentPlayerIndex()].money()).to.eql(1500 - amount);
 				expect(state.players()[1].money()).to.eql(1500 + amount);
+			}, done, done);
+		}
+		
+		function assertPlayerHasBeenRemovedFromTheGame(gameState, playerId, done) {
+			gameState.take(1).subscribe(function (state) {
+				var isPresent = _.some(state.players(), function (player) {
+					return player.id() === playerId;
+				});
+				expect(isPresent).to.be(false);
 			}, done, done);
 		}
 	});

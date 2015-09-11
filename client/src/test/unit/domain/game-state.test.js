@@ -105,6 +105,27 @@
 				assertChoices(state, [Choices.finishTurn().id]);
 			});
 		});
+		
+		describe('when current player is on property owned by other player, but rent is too high, ' +
+			'offers bankruptcy', function () {
+			it('if that property is an estate', function () {
+				var state = turnEndStateOnEstateOwnedByOtherButCannotPayRent();
+				
+				assertChoices(state, [Choices.goBankrupt().id]);
+			});
+			
+			it('if that property is a railroad', function () {
+				var state = turnEndStateOnRailroadOwnedByOtherButCannotPayRent();
+				
+				assertChoices(state, [Choices.goBankrupt().id]);
+			});
+			
+			it('if that property is a company', function () {
+				var state = turnEndStateOnCompanyOwnedByOtherButCannotPayRent();
+				
+				assertChoices(state, [Choices.goBankrupt().id]);
+			});
+		});
 	});
 	
 	function assertChoices(state, choiceIds) {
@@ -159,6 +180,18 @@
 		return turnEndStateWithPlayers(playerOnCompanyOwnedByOther(), true);
 	}
 	
+	function turnEndStateOnEstateOwnedByOtherButCannotPayRent() {
+		return turnEndStateWithPlayers(playerWithAlmostNoMoneyOnEstateOwnedByOther());
+	}
+	
+	function turnEndStateOnRailroadOwnedByOtherButCannotPayRent() {
+		return turnEndStateWithPlayers(playerWithAlmostNoMoneyOnRailroadOwnedByOther());
+	}
+	
+	function turnEndStateOnCompanyOwnedByOtherButCannotPayRent() {
+		return turnEndStateWithPlayers(playerWithAlmostNoMoneyOnCompanyOwnedByOther());
+	}
+	
 	function turnEndStateWithPlayers(players, paid) {
 		return GameState.turnEndState({
 			squares: Board.squares(),
@@ -205,6 +238,21 @@
 	function playerOnCompanyOwnedByOther() {
 		var players = testData.players();
 		return [players[0].move([0, 12], 40), players[1].buyProperty('electric', 1), players[2]];
+	}
+	
+	function playerWithAlmostNoMoneyOnEstateOwnedByOther() {
+		var players = testData.players();
+		return [players[0].move([0, 1], 40).pay(1499), players[1].buyProperty('med', 1), players[2]];
+	}
+	
+	function playerWithAlmostNoMoneyOnRailroadOwnedByOther() {
+		var players = testData.players();
+		return [players[0].move([0, 5], 40).pay(1499), players[1].buyProperty('rr-reading', 1), players[2]];
+	}
+	
+	function playerWithAlmostNoMoneyOnCompanyOwnedByOther() {
+		var players = testData.players();
+		return [players[0].move([0, 12], 40).pay(1499), players[1].buyProperty('electric', 1), players[2]];
 	}
 	
 	function toChoiceIds(choices) {
