@@ -84,6 +84,9 @@
 				if (previousMoney > player.money()) {
 					element.style('color', 'red');
 					element.transition().duration(700).style('color', 'black');
+				} else if (previousMoney < player.money()) {
+					element.style('color', 'forestgreen');
+					element.transition().duration(700).style('color', 'black');
 				}
 				return player.money();
 			})
