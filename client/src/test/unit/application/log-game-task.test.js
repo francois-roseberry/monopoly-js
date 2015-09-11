@@ -21,8 +21,8 @@
 			gameTask.rollDiceTaskCreated().take(1).subscribe(function (task) {
 				task.diceRolled().last().subscribe(function () {
 					assertLogged([
-						Messages.logDiceRoll().id(),
-						Messages.logDoubleDiceRoll().id()
+						Messages.logDiceRoll('Player', 2, 3).id(),
+						Messages.logDoubleDiceRoll('Player', 5).id()
 					], done);
 				});
 			});
@@ -31,9 +31,23 @@
 		});
 		
 		it('when player buys property, sends a message', function (done) {
-			assertLogged([Messages.logPropertyBought().id()], done);
+			var message = Messages.logPropertyBought('Player', 'Property').id();
+			assertLogged([message], done);
 			
-			gameTask.handleChoicesTask().makeChoice(Choices.buyProperty('rr-reading', '', 20));
+			var choice = Choices.buyProperty('rr-reading', testData.players()[0].id(), 20);
+			gameTask.handleChoicesTask().makeChoice(choice);
+		});
+		
+		it('when player pays rent, sends a message', function (done) {
+			var rent = 20;
+			var fromPlayerName = testData.players()[0].name();
+			var toPlayerName = testData.players()[1].name();
+			var message = Messages.logRentPaid(rent, fromPlayerName, toPlayerName).id();
+			
+			assertLogged([message], done);
+			
+			var choice = Choices.payRent(rent, testData.players()[1].id(), toPlayerName);
+			gameTask.handleChoicesTask().makeChoice(choice);
 		});
 		
 		function assertLogged(logs, done) {

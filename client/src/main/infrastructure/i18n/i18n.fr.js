@@ -18,6 +18,7 @@
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';
 	exports.LOG_DOUBLE_DICE_ROLL = '{player} a obtenu un doublé de {dice}';
 	exports.LOG_PROPERTY_BOUGHT = '{player} a acheté {property}';
+	exports.LOG_RENT_PAID = '{fromPlayer} a payé {amount} à {toPlayer}';
 	
 	// Squares
 	exports.CHANCE = 'Chance';

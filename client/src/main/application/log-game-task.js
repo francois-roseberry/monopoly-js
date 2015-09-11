@@ -29,6 +29,12 @@
 			.subscribe(function (info) {
 				messages.onNext(Messages.logPropertyBought(info.player, info.property));
 			});
+			
+		onRentPaid(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (info) {
+				messages.onNext(Messages.logRentPaid(info.amount, info.fromPlayer, info.toPlayer));
+			});
 	}
 	
 	function diceMessage(dice) {
@@ -63,6 +69,37 @@
 				return {
 					player: player.name(),
 					property: propertyName
+				};
+			});
+	}
+	
+	function onRentPaid(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+			.filter(function (states) {
+				var fromPlayer = _.find(states.current.players(), function (player, index) {
+					return player.money() < states.previous.players()[index].money();
+				});
+				var toPlayer = _.find(states.current.players(), function (player, index) {
+					return player.money() > states.previous.players()[index].money();
+				});
+				
+				return !!fromPlayer && !!toPlayer;
+			})
+			.map(function (states) {
+				var fromPlayer = _.find(states.current.players(), function (player, index) {
+					return player.money() < states.previous.players()[index].money();
+				});
+				var toPlayer = _.find(states.current.players(), function (player, index) {
+					return player.money() > states.previous.players()[index].money();
+				});
+				
+				var amount = states.previous.players()[states.current.currentPlayerIndex()].money() -
+					states.current.players()[states.current.currentPlayerIndex()].money();
+				
+				return {
+					fromPlayer: fromPlayer.name(),
+					toPlayer: toPlayer.name(),
+					amount: amount
 				};
 			});
 	}
