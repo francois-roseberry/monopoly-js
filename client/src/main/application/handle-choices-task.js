@@ -13,6 +13,9 @@
 		var task = new HandleChoicesTask(humanChoices);
 		
 		choicesForPlayerType(playGameTask, 'computer')
+			.filter(function (choices) {
+				return choices.length > 0;
+			})
 			.map(computerPlayer)
 			.subscribe(applyChoice(task));
 			

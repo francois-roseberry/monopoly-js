@@ -5,6 +5,18 @@
 	
 	var precondition = require('./contract').precondition;
 	
+	exports.gameFinishedState = function (squares, winner) {
+		precondition(_.isArray(squares) && squares.length === 40,
+			'GameFinishedState requires an array of 40 squares');
+		precondition(winner, 'GameFinishedState requires a winner');
+		
+		return new GameState({
+			squares: squares,
+			players: [winner],
+			currentPlayerIndex: 0
+		}, []);
+	};
+	
 	exports.turnStartState = function (info) {
 		validateInfo(info);
 			

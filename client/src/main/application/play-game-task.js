@@ -151,20 +151,28 @@
 	
 	function goBankrupt(state) {
 		return function () {
-			var newPlayers = _.filter(state.players(), function (player, index) {
-				return index !== state.currentPlayerIndex();
-			});
-			
-			var newPlayerIndex = state.currentPlayerIndex() % newPlayers.length;
-			
-			var newState = GameState.turnStartState({
-				squares: state.squares(),
-				players: newPlayers,
-				currentPlayerIndex: newPlayerIndex
-			}, true);
+			var newState = goBankruptNextState(state);
 			
 			return Rx.Observable.return(newState);
 		};
+	}
+	
+	function goBankruptNextState(state) {
+		var newPlayers = _.filter(state.players(), function (player, index) {
+			return index !== state.currentPlayerIndex();
+		});
+		
+		if (newPlayers.length === 1) {
+			return GameState.gameFinishedState(state.squares(), newPlayers[0]);
+		}
+		
+		var newPlayerIndex = state.currentPlayerIndex() % newPlayers.length;
+		
+		return GameState.turnStartState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: newPlayerIndex
+		});
 	}
 	
 	function transferOwnership(state, id, price) {

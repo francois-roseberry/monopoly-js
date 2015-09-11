@@ -109,6 +109,12 @@
 			assertCurrentPlayerIsTheFirstOne(task.gameState(), done);
 		});
 		
+		it('when only one player remains, game is over', function (done) {
+			killAllPlayersButOne(task);
+			
+			assertGameIsOver(task.gameState(), done);
+		});
+		
 		function getSecondPlayer(gameState) {
 			var player;
 			gameState.take(1)
@@ -168,6 +174,12 @@
 			}
 		}
 		
+		function killAllPlayersButOne(task) {
+			for (var i = 0; i < testData.playersConfiguration().length - 1; i++) {
+				task.handleChoicesTask().makeChoice(Choices.goBankrupt());
+			}
+		}
+		
 		function switchToLastPlayerTurn(task) {
 			for (var i = 0; i < testData.playersConfiguration().length - 1; i++) {
 				task.handleChoicesTask().makeChoice(Choices.finishTurn());
@@ -208,6 +220,14 @@
 				});
 				expect(isPresent).to.be(false);
 			}, done, done);
+		}
+		
+		function assertGameIsOver(gameState, done) {
+			gameState.take(1)
+				.map(onlyChoices)
+				.subscribe(function (choices) {
+					expect(choices.length).to.eql(0);
+				}, done, done);
 		}
 	});
 }());
