@@ -18,7 +18,7 @@
 		computerPlayersBox.append('span').text(i18n.COMPUTER_PLAYERS_LABEL + ' : ');
 		computerPlayersBox.append('input').classed('computer-players', true);
 		var spinner = $('.computer-players');
-		spinner.spinner({ min: 1, max: 7 });
+		spinner.spinner({ min: 2, max: 7 });
 		configureGameTask.players().take(1).subscribe(function (players) {
 			spinner.spinner('value', players.length - 1);
 			spinner.on('spinchange', function (event) {

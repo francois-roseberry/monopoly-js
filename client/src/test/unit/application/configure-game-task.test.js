@@ -10,10 +10,11 @@
 			task = ConfigureGameTask.start();
 		});
 		
-		it('at start, has 1 computer player', function (done) {
+		it('at start, has 2 computer players', function (done) {
 			task.players().take(1).subscribe(function (players) {
 				expect(players).to.eql([
 					{ type: 'human' },
+					{ type: 'computer' },
 					{ type: 'computer' }
 				]);
 			}, done, done);
