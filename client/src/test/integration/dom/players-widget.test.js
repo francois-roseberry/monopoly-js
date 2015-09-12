@@ -40,6 +40,20 @@
 			domContext.assertElementCount('.player-properties', testData.playersConfiguration().length);
 		});
 		
+		it('updates the player money when it changes', function () {
+			var playerId = firstPlayerId(task.gameState());
+			
+			domContext.assertSelectionContainsAttributeValues(
+				'.player-panel[data-ui=' + playerId + '] .player-money', 'data-ui', [(1500).toString()]);
+				
+			var propertyId = 'rr-reading';
+			var price = 100;
+			task.handleChoicesTask().makeChoice(Choices.buyProperty(propertyId, '', price));
+			
+			domContext.assertSelectionContainsAttributeValues(
+				'.player-panel[data-ui=' + playerId + '] .player-money', 'data-ui', [(1500 - price).toString()]);
+		});
+		
 		it('renders a property for each one the player owns', function () {
 			domContext.assertNothingOf('.player-property');
 			

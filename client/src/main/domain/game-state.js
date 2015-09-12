@@ -124,6 +124,9 @@
 	};
 	
 	GameState.prototype.propertyById = function (propertyId) {
+		precondition(_.isString(propertyId) && propertyId.length > 0,
+			'Trying to find a property in a game state requires the property id');
+		
 		var match = _.find(this._squares, function (square) {
 			return square.match({
 				'estate': function (id) { return id === propertyId; },

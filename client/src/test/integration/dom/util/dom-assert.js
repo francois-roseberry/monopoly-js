@@ -155,7 +155,8 @@
                 expectedValues.forEach(function (value) {
                     if (!_.contains(foundValues, value)) {
                         throw new Error("No element with selector " + selector +
-                            " has attribute " + attribute + "=" + value);
+                            " has attribute " + attribute + "=" + value +
+							', values found=' + JSON.stringify(foundValues));
                     }
                 });
             },
