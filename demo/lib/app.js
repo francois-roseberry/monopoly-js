@@ -237,7 +237,7 @@
 		return transforms[rowIndex];
 	}
 }());
-},{"./contract":6,"./group-colors":14,"./i18n":18,"./symbols":28,"./text-wrapper":29}],2:[function(require,module,exports){
+},{"./contract":6,"./group-colors":14,"./i18n":18,"./symbols":29,"./text-wrapper":30}],2:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -407,6 +407,7 @@
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
 	
 	exports.rollDice = function () {
 		return {
@@ -429,6 +430,10 @@
 	};
 	
 	exports.buyProperty = function (id, name, price) {
+		precondition(_.isString(id), 'Buy property choice requires a property id');
+		precondition(_.isString(name), 'Buy property choice requires a property name');
+		precondition(_.isNumber(price) && price > 0, 'Buy property choice requires a price greater than 0');
+		
 		return {
 			id: 'buy-property',
 			name: i18n.CHOICE_BUY_PROPERTY.replace('{property}', name).replace('{price}', i18n.formatPrice(price)),
@@ -437,8 +442,32 @@
 			}
 		};
 	};
+	
+	exports.payRent = function (rent, toPlayerId, toPlayerName) {
+		precondition(_.isNumber(rent) && rent > 0, 'Pay rent choice requires a rent greater than 0');
+		precondition(_.isString(toPlayerId), 'Pay rent choice requires the id of the player to pay to');
+		precondition(_.isString(toPlayerName), 'Pay rent choice requires the name of the player to pay to');
+		
+		return {
+			id: 'pay-rent',
+			name: i18n.CHOICE_PAY_RENT.replace('{rent}', i18n.formatPrice(rent)).replace('{toPlayer}', toPlayerName),
+			match: function (visitor) {
+				return visitor['pay-rent'](rent, toPlayerId);
+			}
+		};
+	};
+	
+	exports.goBankrupt = function () {
+		return {
+			id: 'go-bankrupt',
+			name: i18n.CHOICE_GO_BANKRUPT,
+			match: function (visitor) {
+				return visitor['go-bankrupt']();
+			}
+		};
+	};
 }());
-},{"./i18n":18}],5:[function(require,module,exports){
+},{"./contract":6,"./i18n":18}],5:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -449,19 +478,66 @@
 	};
 	
 	function ConfigureGameTask() {
+		this._availablePlayerTypes = ['human', 'computer'];
 		this._completed = new Rx.AsyncSubject();
-		this._players = new Rx.BehaviorSubject(players(1));
+		this._playerSlots = new Rx.BehaviorSubject([
+			{ type: this._availablePlayerTypes[0] },
+			{ type: this._availablePlayerTypes[1] },
+			{ type: this._availablePlayerTypes[1] }
+		]);
+		this._canAddPlayerSlot = new Rx.BehaviorSubject(true);
+		this._configurationValid = new Rx.BehaviorSubject(true);
 	}
 	
-	ConfigureGameTask.prototype.players = function () {
-		return this._players.asObservable();
+	ConfigureGameTask.prototype.availablePlayerTypes = function () {
+		return this._availablePlayerTypes.slice();
 	};
 	
-	ConfigureGameTask.prototype.setComputers = function (count) {
-		precondition(_.isNumber(count) && count > 0 && count < 8,
-			'The number of computer players must be between 1 and 7');
+	ConfigureGameTask.prototype.playerSlots = function () {
+		return this._playerSlots.asObservable();
+	};
+	
+	ConfigureGameTask.prototype.configurationValid = function () {
+		return this._configurationValid.asObservable();
+	};
+	
+	ConfigureGameTask.prototype.addPlayerSlot = function (type) {
+		precondition(_.contains(this._availablePlayerTypes, type), 'Player type [' + type + '] is not authorized');
+		
+		var playerSlots = this._playerSlots;
+		var canAddPlayerSlot = this._canAddPlayerSlot;
+		var configurationValid = this._configurationValid;
+		this._playerSlots.take(1).subscribe(function (slots) {
+			slots.push({ type: type });
+			playerSlots.onNext(slots);
+			if (slots.length === 8) {
+				canAddPlayerSlot.onNext(false);
+			}
+			if (slots.length > 2) {
+				configurationValid.onNext(true);
+			}
+		});
+	};
+	
+	ConfigureGameTask.prototype.removePlayerSlot = function () {
+		var playerSlots = this._playerSlots;
+		var canAddPlayerSlot = this._canAddPlayerSlot;
+		var configurationValid = this._configurationValid;
+		this._playerSlots.take(1).subscribe(function (slots) {
+			slots.pop();
+			playerSlots.onNext(slots);
+			if (slots.length < 8) {
+				canAddPlayerSlot.onNext(true);
+			}
 			
-		this._players.onNext(players(count));
+			if (slots.length < 3) {
+				configurationValid.onNext(false);
+			}
+		});
+	};
+	
+	ConfigureGameTask.prototype.canAddPlayerSlot = function () {
+		return this._canAddPlayerSlot.asObservable();
 	};
 	
 	ConfigureGameTask.prototype.startGame = function () {
@@ -472,14 +548,6 @@
 	ConfigureGameTask.prototype.completed = function () {
 		return this._completed.asObservable();
 	};
-	
-	function players(computers) {
-		var allPlayers = [{ type: 'human' }];
-		for (var i = 0; i < computers; i++) {
-			allPlayers.push({ type: 'computer' });
-		}
-		return allPlayers;
-	}
 }());
 },{"./contract":6}],6:[function(require,module,exports){
 (function() {
@@ -661,6 +729,8 @@
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
+	var Popup = require('./popup');
+	
 	exports.render = function (container, configureGameTask) {
 		precondition(container, 'Game configuration widget requires container to render into');
 		precondition(configureGameTask, 'Game configuration widget requires a ConfigureGameTask');
@@ -671,33 +741,171 @@
 			
 		panel.append('h1').text(i18n.CONFIGURE_GAME_TITLE);
 		
-		var computerPlayersBox = panel.append('div');
-		computerPlayersBox.append('span').text(i18n.COMPUTER_PLAYERS_LABEL + ' : ');
-		computerPlayersBox.append('input').classed('computer-players', true);
-		var spinner = $('.computer-players');
-		spinner.spinner({ min: 1, max: 7 });
-		configureGameTask.players().take(1).subscribe(function (players) {
-			spinner.spinner('value', players.length - 1);
-			spinner.on('spinchange', function (event) {
-				configureGameTask.setComputers(spinner.spinner('value'));
-			});
-		});
+		var slotsContainer = panel.append('div').classed('player-slots', true);
 		
-		panel.append('button')
+		var activeSlotsContainer = slotsContainer.append('div')
+			.classed('active-player-slots', true);
+		
+		var emptyBlock = slotsContainer.append('div')
+			.classed({
+				'player-slot': true,
+				'empty-slot': true
+			});
+			
+		var emptyBlockButton = emptyBlock.append('button')
+			.classed('empty-slot-btn', true)
+			.text(i18n.BUTTON_ADD_PLAYER);
+			
+		emptyBlockButton
+			.on('click', function () {
+				var positionning = firstPlayerTypeOverEmptyBlock(emptyBlockButton, configureGameTask);
+				var popup = Popup.render($(document.body), positionning);
+
+				renderPlayerTypesList(popup, configureGameTask);
+			});
+			
+		configureGameTask.canAddPlayerSlot()
+			.takeUntil(configureGameTask.completed())
+			.subscribe(function (canAdd) {
+				emptyBlock.style('display', (canAdd ? null : 'none'));
+			});
+		
+		
+		configureGameTask.playerSlots()
+			.takeUntil(configureGameTask.completed())
+			.subscribe(function (slots) {
+				var slotsSelection = activeSlotsContainer
+					.selectAll('.player-slot')
+					.data(slots);
+					
+				createNewSlots(slotsSelection, configureGameTask);
+				updateSlots(slotsSelection);
+				removeUnneededSlots(slotsSelection);
+			});
+		
+		var startButton = panel.append('button')
 			.classed('btn-start-game', true)
 			.text(i18n.BUTTON_START_GAME)
 			.on('click', function () {
 				configureGameTask.startGame();
 			});
+			
+		configureGameTask.configurationValid()
+			.takeUntil(configureGameTask.completed())
+			.subscribe(function (valid) {
+				startButton.attr('disabled', (valid ? null : 'disabled'));
+			});
 	};
+	
+	function firstPlayerTypeOverEmptyBlock(emptyBlockButton, configureGameTask) {
+        var buttonRectangle = emptyBlockButton.node().getBoundingClientRect();
+
+        var availableTypes = configureGameTask.availablePlayerTypes();
+        var totalChoiceHeight = totalPlayerTypesHeight(availableTypes);
+        var popupHeaderHeight = 60;
+
+        return {
+            top: String(buttonRectangle.top - 60) + "px",
+            left: String(buttonRectangle.left + 25) + "px",
+            width: "250px",
+            height: String(totalChoiceHeight + popupHeaderHeight) + "px"
+        };
+    }
+	
+	function totalPlayerTypesHeight(types) {
+        var lineHeight = 32;
+        var maxCharacterPerLines = 22;
+
+        return types.map(function (type) {
+            var lineCount = Math.ceil(type.length / maxCharacterPerLines);
+            return lineCount * lineHeight;
+        }).reduce(function (previous, current) {
+            return previous + current;
+        }, 0);
+    }
+	
+	function renderPlayerTypesList(popup, configureGameTask) {
+        var allTypes = configureGameTask.availablePlayerTypes();
+
+        var typeItems = d3.select(popup.contentContainer()[0])
+            .append("ul")
+            .attr('data-ui', 'available-types')
+            .classed('choice-list', true)
+            .selectAll('li')
+            .data(allTypes);
+
+        var typeButtons = typeItems.enter()
+            .append('li')
+            .append('button')
+            .classed('choice-btn', true)
+            .attr({
+                'data-ui': 'available-type-choice',
+                'data-id': function (type) {
+                    return type;
+                }
+            })
+            .on('click', function (type) {
+                configureGameTask.addPlayerSlot(type);
+                popup.close();
+            });
+
+        typeButtons.append('span')
+            .classed('choice-label', true)
+            .text(function (type) {
+                return type === 'human' ? i18n.PLAYER_TYPE_HUMAN : i18n.PLAYER_TYPE_COMPUTER;
+            });
+    }
+	
+	function createNewSlots(selection, configureGameTask) {
+		var newSlot = selection.enter()
+			.append('div')
+			.classed('player-slot', true);
+			
+		newSlot.append('div')
+			.classed('player-type-label', true);
+			
+		newSlot.append('div')
+			.classed('remove-player-slot-btn', true)
+			.on('click', function () {
+				configureGameTask.removePlayerSlot();
+			})
+			.append('span')
+			.classed({
+				'glyphicon': true,
+				'glyphicon-minus-sign': true
+			});
+	}
+	
+	function updateSlots(selection) {
+		selection.select('.player-type-label')
+			.text(function (slot) {
+				return (slot.type === 'human' ? i18n.PLAYER_TYPE_HUMAN : i18n.PLAYER_TYPE_COMPUTER);
+			});
+	}
+	
+	function removeUnneededSlots(selection) {
+		selection.exit().remove();
+	}
 }());
-},{"./contract":6,"./i18n":18}],11:[function(require,module,exports){
+},{"./contract":6,"./i18n":18,"./popup":27}],11:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var Choices = require('./choices');
 	
 	var precondition = require('./contract').precondition;
+	
+	exports.gameFinishedState = function (squares, winner) {
+		precondition(_.isArray(squares) && squares.length === 40,
+			'GameFinishedState requires an array of 40 squares');
+		precondition(winner, 'GameFinishedState requires a winner');
+		
+		return new GameState({
+			squares: squares,
+			players: [winner],
+			currentPlayerIndex: 0
+		}, []);
+	};
 	
 	exports.turnStartState = function (info) {
 		validateInfo(info);
@@ -711,49 +919,58 @@
 		return [Choices.rollDice()];
 	}
 	
-	exports.turnEndState = function (info) {
+	exports.turnEndState = function (info, paid) {
 		validateInfo(info);
 			
-		var choices = turnEndChoices(info);
+		var choices = turnEndChoices(info, paid || false);
 		
 		return new GameState(info, choices);
 	};
 	
-	function turnEndChoices(info) {
+	function turnEndChoices(info, paid) {
 		var currentPlayer = info.players[info.currentPlayerIndex];
 		var currentSquare = info.squares[currentPlayer.position()];
-		var choices = choicesForSquare(currentSquare, info.players, currentPlayer);
-		
-		choices.push(Choices.finishTurn());
+		var choices = choicesForSquare(currentSquare, info.players, currentPlayer, paid);
 			
 		return choices;
 	}
 	
-	function choicesForSquare(square, players, currentPlayer) {
+	function choicesForSquare(square, players, currentPlayer, paid) {
 		return square.match({
-			'estate': choicesForProperty(players, currentPlayer),
-			'railroad': choicesForProperty(players, currentPlayer),
-			'company': choicesForProperty(players, currentPlayer),
-			_: noChoices
+			'estate': choicesForProperty(players, currentPlayer, paid),
+			'railroad': choicesForProperty(players, currentPlayer, paid),
+			'company': choicesForProperty(players, currentPlayer, paid),
+			_: onlyFinishTurn
 		});
 	}
 	
-	function noChoices() {
-		return [];
+	function onlyFinishTurn() {
+		return [Choices.finishTurn()];
 	}
 	
-	function choicesForProperty(players, currentPlayer) {
+	function choicesForProperty(players, currentPlayer, paid) {
 		return function (id, name, price) {
-			if (!isOwned(players, id) && currentPlayer.money() > price) {
-				return [Choices.buyProperty(id, name, price)];
+			var owner = getOwner(players, id);
+			
+			if (!paid && owner && owner.id() !== currentPlayer.id()) {
+				var rent = 25;
+				if (currentPlayer.money() <= rent) {
+					return [Choices.goBankrupt()];
+				}
+				
+				return [Choices.payRent(rent, owner.id(), owner.name())];
 			}
 			
-			return [];
+			if (!owner && currentPlayer.money() > price) {
+				return [Choices.buyProperty(id, name, price), Choices.finishTurn()];
+			}
+			
+			return [Choices.finishTurn()];
 		};
 	}
 	
-	function isOwned(players, propertyId) {
-		return _.some(players, function (player) {
+	function getOwner(players, propertyId) {
+		return _.find(players, function (player) {
 			return _.some(player.properties(), function (property) {
 				return property === propertyId;
 			});
@@ -797,6 +1014,9 @@
 	};
 	
 	GameState.prototype.propertyById = function (propertyId) {
+		precondition(_.isString(propertyId) && propertyId.length > 0,
+			'Trying to find a property in a game state requires the property id');
+		
 		var match = _.find(this._squares, function (square) {
 			return square.match({
 				'estate': function (id) { return id === propertyId; },
@@ -833,8 +1053,8 @@
 	function configuringStatus(statusChanged) {
 		var task = ConfigureGameTask.start();
 		task.completed()
-			.withLatestFrom(task.players(), function (_, players) {
-				return players;
+			.withLatestFrom(task.playerSlots(), function (_, slots) {
+				return slots;
 			})
 			.subscribe(function (players) {
 				startGame(players, statusChanged);
@@ -939,6 +1159,9 @@
 		var task = new HandleChoicesTask(humanChoices);
 		
 		choicesForPlayerType(playGameTask, 'computer')
+			.filter(function (choices) {
+				return choices.length > 0;
+			})
 			.map(computerPlayer)
 			.subscribe(applyChoice(task));
 			
@@ -991,21 +1214,24 @@
 	"use strict";
 	
 	exports.CONFIGURE_GAME_TITLE = 'Monopoly - game configuration';
-	exports.COMPUTER_PLAYERS_LABEL = 'Computer players';
 	
 	// Buttons
 	exports.BUTTON_NEW_GAME = 'New game';
 	exports.BUTTON_START_GAME = 'Start game';
+	exports.BUTTON_ADD_PLAYER = 'Click here to add a player';
 	
 	// Choices
 	exports.CHOICE_ROLL_DICE = 'Roll the dice';
 	exports.CHOICE_FINISH_TURN = 'Finish turn';
 	exports.CHOICE_BUY_PROPERTY = 'Buy {property} for {price}';
+	exports.CHOICE_PAY_RENT = 'Pay {rent} to {toPlayer}';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
 	exports.LOG_DOUBLE_DICE_ROLL = '{player} rolled a double of {dice}';
 	exports.LOG_PROPERTY_BOUGHT = '{player} bought {property}';
+	exports.LOG_RENT_PAID = '{fromPlayer} paid {amount} to {toPlayer}';
+	exports.CHOICE_GO_BANKRUPT = 'Go bankrupt';
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -1047,6 +1273,10 @@
 	// Player name
 	exports.DEFAULT_PLAYER_NAME = 'Player {index}';
 	
+	// Player types
+	exports.PLAYER_TYPE_HUMAN = 'Human';
+	exports.PLAYER_TYPE_COMPUTER = 'Computer';
+	
 	// Price formatting
 	exports.PRICE_STRING = 'PRICE {price}';
 	exports.formatPrice = function (price) {
@@ -1058,21 +1288,24 @@
 	"use strict";
 	
 	exports.CONFIGURE_GAME_TITLE = 'Monopoly - configuration de partie';
-	exports.COMPUTER_PLAYERS_LABEL = 'Joueurs IA';
 	
 	// Buttons
 	exports.BUTTON_NEW_GAME = 'Nouvelle partie';
 	exports.BUTTON_START_GAME = 'Commencer la partie';
+	exports.BUTTON_ADD_PLAYER = 'Cliquez ici pour ajouter un joueur';
 	
 	// Choices
 	exports.CHOICE_ROLL_DICE = 'Lancer les dés';
 	exports.CHOICE_FINISH_TURN = 'Terminer le tour';
 	exports.CHOICE_BUY_PROPERTY = 'Acheter {property} pour {price}';
+	exports.CHOICE_PAY_RENT = 'Payer {rent} à {toPlayer}';
+	exports.CHOICE_GO_BANKRUPT = 'Faire faillite';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';
 	exports.LOG_DOUBLE_DICE_ROLL = '{player} a obtenu un doublé de {dice}';
 	exports.LOG_PROPERTY_BOUGHT = '{player} a acheté {property}';
+	exports.LOG_RENT_PAID = '{fromPlayer} a payé {amount} à {toPlayer}';
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -1113,6 +1346,10 @@
 	
 	// Player name
 	exports.DEFAULT_PLAYER_NAME = 'Joueur {index}';
+	
+	// Player types
+	exports.PLAYER_TYPE_HUMAN = 'Humain';
+	exports.PLAYER_TYPE_COMPUTER = 'Ordinateur';
 	
 	// Price formatting
 	exports.PRICE_STRING = 'PRIX {price}';
@@ -1191,6 +1428,12 @@
 			.subscribe(function (info) {
 				messages.onNext(Messages.logPropertyBought(info.player, info.property));
 			});
+			
+		onRentPaid(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (info) {
+				messages.onNext(Messages.logRentPaid(info.amount, info.fromPlayer, info.toPlayer));
+			});
 	}
 	
 	function diceMessage(dice) {
@@ -1225,6 +1468,37 @@
 				return {
 					player: player.name(),
 					property: propertyName
+				};
+			});
+	}
+	
+	function onRentPaid(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+			.filter(function (states) {
+				var fromPlayer = _.find(states.current.players(), function (player, index) {
+					return player.money() < states.previous.players()[index].money();
+				});
+				var toPlayer = _.find(states.current.players(), function (player, index) {
+					return player.money() > states.previous.players()[index].money();
+				});
+				
+				return !!fromPlayer && !!toPlayer;
+			})
+			.map(function (states) {
+				var fromPlayer = _.find(states.current.players(), function (player, index) {
+					return player.money() < states.previous.players()[index].money();
+				});
+				var toPlayer = _.find(states.current.players(), function (player, index) {
+					return player.money() > states.previous.players()[index].money();
+				});
+				
+				var amount = states.previous.players()[states.current.currentPlayerIndex()].money() -
+					states.current.players()[states.current.currentPlayerIndex()].money();
+				
+				return {
+					fromPlayer: fromPlayer.name(),
+					toPlayer: toPlayer.name(),
+					amount: amount
 				};
 			});
 	}
@@ -1303,8 +1577,16 @@
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
 	
 	exports.logDiceRoll = function (player, die1, die2) {
+		precondition(_.isString(player) && player.length > 0,
+			'A log about dice roll requires the name of the player who rolled the dice');
+		precondition(_.isNumber(die1) && die1 >= 1 && die1 <= 6,
+			'A log about dice roll requires a first die between 1 and 6');
+		precondition(_.isNumber(die2) && die2 >= 1 && die2 <= 6,
+			'A log about dice roll requires a first die between 1 and 6');
+		
 		var message = i18n.LOG_DICE_ROLL
 					.replace('{player}', player)
 					.replace('{die1}', die1)
@@ -1314,6 +1596,11 @@
 	};
 	
 	exports.logDoubleDiceRoll = function (player, dice) {
+		precondition(_.isString(player) && player.length > 0,
+			'A log about double dice roll requires the name of the player who rolled the dice');
+		precondition(_.isNumber(dice) && dice >= 1 && dice <= 6,
+			'A log about dice roll requires a first die between 1 and 6');
+		
 		var message = i18n.LOG_DOUBLE_DICE_ROLL
 						.replace('{player}', player)
 						.replace('{dice}', dice);
@@ -1322,11 +1609,32 @@
 	};
 	
 	exports.logPropertyBought = function (player, property) {
+		precondition(_.isString(player) && player.length > 0,
+			'A log about property bought requires the name of the player who bought');
+		precondition(_.isString(property) && property.length > 0,
+			'A log about property bought requires the name of the property that was bought');
+		
 		var message = i18n.LOG_PROPERTY_BOUGHT
 						.replace('{player}', player)
 						.replace('{property}', property);
 						
 		return new Log('property-bought', message);
+	};
+	
+	exports.logRentPaid = function (amount, fromPlayer, toPlayer) {
+		precondition(_.isNumber(amount) && amount > 0,
+			'A log about rent paid requires an amount greater than 0');
+		precondition(_.isString(fromPlayer) && fromPlayer.length > 0,
+			'A log about rent paid requires the name of the player who paid');
+		precondition(_.isString(toPlayer) && toPlayer.length > 0,
+			'A log about rent paid requires the name of the player who received the payment');
+		
+		var message = i18n.LOG_RENT_PAID
+						.replace('{amount}', i18n.formatPrice(amount))
+						.replace('{fromPlayer}', fromPlayer)
+						.replace('{toPlayer}', toPlayer);
+		
+		return new Log('rent-paid', message);
 	};
 	
 	exports.simpleLog = function () {
@@ -1346,7 +1654,7 @@
 		return this._message;
 	};
 }());
-},{"./i18n":18}],22:[function(require,module,exports){
+},{"./contract":6,"./i18n":18}],22:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1482,7 +1790,9 @@
 			return choice.match({
 				'roll-dice': rollDice(self, state),
 				'finish-turn': finishTurn(state),
-				'buy-property': buyProperty(state)
+				'buy-property': buyProperty(state),
+				'pay-rent': payRent(state),
+				'go-bankrupt': goBankrupt(state)
 			});
 		};
 	}
@@ -1512,6 +1822,56 @@
 		return function (id, price) {
 			return Rx.Observable.return(transferOwnership(state, id, price));
 		};
+	}
+	
+	function payRent(state) {
+		return function (rent, toPlayerId) {
+			var newPlayers = _.map(state.players(), function (player, index) {
+				if (index === state.currentPlayerIndex()) {
+					return player.pay(rent);
+				}
+				
+				if (player.id() === toPlayerId) {
+					return player.earn(rent);
+				}
+				
+				return player;
+			});
+			
+			var newState = GameState.turnEndState({
+				squares: state.squares(),
+				players: newPlayers,
+				currentPlayerIndex: state.currentPlayerIndex()
+			}, true);
+			
+			return Rx.Observable.return(newState);
+		};
+	}
+	
+	function goBankrupt(state) {
+		return function () {
+			var newState = goBankruptNextState(state);
+			
+			return Rx.Observable.return(newState);
+		};
+	}
+	
+	function goBankruptNextState(state) {
+		var newPlayers = _.filter(state.players(), function (player, index) {
+			return index !== state.currentPlayerIndex();
+		});
+		
+		if (newPlayers.length === 1) {
+			return GameState.gameFinishedState(state.squares(), newPlayers[0]);
+		}
+		
+		var newPlayerIndex = state.currentPlayerIndex() % newPlayers.length;
+		
+		return GameState.turnStartState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: newPlayerIndex
+		});
 	}
 	
 	function transferOwnership(state, id, price) {
@@ -1554,7 +1914,7 @@
 		});
 	}
 }());
-},{"./contract":6,"./game-state":11,"./handle-choices-task":15,"./log-game-task":19,"./player":25,"./roll-dice-task":27}],24:[function(require,module,exports){
+},{"./contract":6,"./game-state":11,"./handle-choices-task":15,"./log-game-task":19,"./player":25,"./roll-dice-task":28}],24:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1670,6 +2030,34 @@
 			properties: this.properties().concat([id])
 		});
 	};
+	
+	Player.prototype.pay = function (amount) {
+		precondition(_.isNumber(amount) && amount > 0,
+			'Player requires an amount to pay, that is greater than 0');
+			
+		precondition(this.money() > amount, 'Player does not have enough money to pay ' + amount);
+		
+		return playerWithAdditionalMoney(this, -amount);
+	};
+	
+	Player.prototype.earn = function (amount) {
+		precondition(_.isNumber(amount) && amount > 0,
+			'Player requires an amount to earn, that is greater than 0');
+		
+		return playerWithAdditionalMoney(this, amount);
+	};
+	
+	function playerWithAdditionalMoney(player, amount) {
+		return newPlayer({
+			id: player.id(),
+			name: player.name(),
+			money: player.money() + amount,
+			position: player.position(),
+			color: player.color(),
+			type: player.type(),
+			properties: player.properties()
+		});
+	}
 }());
 },{"./contract":6,"./i18n":18,"./player-colors":24}],26:[function(require,module,exports){
 (function() {
@@ -1694,10 +2082,13 @@
 	function renderPlayerPanels(container) {
 		return function (state) {
 			var panelSelection = container.selectAll('.player-panel')
-				.data(state.players());
+				.data(state.players(), function (player) {
+					return player.id();
+				});
 				
 			createPlayerPanels(panelSelection);
 			updatePlayerPanels(panelSelection, state);
+			removeUnneededPlayerPanels(panelSelection);
 		};
 	}
 	
@@ -1728,6 +2119,10 @@
 			.classed('player-properties', true);
 	}
 	
+	function removeUnneededPlayerPanels(selection) {
+		selection.exit().remove();
+	}
+	
 	function createPlayerTokens(panels) {
 		panels
 			.append('svg')
@@ -1755,6 +2150,9 @@
 				var previousMoney = element.attr('data-ui');
 				if (previousMoney > player.money()) {
 					element.style('color', 'red');
+					element.transition().duration(700).style('color', 'black');
+				} else if (previousMoney < player.money()) {
+					element.style('color', 'forestgreen');
 					element.transition().duration(700).style('color', 'black');
 				}
 				return player.money();
@@ -1821,6 +2219,94 @@
 	}
 }());
 },{"./contract":6,"./group-colors":14,"./i18n":18}],27:[function(require,module,exports){
+(function () {
+    'use strict';
+
+    var precondition = require('./contract').precondition;
+
+    exports.render = function (container, positioning) {
+        precondition(container, "A popup require a positionned container to render into");
+        // Example : top + height + left + width, OR top + bottom + left + width, and so forth
+        precondition(isFullyPositioned(positioning), "The popup must be fully positioned vertically and horizontally");
+
+        var htmlElements = renderDom(container, positioning);
+        var closedSubject = bindEvents(htmlElements);
+
+        return externalInterface(htmlElements, closedSubject);
+    };
+
+    function isFullyPositioned(positioning) {
+        var cssAttributes = _.keys(positioning);
+        var heightAttributes = ["top", "bottom", "height"];
+        var widthAttributes = ["left", "width", "right"];
+
+        return cssAttributes.length === 4 &&
+            _.intersection(cssAttributes, heightAttributes).length === 2 &&
+            _.intersection(cssAttributes, widthAttributes).length === 2;
+    }
+
+    function renderDom(container, positioning) {
+        var popupElement = d3.select(container[0])
+            .append('div')
+            .classed('popup', true)
+            // The CSS classes are not accessible in the test so we set the position in javascript
+            .style('position', 'absolute')
+            .style(positioning);
+
+        var closeButton = popupElement.append('button')
+            .classed('popup-close-btn', true)
+            .attr('data-ui', 'popup-close');
+			
+		closeButton.append('span')
+			.classed({
+				'glyphicon': true,
+				'glyphicon-remove': true
+			});
+
+        var contentContainer = popupElement.append('div')
+            .classed('popup-content', true);
+
+        return {
+            popupElement: popupElement,
+            closeButton: closeButton,
+            contentContainer: contentContainer
+        };
+    }
+
+    function bindEvents(htmlElements) {
+        var closedSubject = new Rx.AsyncSubject();
+
+        htmlElements.closeButton.on('click', function () {
+            closePopup(htmlElements, closedSubject);
+        });
+
+        return closedSubject;
+    }
+
+    function externalInterface(htmlElements, closedSubject) {
+        return {
+            contentContainer: function () {
+                return $(htmlElements.contentContainer[0]);
+            },
+
+            closed: function () {
+                return closedSubject.asObservable();
+            },
+
+            close: function () {
+                closePopup(htmlElements, closedSubject);
+            }
+        };
+    }
+
+    function closePopup(htmlElement, closedSubject) {
+        htmlElement.popupElement.classed('.popup-closing', true);
+        htmlElement.popupElement.remove();
+        closedSubject.onNext(true);
+        closedSubject.onCompleted();
+    }
+}());
+},{"./contract":6}],28:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1855,7 +2341,7 @@
 		return this._diceRolled.asObservable();
 	};
 }());
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1886,7 +2372,7 @@
 			'L 136 10 L 140 18 L 124 18 L 120 13 L 20 13 L 20 20 Z">';
 	};
 }());
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 (function () {
     'use strict';
 
