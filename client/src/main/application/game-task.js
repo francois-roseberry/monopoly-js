@@ -17,8 +17,8 @@
 	function configuringStatus(statusChanged) {
 		var task = ConfigureGameTask.start();
 		task.completed()
-			.withLatestFrom(task.players(), function (_, players) {
-				return players;
+			.withLatestFrom(task.playerSlots(), function (_, slots) {
+				return slots;
 			})
 			.subscribe(function (players) {
 				startGame(players, statusChanged);

@@ -1,26 +1,64 @@
 (function() {
 	"use strict";
 	
-	var precondition = require('./contract').precondition;
-	
 	exports.start = function () {
 		return new ConfigureGameTask();
 	};
 	
 	function ConfigureGameTask() {
 		this._completed = new Rx.AsyncSubject();
-		this._players = new Rx.BehaviorSubject(players(2));
+		this._playerSlots = new Rx.BehaviorSubject([
+			{ type: 'human' },
+			{ type: 'computer' },
+			{ type: 'computer' }
+		]);
+		this._canAddPlayerSlot = new Rx.BehaviorSubject(true);
+		this._configurationValid = new Rx.BehaviorSubject(true);
 	}
 	
-	ConfigureGameTask.prototype.players = function () {
-		return this._players.asObservable();
+	ConfigureGameTask.prototype.playerSlots = function () {
+		return this._playerSlots.asObservable();
 	};
 	
-	ConfigureGameTask.prototype.setComputers = function (count) {
-		precondition(_.isNumber(count) && count > 1 && count < 8,
-			'The number of computer players must be between 2 and 7');
+	ConfigureGameTask.prototype.configurationValid = function () {
+		return this._configurationValid.asObservable();
+	};
+	
+	ConfigureGameTask.prototype.addPlayerSlot = function () {
+		var playerSlots = this._playerSlots;
+		var canAddPlayerSlot = this._canAddPlayerSlot;
+		var configurationValid = this._configurationValid;
+		this._playerSlots.take(1).subscribe(function (slots) {
+			slots.push({ type: 'computer' });
+			playerSlots.onNext(slots);
+			if (slots.length === 8) {
+				canAddPlayerSlot.onNext(false);
+			}
+			if (slots.length > 2) {
+				configurationValid.onNext(true);
+			}
+		});
+	};
+	
+	ConfigureGameTask.prototype.removePlayerSlot = function () {
+		var playerSlots = this._playerSlots;
+		var canAddPlayerSlot = this._canAddPlayerSlot;
+		var configurationValid = this._configurationValid;
+		this._playerSlots.take(1).subscribe(function (slots) {
+			slots.pop();
+			playerSlots.onNext(slots);
+			if (slots.length < 8) {
+				canAddPlayerSlot.onNext(true);
+			}
 			
-		this._players.onNext(players(count));
+			if (slots.length < 3) {
+				configurationValid.onNext(false);
+			}
+		});
+	};
+	
+	ConfigureGameTask.prototype.canAddPlayerSlot = function () {
+		return this._canAddPlayerSlot.asObservable();
 	};
 	
 	ConfigureGameTask.prototype.startGame = function () {
@@ -31,12 +69,4 @@
 	ConfigureGameTask.prototype.completed = function () {
 		return this._completed.asObservable();
 	};
-	
-	function players(computers) {
-		var allPlayers = [{ type: 'human' }];
-		for (var i = 0; i < computers; i++) {
-			allPlayers.push({ type: 'computer' });
-		}
-		return allPlayers;
-	}
 }());

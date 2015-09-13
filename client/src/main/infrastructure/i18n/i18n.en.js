@@ -7,6 +7,7 @@
 	// Buttons
 	exports.BUTTON_NEW_GAME = 'New game';
 	exports.BUTTON_START_GAME = 'Start game';
+	exports.BUTTON_ADD_PLAYER = 'Click here to add a player';
 	
 	// Choices
 	exports.CHOICE_ROLL_DICE = 'Roll the dice';
@@ -60,6 +61,10 @@
 	
 	// Player name
 	exports.DEFAULT_PLAYER_NAME = 'Player {index}';
+	
+	// Player types
+	exports.PLAYER_TYPE_HUMAN = 'Human';
+	exports.PLAYER_TYPE_COMPUTER = 'Computer';
 	
 	// Price formatting
 	exports.PRICE_STRING = 'PRICE {price}';

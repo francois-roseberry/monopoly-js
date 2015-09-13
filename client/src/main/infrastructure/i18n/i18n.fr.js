@@ -7,6 +7,7 @@
 	// Buttons
 	exports.BUTTON_NEW_GAME = 'Nouvelle partie';
 	exports.BUTTON_START_GAME = 'Commencer la partie';
+	exports.BUTTON_ADD_PLAYER = 'Cliquez ici pour ajouter un joueur';
 	
 	// Choices
 	exports.CHOICE_ROLL_DICE = 'Lancer les dés';
@@ -60,6 +61,10 @@
 	
 	// Player name
 	exports.DEFAULT_PLAYER_NAME = 'Joueur {index}';
+	
+	// Player types
+	exports.PLAYER_TYPE_HUMAN = 'Humain';
+	exports.PLAYER_TYPE_COMPUTER = 'Ordinateur';
 	
 	// Price formatting
 	exports.PRICE_STRING = 'PRIX {price}';

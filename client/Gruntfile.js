@@ -22,7 +22,7 @@ module.exports = function(grunt) {
 	
 	// Packaging
 	grunt.registerTask('prepare', ['copy:html', 'copy:flattenSourceAndTest', 'copy:flattenSmokeTest']);
-	grunt.registerTask('copySource', ['copy:jqueryUiImages']);
+	grunt.registerTask('copySource', ['copy:jqueryUiImages', 'copy:lib', 'copy:fonts']);
 	grunt.registerTask('minify', ['cssmin']);
 	grunt.registerTask('package', ['prepare', 'browserify', 'concat', 'copySource', 'minify']);
 	
@@ -57,7 +57,8 @@ module.exports = function(grunt) {
 				src: [
 					'Gruntfile.js',
 					'build/**/*.js',
-					'src/**/*.js'
+					'src/**/*.js',
+					exclude('src/**/i18n.*.js')
 				]
 			}
 		},
@@ -85,6 +86,7 @@ module.exports = function(grunt) {
 					'node_modules/underscore/underscore.js',
 					'node_modules/d3/d3.min.js',
 					'node_modules/rx/dist/rx.all.min.js',
+					'node_modules/bootstrap/dist/bootstrap.min.js',
 					'node_modules/jquery/dist/jquery.min.js',
 					'node_modules/jquery-ui/jquery-ui.js'
 				],
@@ -112,10 +114,32 @@ module.exports = function(grunt) {
 				flatten: true
 			},
 			
+			lib: {
+				expand: true,
+				cwd: 'node_modules',
+				src: [
+					'bootstrap/dist/css/bootstrap.css'
+				],
+				dest: 'target/dist/lib',
+				filter: 'isFile',
+				flatten: true
+			},
+			
 			html: {
 				src: ['src/static/index.html'],
 				dest: 'target/dist/index.html',
 				filter: 'isFile'
+			},
+			
+			fonts: {
+				expand: true,
+				cwd: 'node_modules',
+				src: [
+					'bootstrap/dist/fonts/*.*'
+				],
+				dest: 'target/dist/fonts',
+				filter: 'isFile',
+				flatten: true
 			},
 			
 			jqueryUiImages: {
@@ -151,12 +175,16 @@ module.exports = function(grunt) {
 		clean: ['target/**'],
 	});
 
-  grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-contrib-jshint');
-  grunt.loadNpmTasks('grunt-contrib-csslint');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-mocha-test');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-contrib-concat');
+	grunt.loadNpmTasks('grunt-browserify');
+	grunt.loadNpmTasks('grunt-contrib-jshint');
+	grunt.loadNpmTasks('grunt-contrib-csslint');
+	grunt.loadNpmTasks('grunt-contrib-copy');
+	grunt.loadNpmTasks('grunt-mocha-test');
+	grunt.loadNpmTasks('grunt-contrib-cssmin');
+	grunt.loadNpmTasks('grunt-contrib-clean');
+	grunt.loadNpmTasks('grunt-contrib-concat');
+	  
+	function exclude(filePattern) {
+        return '!' + filePattern;
+    }
 };
