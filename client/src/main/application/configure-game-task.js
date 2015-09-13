@@ -1,20 +1,27 @@
 (function() {
 	"use strict";
 	
+	var precondition = require('./contract').precondition;
+	
 	exports.start = function () {
 		return new ConfigureGameTask();
 	};
 	
 	function ConfigureGameTask() {
+		this._availablePlayerTypes = ['human', 'computer'];
 		this._completed = new Rx.AsyncSubject();
 		this._playerSlots = new Rx.BehaviorSubject([
-			{ type: 'human' },
-			{ type: 'computer' },
-			{ type: 'computer' }
+			{ type: this._availablePlayerTypes[0] },
+			{ type: this._availablePlayerTypes[1] },
+			{ type: this._availablePlayerTypes[1] }
 		]);
 		this._canAddPlayerSlot = new Rx.BehaviorSubject(true);
 		this._configurationValid = new Rx.BehaviorSubject(true);
 	}
+	
+	ConfigureGameTask.prototype.availablePlayerTypes = function () {
+		return this._availablePlayerTypes.slice();
+	};
 	
 	ConfigureGameTask.prototype.playerSlots = function () {
 		return this._playerSlots.asObservable();
@@ -24,12 +31,14 @@
 		return this._configurationValid.asObservable();
 	};
 	
-	ConfigureGameTask.prototype.addPlayerSlot = function () {
+	ConfigureGameTask.prototype.addPlayerSlot = function (type) {
+		precondition(_.contains(this._availablePlayerTypes, type), 'Player type [' + type + '] is not authorized');
+		
 		var playerSlots = this._playerSlots;
 		var canAddPlayerSlot = this._canAddPlayerSlot;
 		var configurationValid = this._configurationValid;
 		this._playerSlots.take(1).subscribe(function (slots) {
-			slots.push({ type: 'computer' });
+			slots.push({ type: type });
 			playerSlots.onNext(slots);
 			if (slots.length === 8) {
 				canAddPlayerSlot.onNext(false);

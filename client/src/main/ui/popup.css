@@ -1,0 +1,41 @@
+.popup {
+    /* positioning is handled by JS code */
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border: 1px solid #777;
+    z-index: 1001; /* Leaflet map controls have z-index of 1000, and the popup needs to be over it */
+    border-radius: 5px;
+    box-shadow: 4px 4px 20px 0 darkgray;
+    animation: fade-in 0.1s;
+}
+
+@keyframes popup-fade-in {
+    from {
+        opacity:0;
+    }
+    to {
+        opacity:1;
+    }
+}
+
+.popup.popup-closing {
+    animation: fade-out 0.1s;
+}
+
+.popup-close-btn {
+    display:block;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+	background-color: transparent;
+	border: none;
+}
+
+.popup-content {
+    position: absolute;
+    top: 40px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 5px 20px;
+}

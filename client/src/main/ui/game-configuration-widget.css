@@ -47,7 +47,7 @@
 	font-style: italic;
 }
 
-.empty-slot-btn.hover {
+.empty-slot-btn:hover {
 	text-decoration: underline;
 }
 
@@ -72,4 +72,24 @@
 
 .player-type-label {
 	padding-right: 25px;
+}
+
+.choice-list {
+    list-style-type: none;
+    padding: 0.5em 0 1em 0;
+}
+
+.choice-btn {
+    display: block;
+    box-sizing: border-box;
+    background-color: transparent;
+    width: 100%;
+    text-align: left;
+    padding: 0.5em;
+    border: 0;
+    margin: 0;
+}
+
+.choice-btn[disabled] {
+    color: #999;
 }

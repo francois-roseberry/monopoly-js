@@ -8,10 +8,15 @@
 	
 	describeInDom('A game configuration widget', function (domContext) {
 		var task;
+		var currentSlots;
 		
 		beforeEach(function () {
 			task = ConfigureGameTask.start();
 			GameConfigurationWidget.render(domContext.rootElement, task);
+			
+			task.playerSlots().subscribe(function (slots) {
+				currentSlots = slots;
+			});
 		});
 		
 		it('is rendered in the given container', function () {
@@ -39,18 +44,53 @@
 			domContext.assertVisible('.player-slot.empty-slot');
 		});
 		
-		it('clicking to add a player sends an event in the underlying task', function (done) {
-			task.playerSlots().skip(1).take(1).subscribe(_.noop, done, done);
+		describe('clicking the empty block', function () {
+			beforeEach(function () {
+				domContext.d3.clickOn('.empty-slot-btn');
+			});
 			
-			domContext.d3.clickOn('.empty-slot-btn');
+			afterEach(function () {
+				domContext.body.remove('.popup');
+			});
+			
+			it('displays a popup with the available player types', function () {
+				domContext.body.assertOneOf('.popup [data-ui=available-types]');
+				
+				_.each(task.availablePlayerTypes(), function (type) {
+                    domContext.body.assertOneOf(popupTypeChoiceFor(type));
+                });
+			});
+			
+			describe('clicking on a type choice in the popup', function () {
+                var type;
+
+                beforeEach(function () {
+                    type = task.availablePlayerTypes()[0];
+
+                    domContext.body.clickOn(popupTypeChoiceFor(type));
+                });
+
+                it('add a player slot with the type', function () {
+					expect(currentSlots.length).to.eql(4);
+					expect(currentSlots[3]).to.eql({ type: type });
+                });
+
+                it('close the popup', function () {
+                    domContext.body.assertNothingOf('.popup');
+                });
+            });
+			
+			function popupTypeChoiceFor(type) {
+                return '.popup [data-ui=available-type-choice][data-id=' + type + ']';
+            }
 		});
 		
 		it('hides the empty slot when cannot add player', function () {
-			domContext.d3.clickOn('.empty-slot-btn');
-			domContext.d3.clickOn('.empty-slot-btn');
-			domContext.d3.clickOn('.empty-slot-btn');
-			domContext.d3.clickOn('.empty-slot-btn');
-			domContext.d3.clickOn('.empty-slot-btn');
+			task.addPlayerSlot('computer');
+			task.addPlayerSlot('computer');
+			task.addPlayerSlot('computer');
+			task.addPlayerSlot('computer');
+			task.addPlayerSlot('computer');
 			
 			domContext.assertHidden('.player-slot.empty-slot');
 		});

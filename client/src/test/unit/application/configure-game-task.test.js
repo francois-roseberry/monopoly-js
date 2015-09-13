@@ -10,6 +10,10 @@
 			task = ConfigureGameTask.start();
 		});
 		
+		it('the available player types are human and computer', function () {
+			expect(task.availablePlayerTypes()).to.eql(['human', 'computer']);
+		});
+		
 		it('at start, creates 3 player slots', function (done) {
 			task.playerSlots().take(1).subscribe(function (slots) {
 				expect(slots).to.eql([
@@ -26,7 +30,7 @@
 				expect(slots[3]).to.eql({ type: 'computer' });
 			}, done, done);
 			
-			task.addPlayerSlot();
+			task.addPlayerSlot('computer');
 		});
 		
 		it('if there are at least 3 players, game configuration is valid', function (done) {
@@ -44,10 +48,10 @@
 		});
 		
 		it('if there are less than 8 players, can add new ones', function (done) {
-			task.addPlayerSlot();
-			task.addPlayerSlot();
-			task.addPlayerSlot();
-			task.addPlayerSlot();
+			task.addPlayerSlot('computer');
+			task.addPlayerSlot('computer');
+			task.addPlayerSlot('computer');
+			task.addPlayerSlot('computer');
 			
 			task.canAddPlayerSlot().take(1).subscribe(function (canAdd) {
 				expect(canAdd).to.be(true);
@@ -55,11 +59,11 @@
 		});
 		
 		it('if there are 8 players, cannot add anymore players', function (done) {
-			task.addPlayerSlot();
-			task.addPlayerSlot();
-			task.addPlayerSlot();
-			task.addPlayerSlot();
-			task.addPlayerSlot();
+			task.addPlayerSlot('computer');
+			task.addPlayerSlot('computer');
+			task.addPlayerSlot('computer');
+			task.addPlayerSlot('computer');
+			task.addPlayerSlot('computer');
 			
 			task.canAddPlayerSlot().take(1).subscribe(function (canAdd) {
 				expect(canAdd).to.be(false);

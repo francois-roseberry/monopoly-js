@@ -4,6 +4,8 @@
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
+	var Popup = require('./popup');
+	
 	exports.render = function (container, configureGameTask) {
 		precondition(container, 'Game configuration widget requires container to render into');
 		precondition(configureGameTask, 'Game configuration widget requires a ConfigureGameTask');
@@ -25,11 +27,16 @@
 				'empty-slot': true
 			});
 			
-		emptyBlock.append('button')
+		var emptyBlockButton = emptyBlock.append('button')
 			.classed('empty-slot-btn', true)
-			.text(i18n.BUTTON_ADD_PLAYER)
+			.text(i18n.BUTTON_ADD_PLAYER);
+			
+		emptyBlockButton
 			.on('click', function () {
-				configureGameTask.addPlayerSlot();
+				var positionning = firstPlayerTypeOverEmptyBlock(emptyBlockButton, configureGameTask);
+				var popup = Popup.render($(document.body), positionning);
+
+				renderPlayerTypesList(popup, configureGameTask);
 			});
 			
 		configureGameTask.canAddPlayerSlot()
@@ -64,6 +71,65 @@
 				startButton.attr('disabled', (valid ? null : 'disabled'));
 			});
 	};
+	
+	function firstPlayerTypeOverEmptyBlock(emptyBlockButton, configureGameTask) {
+        var buttonRectangle = emptyBlockButton.node().getBoundingClientRect();
+
+        var availableTypes = configureGameTask.availablePlayerTypes();
+        var totalChoiceHeight = totalPlayerTypesHeight(availableTypes);
+        var popupHeaderHeight = 60;
+
+        return {
+            top: String(buttonRectangle.top - 60) + "px",
+            left: String(buttonRectangle.left + 25) + "px",
+            width: "250px",
+            height: String(totalChoiceHeight + popupHeaderHeight) + "px"
+        };
+    }
+	
+	function totalPlayerTypesHeight(types) {
+        var lineHeight = 32;
+        var maxCharacterPerLines = 22;
+
+        return types.map(function (type) {
+            var lineCount = Math.ceil(type.length / maxCharacterPerLines);
+            return lineCount * lineHeight;
+        }).reduce(function (previous, current) {
+            return previous + current;
+        }, 0);
+    }
+	
+	function renderPlayerTypesList(popup, configureGameTask) {
+        var allTypes = configureGameTask.availablePlayerTypes();
+
+        var typeItems = d3.select(popup.contentContainer()[0])
+            .append("ul")
+            .attr('data-ui', 'available-types')
+            .classed('choice-list', true)
+            .selectAll('li')
+            .data(allTypes);
+
+        var typeButtons = typeItems.enter()
+            .append('li')
+            .append('button')
+            .classed('choice-btn', true)
+            .attr({
+                'data-ui': 'available-type-choice',
+                'data-id': function (type) {
+                    return type;
+                }
+            })
+            .on('click', function (type) {
+                configureGameTask.addPlayerSlot(type);
+                popup.close();
+            });
+
+        typeButtons.append('span')
+            .classed('choice-label', true)
+            .text(function (type) {
+                return type === 'human' ? i18n.PLAYER_TYPE_HUMAN : i18n.PLAYER_TYPE_COMPUTER;
+            });
+    }
 	
 	function createNewSlots(selection, configureGameTask) {
 		var newSlot = selection.enter()
