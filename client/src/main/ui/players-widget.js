@@ -20,12 +20,13 @@
 	function renderPlayerPanels(container) {
 		return function (state) {
 			var panelSelection = container.selectAll('.player-panel')
-				.data(state.players());
+				.data(state.players(), function (player) {
+					return player.id();
+				});
 				
 			createPlayerPanels(panelSelection);
 			updatePlayerPanels(panelSelection, state);
-			
-			panelSelection.exit().remove();
+			removeUnneededPlayerPanels(panelSelection);
 		};
 	}
 	
@@ -54,6 +55,10 @@
 			
 		panels.append('div')
 			.classed('player-properties', true);
+	}
+	
+	function removeUnneededPlayerPanels(selection) {
+		selection.exit().remove();
 	}
 	
 	function createPlayerTokens(panels) {

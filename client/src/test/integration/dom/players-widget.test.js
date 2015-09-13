@@ -67,9 +67,13 @@
 		});
 		
 		it('when a player is removed from the game, its panel is removed too', function () {
+			var playerId = firstPlayerId(task.gameState());
+			
+			domContext.assertOneOf('.player-panel[data-ui=' + playerId + ']');
+			
 			task.handleChoicesTask().makeChoice(Choices.goBankrupt());
 			
-			domContext.assertElementCount('.player-panel', testData.playersConfiguration().length - 1);
+			domContext.assertNothingOf('.player-panel[data-ui=' + playerId + ']');
 		});
 		
 		function firstPlayerId(gameState) {
