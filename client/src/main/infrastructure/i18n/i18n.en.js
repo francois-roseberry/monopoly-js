@@ -2,7 +2,6 @@
 	"use strict";
 	
 	exports.CONFIGURE_GAME_TITLE = 'Monopoly - game configuration';
-	exports.COMPUTER_PLAYERS_LABEL = 'Computer players';
 	
 	// Buttons
 	exports.BUTTON_NEW_GAME = 'New game';
