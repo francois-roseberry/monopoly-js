@@ -68,7 +68,9 @@
 			container.selectAll('.monopoly-square')
 				.data(state.squares())
 				.each(function (square, index) {
-					renderPlayerTokens(d3.select(this), index, state.players());
+					var graphicalSquare = d3.select(this);
+					graphicalSquare.attr('data-ui', index);
+					renderPlayerTokens(graphicalSquare, index, state.players());
 				});
 			};
 	}
@@ -118,6 +120,9 @@
 			.enter()
 			.append('circle')
 			.classed('player-token', true)
+			.attr('data-ui', function (player) {
+				return player.id();
+			})
 			.attr({
 				cx: function (_, index) {
 					return (SQUARE_WIDTH / 5) * (index % 4 + 1);
