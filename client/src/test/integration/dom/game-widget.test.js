@@ -7,30 +7,63 @@
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
 	describeInDom('A Game widget', function (domContext) {
+		var currentStatus;
 		var task;
 		
 		beforeEach(function () {
 			task = GameTask.start();
 			GameWidget.render(domContext.rootElement, task);
-		});
-		
-		it('renders the game configuration widget in the given container ' +
-			'when its game task send the configuring status', function () {
-				domContext.assertOneOf('.monopoly-game-configuration');
-			});
 			
-		it('renders the monopoly game widget in the given container ' +
-			'when its game task send the playing status', function () {
-				task.statusChanged().take(1).subscribe(function (status) {
-					status.match({
-						'configuring': function (task) {
-							task.startGame();
-						}
-					});
-				});
-				
-				domContext.assertOneOf('.monopoly-game');
-				domContext.assertNothingOf('.monopoly-game-configuration');
+			task.statusChanged().subscribe(function (status) {
+				currentStatus = status;
 			});
+		});
+			
+		it('renders the right game component in the given container', function () {
+			assertGameConfigurationPresent();
+			assertGameAbsent();
+			
+			startGame();
+			
+			assertGamePresent();
+			assertGameConfigurationAbsent();
+			
+			newGame();
+			
+			assertGameConfigurationPresent();
+			assertGameAbsent();
+		});
+			
+		function startGame() {
+			currentStatus.match({
+				'configuring': function (task) {
+					task.startGame();
+				}
+			});
+		}
+		
+		function newGame() {
+			currentStatus.match({
+				'playing': function (task) {
+					task.stop();
+				}
+			});
+		}
+		
+		function assertGamePresent() {
+			domContext.assertOneOf('.monopoly-game');
+		}
+		
+		function assertGameAbsent() {
+			domContext.assertNothingOf('.monopoly-game');
+		}
+		
+		function assertGameConfigurationPresent() {
+			domContext.assertOneOf('.monopoly-game-configuration');
+		}
+		
+		function assertGameConfigurationAbsent() {
+			domContext.assertNothingOf('.monopoly-game-configuration');
+		}
 	});
 }());
