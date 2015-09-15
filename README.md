@@ -3,7 +3,10 @@ Implementation of the Monopoly game in javascript, rendering done with D3
 
 Far from complete, right now players alternate, roll the dice and buy properties. That's it. Not very exciting but at least the main game flow is operational.
 
-## Screenshot (with the french UI)
+## Screenshots (with the french UI)
+
+![Game configuration screenshot]
+(http://francois-roseberry.github.io/monopoly-js/screenshots/game-configuration.png)
 
 ![In-game screenshot]
 (http://francois-roseberry.github.io/monopoly-js/screenshots/in-game.png)
