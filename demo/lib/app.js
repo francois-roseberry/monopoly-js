@@ -69,7 +69,9 @@
 			container.selectAll('.monopoly-square')
 				.data(state.squares())
 				.each(function (square, index) {
-					renderPlayerTokens(d3.select(this), index, state.players());
+					var graphicalSquare = d3.select(this);
+					graphicalSquare.attr('data-ui', index);
+					renderPlayerTokens(graphicalSquare, index, state.players());
 				});
 			};
 	}
@@ -119,6 +121,9 @@
 			.enter()
 			.append('circle')
 			.classed('player-token', true)
+			.attr('data-ui', function (player) {
+				return player.id();
+			})
 			.attr({
 				cx: function (_, index) {
 					return (SQUARE_WIDTH / 5) * (index % 4 + 1);
@@ -1454,12 +1459,15 @@
 	}
 	
 	function onPropertyBought(playGameTask) {
-		return combineWithPrevious(playGameTask.gameState()
-			.distinctUntilChanged(function (state) {
-				return _.reduce(state.players(), function (sum, player) {
-					return player.properties().length + sum;
-				}, 0);
-			}))
+		return combineWithPrevious(playGameTask.gameState())
+			.filter(function (states) {
+				return _.some(states.current.players(), function (player, index) {
+					var currentProperties = player.properties();
+					var previousProperties = states.previous.players()[index].properties();
+					
+					return currentProperties.length > previousProperties.length;
+				});
+			})
 			.map(function (states) {
 				var player = states.previous.players()[states.current.currentPlayerIndex()];
 				var newProperty = findNewProperty(states);	
