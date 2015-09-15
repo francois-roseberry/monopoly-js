@@ -9,11 +9,16 @@
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
 	describeInDom('A Players widget', function (domContext) {
+		var currentState;
 		var task;
 		
 		beforeEach(function () {
 			task = PlayGameTask.start(testData.gameConfiguration());
 			PlayersWidget.render(domContext.rootElement, task.gameState());
+			
+			task.gameState().subscribe(function (state) {
+				currentState = state;
+			});
 		});
 		
 		it('is rendered in the given container', function () {
@@ -21,67 +26,96 @@
 		});
 		
 		it('renders a panel for each player', function () {
-			domContext.assertElementCount('.player-panel', testData.playersConfiguration().length);
+			assertPlayerPanels();
+			eliminateFirstPlayer();
+			assertPlayerPanels();
+			eliminateFirstPlayer();
+			assertPlayerPanels();
 		});
 		
 		it('renders the player tokens', function () {
-			domContext.assertElementCount('.player-panel-token', testData.playersConfiguration().length);
+			assertPlayerTokens();
+			eliminateFirstPlayer();
+			assertPlayerTokens();
 		});
 		
 		it('renders the player names', function () {
-			domContext.assertElementCount('.player-name', testData.playersConfiguration().length);
+			assertPlayerNames();
+			eliminateFirstPlayer();
+			assertPlayerNames();
 		});
 		
 		it('renders the player amounts', function () {
-			domContext.assertElementCount('.player-money', testData.playersConfiguration().length);
+			assertPlayerAmounts();
+			buyPropertyWithFirstPlayer();
+			assertPlayerAmounts();
+			eliminateFirstPlayer();
+			assertPlayerAmounts();
 		});
 		
 		it('renders the player properties', function () {
-			domContext.assertElementCount('.player-properties', testData.playersConfiguration().length);
+			assertPlayerProperties();
+			buyPropertyWithFirstPlayer();
+			assertPlayerProperties();
+			eliminateFirstPlayer();
+			assertPlayerProperties();
 		});
 		
-		it('updates the player money when it changes', function () {
-			var playerId = firstPlayerId(task.gameState());
+		function assertPlayerPanels() {
+			domContext.assertElementCount('.player-panel', currentState.players().length);
 			
-			domContext.assertSelectionContainsAttributeValues(
-				'.player-panel[data-ui=' + playerId + '] .player-money', 'data-ui', [(1500).toString()]);
+			_.each(currentState.players(), function (player) {
+				domContext.assertOneOf('.player-panel[data-ui=' + player.id() + ']');
+			});
+		}
+		
+		function assertPlayerTokens() {
+			domContext.assertElementCount('.player-panel-token', currentState.players().length);
+			
+			_.each(currentState.players(), function (player) {
+				domContext.assertOneOf('.player-panel[data-ui=' + player.id() + '] .player-panel-token');
+			});
+		}
+		
+		function assertPlayerNames() {
+			domContext.assertElementCount('.player-name', currentState.players().length);
+			
+			_.each(currentState.players(), function (player) {
+				domContext.assertText(
+					'.player-panel[data-ui=' + player.id() + '] .player-name', player.name());
+			});
+		}
+		
+		function assertPlayerAmounts() {
+			domContext.assertElementCount('.player-money', currentState.players().length);
+			
+			_.each(currentState.players(), function (player) {
+				domContext.assertSelectionContainsAttributeValues(
+					'.player-panel[data-ui=' + player.id() + '] .player-money', 'data-ui', [player.money().toString()]);
+			});
+		}
+		
+		function assertPlayerProperties() {
+			domContext.assertElementCount('.player-properties', currentState.players().length);
+			
+			_.each(currentState.players(), function (player) {
+				domContext.assertOneOf('.player-panel[data-ui=' + player.id() + '] .player-properties');
 				
+				_.each(player.properties(), function (propertyId) {
+					domContext.assertOneOf(
+						'.player-panel[data-ui=' + player.id() + '] .player-property[data-ui=' + propertyId + ']');
+				});
+			});
+		}
+		
+		function eliminateFirstPlayer() {
+			task.handleChoicesTask().makeChoice(Choices.goBankrupt());
+		}
+		
+		function buyPropertyWithFirstPlayer() {
 			var propertyId = 'rr-reading';
 			var price = 100;
 			task.handleChoicesTask().makeChoice(Choices.buyProperty(propertyId, '', price));
-			
-			domContext.assertSelectionContainsAttributeValues(
-				'.player-panel[data-ui=' + playerId + '] .player-money', 'data-ui', [(1500 - price).toString()]);
-		});
-		
-		it('renders a property for each one the player owns', function () {
-			domContext.assertNothingOf('.player-property');
-			
-			var propertyId = 'rr-reading';
-			var playerId = firstPlayerId(task.gameState());
-			task.handleChoicesTask().makeChoice(Choices.buyProperty(propertyId, '', 100));
-			
-			domContext.assertOneOf('.player-property');
-			domContext.assertOneOf(
-				'.player-panel[data-ui=' + playerId + '] .player-property[data-ui=' + propertyId + ']');
-		});
-		
-		it('when a player is removed from the game, its panel is removed too', function () {
-			var playerId = firstPlayerId(task.gameState());
-			
-			domContext.assertOneOf('.player-panel[data-ui=' + playerId + ']');
-			
-			task.handleChoicesTask().makeChoice(Choices.goBankrupt());
-			
-			domContext.assertNothingOf('.player-panel[data-ui=' + playerId + ']');
-		});
-		
-		function firstPlayerId(gameState) {
-			var playerId;
-			gameState.take(1).subscribe(function (state) {
-				playerId = state.players()[state.currentPlayerIndex()].id();
-			});
-			return playerId;
 		}
 	});
 }());
