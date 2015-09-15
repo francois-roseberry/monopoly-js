@@ -3,6 +3,7 @@
 	
 	var MonopolyGameWidget = require('./monopoly-game-widget');
 	var PlayGameTask = require('./play-game-task');
+	var Choices = require('./choices');
 	
 	var testData = require('./test-data');
 	var describeInDom = require('./dom-fixture').describeInDom;
@@ -43,6 +44,12 @@
 		
 		it('renders the players widget', function () {
 			domContext.assertOneOf('.monopoly-players');
+		});
+		
+		it('renders the dice-widget when the task requires it', function () {
+			task.handleChoicesTask().makeChoice(Choices.rollDice());
+			
+			domContext.assertOneOf('.dice-container');
 		});
 	});
 }());
