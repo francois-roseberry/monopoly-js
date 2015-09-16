@@ -21,7 +21,7 @@
 		it('offers the roll-dice choice', function () {
 			var state = turnStartState();
 			
-			assertChoices(state, [Choices.rollDice().id]);
+			assertChoices(state, [Choices.rollDice()]);
 		});
 	});
 	
@@ -29,37 +29,37 @@
 		it('offers the finish-turn choice', function () {
 			var state = turnEndStateAtStartPosition();
 			
-			assertChoices(state, [Choices.finishTurn().id]);
+			assertChoices(state, [Choices.finishTurn()]);
 		});
 		
 		it('when current player is on an estate, offers to buy it', function () {
 			var state = turnEndStateOnEstate();
 			
-			assertChoices(state, [Choices.buyProperty('med','',1).id, Choices.finishTurn().id]);
+			assertChoices(state, [Choices.buyProperty('med','',60), Choices.finishTurn()]);
 		});
 		
 		it('when current player is on a railroad, offers to buy it', function () {
 			var state = turnEndStateOnRailroad();
 			
-			assertChoices(state, [Choices.buyProperty('rr-reading','',1).id, Choices.finishTurn().id]);
+			assertChoices(state, [Choices.buyProperty('rr-reading','',200), Choices.finishTurn()]);
 		});
 		
 		it('when current player is on a company, offers to buy it', function () {
 			var state = turnEndStateOnCompany();
 			
-			assertChoices(state, [Choices.buyProperty('electric','',1).id, Choices.finishTurn().id]);
+			assertChoices(state, [Choices.buyProperty('electric','',150), Choices.finishTurn()]);
 		});
 		
 		it('when current player is on a property that is owned, does not offer to buy it', function () {
 			var state = turnEndStateOnOwnedEstate();
 			
-			assertChoices(state, [Choices.finishTurn().id]);
+			assertChoices(state, [Choices.finishTurn()]);
 		});
 		
 		it('when current player is on a property that is too expensive, does not offer to buy it', function () {
 			var state = turnEndStateBrokeOnEstate();
 			
-			assertChoices(state, [Choices.finishTurn().id]);
+			assertChoices(state, [Choices.finishTurn()]);
 		});
 		
 		describe('when current player is on property owned by other player, offers to pay the rent', function () {
@@ -67,21 +67,21 @@
 				var state = turnEndStateOnEstateOwnedByOther();
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
+				assertChoices(state, [Choices.payRent(25, secondPlayer.id(), secondPlayer.name())]);
 			});
 			
 			it('if that property is a railroad', function () {
 				var state = turnEndStateOnRailroadOwnedByOther();
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
+				assertChoices(state, [Choices.payRent(25, secondPlayer.id(), secondPlayer.name())]);
 			});
 			
 			it('if that property is a company', function () {
 				var state = turnEndStateOnCompanyOwnedByOther();
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(20, secondPlayer.id(), secondPlayer.name()).id]);
+				assertChoices(state, [Choices.payRent(25, secondPlayer.id(), secondPlayer.name())]);
 			});
 		});
 		
@@ -90,19 +90,19 @@
 			it('if that property is an estate', function () {
 				var state = turnEndStateOnEstateOwnedByOtherButAlreadyPaid();
 				
-				assertChoices(state, [Choices.finishTurn().id]);
+				assertChoices(state, [Choices.finishTurn()]);
 			});
 			
 			it('if that property is a railroad', function () {
 				var state = turnEndStateOnRailroadOwnedByOtherButAlreadyPaid();
 				
-				assertChoices(state, [Choices.finishTurn().id]);
+				assertChoices(state, [Choices.finishTurn()]);
 			});
 			
 			it('if that property is a company', function () {
 				var state = turnEndStateOnCompanyOwnedByOtherButAlreadyPaid();
 				
-				assertChoices(state, [Choices.finishTurn().id]);
+				assertChoices(state, [Choices.finishTurn()]);
 			});
 		});
 		
@@ -111,25 +111,28 @@
 			it('if that property is an estate', function () {
 				var state = turnEndStateOnEstateOwnedByOtherButCannotPayRent();
 				
-				assertChoices(state, [Choices.goBankrupt().id]);
+				assertChoices(state, [Choices.goBankrupt()]);
 			});
 			
 			it('if that property is a railroad', function () {
 				var state = turnEndStateOnRailroadOwnedByOtherButCannotPayRent();
 				
-				assertChoices(state, [Choices.goBankrupt().id]);
+				assertChoices(state, [Choices.goBankrupt()]);
 			});
 			
 			it('if that property is a company', function () {
 				var state = turnEndStateOnCompanyOwnedByOtherButCannotPayRent();
 				
-				assertChoices(state, [Choices.goBankrupt().id]);
+				assertChoices(state, [Choices.goBankrupt()]);
 			});
 		});
 	});
 	
-	function assertChoices(state, choiceIds) {
-		expect(toChoiceIds(state.choices())).to.eql(choiceIds);
+	function assertChoices(state, choices) {
+		_.each(state.choices(), function (choice, index) {
+			expect(choice.equals(choices[index])).to.be(true);
+		});
+		//expect(toChoiceIds(state.choices())).to.eql(choiceIds);
 	}
 	
 	function turnEndStateAtStartPosition() {
@@ -255,11 +258,11 @@
 		return [players[0].move([0, 12], 40).pay(1499), players[1].buyProperty('electric', 1), players[2]];
 	}
 	
-	function toChoiceIds(choices) {
+	/*function toChoiceIds(choices) {
 		return _.map(choices, function (choice) {
 			return choice.id;
 		});
-	}
+	}*/
 	
 	function turnStartState() {
 		return GameState.turnStartState({

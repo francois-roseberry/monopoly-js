@@ -8,6 +8,13 @@
 		return {
 			id: 'roll-dice',
 			name: i18n.CHOICE_ROLL_DICE,
+			equals: function (other) {
+				if (!_.isString(other.id) || !_.isFunction(other.match)) {
+					return false;
+				}
+				
+				return this.id === other.id;
+			},
 			match: function (visitor) {
 				return visitor['roll-dice']();
 			}
@@ -18,22 +25,44 @@
 		return {
 			id: 'finish-turn',
 			name: i18n.CHOICE_FINISH_TURN,
+			equals: function (other) {
+				if (!_.isString(other.id) || !_.isFunction(other.match)) {
+					return false;
+				}
+				
+				return this.id === other.id;
+			},
 			match: function (visitor) {
 				return visitor['finish-turn']();
 			}
 		};
 	};
 	
-	exports.buyProperty = function (id, name, price) {
-		precondition(_.isString(id), 'Buy property choice requires a property id');
+	exports.buyProperty = function (propertyId, name, price) {
+		precondition(_.isString(propertyId), 'Buy property choice requires a property id');
 		precondition(_.isString(name), 'Buy property choice requires a property name');
 		precondition(_.isNumber(price) && price > 0, 'Buy property choice requires a price greater than 0');
 		
 		return {
 			id: 'buy-property',
 			name: i18n.CHOICE_BUY_PROPERTY.replace('{property}', name).replace('{price}', i18n.formatPrice(price)),
+			equals: function (other) {
+				if (!_.isString(other.id) || !_.isFunction(other.match)) {
+					return false;
+				}
+				
+				if (this.id !== other.id) {
+					return false;
+				}
+				
+				return other.match({
+					'buy-property': function (otherPropertyId, otherPrice) {
+						return otherPropertyId === propertyId && otherPrice === price;
+					}
+				});
+			},
 			match: function (visitor) {
-				return visitor['buy-property'](id, price);
+				return visitor['buy-property'](propertyId, price);
 			}
 		};
 	};
@@ -46,6 +75,21 @@
 		return {
 			id: 'pay-rent',
 			name: i18n.CHOICE_PAY_RENT.replace('{rent}', i18n.formatPrice(rent)).replace('{toPlayer}', toPlayerName),
+			equals: function (other) {
+				if (!_.isString(other.id) || !_.isFunction(other.match)) {
+					return false;
+				}
+				
+				if (this.id !== other.id) {
+					return false;
+				}
+				
+				return other.match({
+					'pay-rent': function (otherRent, otherToPlayerId) {
+						return otherRent === rent && otherToPlayerId === toPlayerId;
+					}
+				});
+			},
 			match: function (visitor) {
 				return visitor['pay-rent'](rent, toPlayerId);
 			}
@@ -56,6 +100,13 @@
 		return {
 			id: 'go-bankrupt',
 			name: i18n.CHOICE_GO_BANKRUPT,
+			equals: function (other) {
+				if (!_.isString(other.id) || !_.isFunction(other.match)) {
+					return false;
+				}
+				
+				return this.id === other.id;
+			},
 			match: function (visitor) {
 				return visitor['go-bankrupt']();
 			}
