@@ -68,6 +68,7 @@
 	color: white;
 	border: none;
 	font-weight: normal;
+	cursor: pointer;
 }
 
 .player-type-label {
