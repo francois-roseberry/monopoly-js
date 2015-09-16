@@ -1,7 +1,7 @@
 # Monopoly-js
 Implementation of the Monopoly game in javascript, rendering done with D3
 
-Far from complete, right now players alternate, roll the dice and buy properties. That's it. Not very exciting but at least the main game flow is operational.
+Far from complete, right now players alternate, roll the dice, buy properties and pay rents (and eventually go bankrupt). That's it. Not very exciting but at least the main game flow is operational, from the beginning to the end.
 
 ## Screenshots (with the french UI)
 
