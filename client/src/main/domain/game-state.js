@@ -47,9 +47,9 @@
 	
 	function choicesForSquare(square, players, currentPlayer, paid) {
 		return square.match({
-			'estate': choicesForProperty(players, currentPlayer, paid),
-			'railroad': choicesForProperty(players, currentPlayer, paid),
-			'company': choicesForProperty(players, currentPlayer, paid),
+			'estate': choicesForProperty(players, currentPlayer, paid, basicRent),
+			'railroad': choicesForProperty(players, currentPlayer, paid, railroadRent),
+			'company': choicesForProperty(players, currentPlayer, paid, basicRent),
 			_: onlyFinishTurn
 		});
 	}
@@ -58,12 +58,32 @@
 		return [Choices.finishTurn()];
 	}
 	
-	function choicesForProperty(players, currentPlayer, paid) {
+	function basicRent() {
+		return 25;
+	}
+	
+	function railroadRent(ownerProperties) {
+		var count = railroadCountIn(ownerProperties);
+		return 25 * Math.pow(2, count - 1);
+	}
+	
+	function railroadCountIn(properties) {
+		return _.reduce(properties, function (count, property) {
+			if (property === 'rr-reading' || property === 'rr-penn' ||
+				property === 'rr-bo' || property === 'rr-short') {
+				return count + 1;
+			}
+			
+			return count;
+		}, 0);
+	}
+	
+	function choicesForProperty(players, currentPlayer, paid, rentFunction) {
 		return function (id, name, price) {
 			var owner = getOwner(players, id);
 			
 			if (!paid && owner && owner.id() !== currentPlayer.id()) {
-				var rent = 25;
+				var rent = rentFunction(owner.properties());
 				if (currentPlayer.money() <= rent) {
 					return [Choices.goBankrupt()];
 				}

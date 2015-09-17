@@ -62,22 +62,43 @@
 			assertChoices(state, [Choices.finishTurn()]);
 		});
 		
-		describe('when current player is on property owned by other player, offers to pay the rent', function () {
-			it('if that property is an estate', function () {
+		describe('when current player is on property owned by other player, offers to pay the rent of ', function () {
+			it('25$ if that property is an estate', function () {
 				var state = turnEndStateOnEstateOwnedByOther();
 				var secondPlayer = testData.players()[1];
 				
 				assertChoices(state, [Choices.payRent(25, secondPlayer.id(), secondPlayer.name())]);
 			});
 			
-			it('if that property is a railroad', function () {
-				var state = turnEndStateOnRailroadOwnedByOther();
+			it('25$ if that property is a railroad and owner possess 1 railroad', function () {
+				var state = turnEndStateOnRailroadOwnedByOtherWithOneRailroad();
 				var secondPlayer = testData.players()[1];
 				
 				assertChoices(state, [Choices.payRent(25, secondPlayer.id(), secondPlayer.name())]);
 			});
 			
-			it('if that property is a company', function () {
+			it('50$ if that property is a railroad and owner possess 2 railroads', function () {
+				var state = turnEndStateOnRailroadOwnedByOtherWithTwoRailroads();
+				var secondPlayer = testData.players()[1];
+				
+				assertChoices(state, [Choices.payRent(50, secondPlayer.id(), secondPlayer.name())]);
+			});
+			
+			it('100$ if that property is a railroad and owner possess 3 railroads', function () {
+				var state = turnEndStateOnRailroadOwnedByOtherWithThreeRailroads();
+				var secondPlayer = testData.players()[1];
+				
+				assertChoices(state, [Choices.payRent(100, secondPlayer.id(), secondPlayer.name())]);
+			});
+			
+			it('200$ if that property is a railroad and owner possess 4 railroads', function () {
+				var state = turnEndStateOnRailroadOwnedByOtherWithFourRailroads();
+				var secondPlayer = testData.players()[1];
+				
+				assertChoices(state, [Choices.payRent(200, secondPlayer.id(), secondPlayer.name())]);
+			});
+			
+			it('25$ if that property is a company', function () {
 				var state = turnEndStateOnCompanyOwnedByOther();
 				var secondPlayer = testData.players()[1];
 				
@@ -132,7 +153,6 @@
 		_.each(state.choices(), function (choice, index) {
 			expect(choice.equals(choices[index])).to.be(true);
 		});
-		//expect(toChoiceIds(state.choices())).to.eql(choiceIds);
 	}
 	
 	function turnEndStateAtStartPosition() {
@@ -163,8 +183,20 @@
 		return turnEndStateWithPlayers(playerOnEstateOwnedByOther());
 	}
 	
-	function turnEndStateOnRailroadOwnedByOther() {
-		return turnEndStateWithPlayers(playerOnRailroadOwnedByOther());
+	function turnEndStateOnRailroadOwnedByOtherWithOneRailroad() {
+		return turnEndStateWithPlayers(playerOnRailroadOwnedByOtherWithOneRailroad());
+	}
+	
+	function turnEndStateOnRailroadOwnedByOtherWithTwoRailroads() {
+		return turnEndStateWithPlayers(playerOnRailroadOwnedByOtherWithTwoRailroads());
+	}
+	
+	function turnEndStateOnRailroadOwnedByOtherWithThreeRailroads() {
+		return turnEndStateWithPlayers(playerOnRailroadOwnedByOtherWithThreeRailroads());
+	}
+	
+	function turnEndStateOnRailroadOwnedByOtherWithFourRailroads() {
+		return turnEndStateWithPlayers(playerOnRailroadOwnedByOtherWithFourRailroads());
 	}
 	
 	function turnEndStateOnCompanyOwnedByOther() {
@@ -176,7 +208,7 @@
 	}
 	
 	function turnEndStateOnRailroadOwnedByOtherButAlreadyPaid() {
-		return turnEndStateWithPlayers(playerOnRailroadOwnedByOther(), true);
+		return turnEndStateWithPlayers(playerOnRailroadOwnedByOtherWithOneRailroad(), true);
 	}
 	
 	function turnEndStateOnCompanyOwnedByOtherButAlreadyPaid() {
@@ -233,9 +265,33 @@
 		return [players[0].move([0, 1], 40), players[1].buyProperty('med', 1), players[2]];
 	}
 	
-	function playerOnRailroadOwnedByOther() {
+	function playerOnRailroadOwnedByOtherWithOneRailroad() {
 		var players = testData.players();
-		return [players[0].move([0, 5], 40), players[1].buyProperty('rr-reading', 1), players[2]];
+		var owner = players[1].buyProperty('rr-reading', 1);
+		return [players[0].move([0, 5], 40), owner, players[2]];
+	}
+	
+	function playerOnRailroadOwnedByOtherWithTwoRailroads() {
+		var players = testData.players();
+		var owner = players[1].buyProperty('rr-reading', 1).buyProperty('rr-penn', 1);
+		return [players[0].move([0, 5], 40), owner, players[2]];
+	}
+	
+	function playerOnRailroadOwnedByOtherWithThreeRailroads() {
+		var players = testData.players();
+		var owner = players[1].buyProperty('rr-reading', 1)
+			.buyProperty('rr-penn', 1)
+			.buyProperty('rr-bo', 1);
+		return [players[0].move([0, 5], 40), owner, players[2]];
+	}
+	
+	function playerOnRailroadOwnedByOtherWithFourRailroads() {
+		var players = testData.players();
+		var owner = players[1].buyProperty('rr-reading', 1)
+			.buyProperty('rr-penn', 1)
+			.buyProperty('rr-bo', 1)
+			.buyProperty('rr-short', 1);
+		return [players[0].move([0, 5], 40), owner, players[2]];
 	}
 	
 	function playerOnCompanyOwnedByOther() {
