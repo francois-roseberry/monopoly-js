@@ -418,6 +418,13 @@
 		return {
 			id: 'roll-dice',
 			name: i18n.CHOICE_ROLL_DICE,
+			equals: function (other) {
+				if (!_.isString(other.id) || !_.isFunction(other.match)) {
+					return false;
+				}
+				
+				return this.id === other.id;
+			},
 			match: function (visitor) {
 				return visitor['roll-dice']();
 			}
@@ -428,22 +435,44 @@
 		return {
 			id: 'finish-turn',
 			name: i18n.CHOICE_FINISH_TURN,
+			equals: function (other) {
+				if (!_.isString(other.id) || !_.isFunction(other.match)) {
+					return false;
+				}
+				
+				return this.id === other.id;
+			},
 			match: function (visitor) {
 				return visitor['finish-turn']();
 			}
 		};
 	};
 	
-	exports.buyProperty = function (id, name, price) {
-		precondition(_.isString(id), 'Buy property choice requires a property id');
+	exports.buyProperty = function (propertyId, name, price) {
+		precondition(_.isString(propertyId), 'Buy property choice requires a property id');
 		precondition(_.isString(name), 'Buy property choice requires a property name');
 		precondition(_.isNumber(price) && price > 0, 'Buy property choice requires a price greater than 0');
 		
 		return {
 			id: 'buy-property',
 			name: i18n.CHOICE_BUY_PROPERTY.replace('{property}', name).replace('{price}', i18n.formatPrice(price)),
+			equals: function (other) {
+				if (!_.isString(other.id) || !_.isFunction(other.match)) {
+					return false;
+				}
+				
+				if (this.id !== other.id) {
+					return false;
+				}
+				
+				return other.match({
+					'buy-property': function (otherPropertyId, otherPrice) {
+						return otherPropertyId === propertyId && otherPrice === price;
+					}
+				});
+			},
 			match: function (visitor) {
-				return visitor['buy-property'](id, price);
+				return visitor['buy-property'](propertyId, price);
 			}
 		};
 	};
@@ -456,6 +485,21 @@
 		return {
 			id: 'pay-rent',
 			name: i18n.CHOICE_PAY_RENT.replace('{rent}', i18n.formatPrice(rent)).replace('{toPlayer}', toPlayerName),
+			equals: function (other) {
+				if (!_.isString(other.id) || !_.isFunction(other.match)) {
+					return false;
+				}
+				
+				if (this.id !== other.id) {
+					return false;
+				}
+				
+				return other.match({
+					'pay-rent': function (otherRent, otherToPlayerId) {
+						return otherRent === rent && otherToPlayerId === toPlayerId;
+					}
+				});
+			},
 			match: function (visitor) {
 				return visitor['pay-rent'](rent, toPlayerId);
 			}
@@ -466,6 +510,13 @@
 		return {
 			id: 'go-bankrupt',
 			name: i18n.CHOICE_GO_BANKRUPT,
+			equals: function (other) {
+				if (!_.isString(other.id) || !_.isFunction(other.match)) {
+					return false;
+				}
+				
+				return this.id === other.id;
+			},
 			match: function (visitor) {
 				return visitor['go-bankrupt']();
 			}
@@ -499,7 +550,7 @@
 	};
 	
 	ConfigureGameTask.prototype.playerSlots = function () {
-		return this._playerSlots.asObservable();
+		return this._playerSlots.asObservable().takeUntil(this._completed);
 	};
 	
 	ConfigureGameTask.prototype.configurationValid = function () {
@@ -942,9 +993,9 @@
 	
 	function choicesForSquare(square, players, currentPlayer, paid) {
 		return square.match({
-			'estate': choicesForProperty(players, currentPlayer, paid),
-			'railroad': choicesForProperty(players, currentPlayer, paid),
-			'company': choicesForProperty(players, currentPlayer, paid),
+			'estate': choicesForProperty(players, currentPlayer, paid, basicRent),
+			'railroad': choicesForProperty(players, currentPlayer, paid, railroadRent),
+			'company': choicesForProperty(players, currentPlayer, paid, basicRent),
 			_: onlyFinishTurn
 		});
 	}
@@ -953,12 +1004,32 @@
 		return [Choices.finishTurn()];
 	}
 	
-	function choicesForProperty(players, currentPlayer, paid) {
+	function basicRent() {
+		return 25;
+	}
+	
+	function railroadRent(ownerProperties) {
+		var count = railroadCountIn(ownerProperties);
+		return 25 * Math.pow(2, count - 1);
+	}
+	
+	function railroadCountIn(properties) {
+		return _.reduce(properties, function (count, property) {
+			if (property === 'rr-reading' || property === 'rr-penn' ||
+				property === 'rr-bo' || property === 'rr-short') {
+				return count + 1;
+			}
+			
+			return count;
+		}, 0);
+	}
+	
+	function choicesForProperty(players, currentPlayer, paid, rentFunction) {
 		return function (id, name, price) {
 			var owner = getOwner(players, id);
 			
 			if (!paid && owner && owner.id() !== currentPlayer.id()) {
-				var rent = 25;
+				var rent = rentFunction(owner.properties());
 				if (currentPlayer.money() <= rent) {
 					return [Choices.goBankrupt()];
 				}
@@ -1057,10 +1128,7 @@
 	
 	function configuringStatus(statusChanged) {
 		var task = ConfigureGameTask.start();
-		task.completed()
-			.withLatestFrom(task.playerSlots(), function (_, slots) {
-				return slots;
-			})
+		task.playerSlots().last()
 			.subscribe(function (players) {
 				startGame(players, statusChanged);
 			});
