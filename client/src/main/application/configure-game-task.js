@@ -24,7 +24,7 @@
 	};
 	
 	ConfigureGameTask.prototype.playerSlots = function () {
-		return this._playerSlots.asObservable();
+		return this._playerSlots.asObservable().takeUntil(this._completed);
 	};
 	
 	ConfigureGameTask.prototype.configurationValid = function () {

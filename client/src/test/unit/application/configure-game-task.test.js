@@ -75,5 +75,11 @@
 			
 			task.startGame();
 		});
+		
+		it('when starting game, completes the playerSlots event', function (done) {
+			task.playerSlots().last().subscribe(_.noop, _.noop, done);
+			
+			task.startGame();
+		});
 	});
 }());
