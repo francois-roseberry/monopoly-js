@@ -101,8 +101,8 @@
 			domContext.assertIsNotDisabled('.btn-start-game');
 		});
 		
-		it('disable the start game button when there are not enough players', function () {
-			domContext.d3.clickOn('.remove-player-slot-btn');
+		it('disable the start game button when the configuration is invalid', function () {
+			domContext.d3.clickOn('.remove-player-slot-btn[data-index="0"]');
 			
 			domContext.assertIsDisabled('.btn-start-game');
 		});

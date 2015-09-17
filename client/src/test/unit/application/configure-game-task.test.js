@@ -40,7 +40,7 @@
 		});
 		
 		it('if there are less than 3 players, configuration is invalid', function (done) {
-			task.removePlayerSlot();
+			task.removePlayerSlot(2);
 			
 			task.configurationValid().take(1).subscribe(function (valid) {
 				expect(valid).to.be(false);

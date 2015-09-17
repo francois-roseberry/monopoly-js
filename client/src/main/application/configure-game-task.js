@@ -49,12 +49,16 @@
 		});
 	};
 	
-	ConfigureGameTask.prototype.removePlayerSlot = function () {
+	ConfigureGameTask.prototype.removePlayerSlot = function (slotIndex) {
+		precondition(_.isNumber(slotIndex) && slotIndex >= 0, 'Removing a player slot requires its index');
+		
 		var playerSlots = this._playerSlots;
 		var canAddPlayerSlot = this._canAddPlayerSlot;
 		var configurationValid = this._configurationValid;
 		this._playerSlots.take(1).subscribe(function (slots) {
-			slots.pop();
+			precondition(slotIndex < slots.length, 'Removing a player slot requires its index to be valid');
+			
+			slots.splice(slotIndex, 1);
 			playerSlots.onNext(slots);
 			if (slots.length < 8) {
 				canAddPlayerSlot.onNext(true);
