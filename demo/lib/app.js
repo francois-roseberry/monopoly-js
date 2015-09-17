@@ -575,12 +575,16 @@
 		});
 	};
 	
-	ConfigureGameTask.prototype.removePlayerSlot = function () {
+	ConfigureGameTask.prototype.removePlayerSlot = function (slotIndex) {
+		precondition(_.isNumber(slotIndex) && slotIndex >= 0, 'Removing a player slot requires its index');
+		
 		var playerSlots = this._playerSlots;
 		var canAddPlayerSlot = this._canAddPlayerSlot;
 		var configurationValid = this._configurationValid;
 		this._playerSlots.take(1).subscribe(function (slots) {
-			slots.pop();
+			precondition(slotIndex < slots.length, 'Removing a player slot requires its index to be valid');
+			
+			slots.splice(slotIndex, 1);
 			playerSlots.onNext(slots);
 			if (slots.length < 8) {
 				canAddPlayerSlot.onNext(true);
@@ -922,8 +926,8 @@
 			
 		newSlot.append('div')
 			.classed('remove-player-slot-btn', true)
-			.on('click', function () {
-				configureGameTask.removePlayerSlot();
+			.on('click', function (_, index) {
+				configureGameTask.removePlayerSlot(index);
 			})
 			.append('span')
 			.classed({
@@ -936,6 +940,11 @@
 		selection.select('.player-type-label')
 			.text(function (slot) {
 				return (slot.type === 'human' ? i18n.PLAYER_TYPE_HUMAN : i18n.PLAYER_TYPE_COMPUTER);
+			});
+			
+		selection.select('.remove-player-slot-btn')
+			.attr('data-index', function (_, index) {
+				return index;
 			});
 	}
 	
