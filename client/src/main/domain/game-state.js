@@ -47,9 +47,9 @@
 	
 	function choicesForSquare(square, players, currentPlayer, paid) {
 		return square.match({
-			'estate': choicesForProperty(players, currentPlayer, paid, basicRent),
+			'estate': choicesForProperty(players, currentPlayer, paid, estateRent(square)),
 			'railroad': choicesForProperty(players, currentPlayer, paid, railroadRent),
-			'company': choicesForProperty(players, currentPlayer, paid, basicRent),
+			'company': choicesForProperty(players, currentPlayer, paid, companyRent),
 			_: onlyFinishTurn
 		});
 	}
@@ -58,8 +58,14 @@
 		return [Choices.finishTurn()];
 	}
 	
-	function basicRent() {
+	function companyRent() {
 		return 25;
+	}
+	
+	function estateRent(square) {
+		return function () {
+			return square.rent();
+		};
 	}
 	
 	function railroadRent(ownerProperties) {

@@ -49,11 +49,8 @@
 		});
 		
 		describe('when current player is on property owned by other player, offers to pay the rent of ', function () {
-			it('25$ if that property is an estate', function () {
-				var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther());
-				var secondPlayer = testData.players()[1];
-				
-				assertChoices(state, [Choices.payRent(25, secondPlayer.id(), secondPlayer.name())]);
+			it('estate rent if that property is an estate', function () {
+				assertRentToPayIsEstateRent();
 			});
 			
 			it('25$ if that property is a railroad and owner possess 1 railroad', function () {
@@ -166,6 +163,25 @@
 		assertChoices(state, [Choices.goBankrupt()]);
 	}
 	
+	function assertRentToPayIsEstateRent() {
+		assertRentIsMediterraneanAvenueRent();
+		assertRentIsBroadwalkRent();
+	}
+	
+	function assertRentIsMediterraneanAvenueRent() {
+		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther('med'));
+		var secondPlayer = testData.players()[1];
+				
+		assertChoices(state, [Choices.payRent(2, secondPlayer.id(), secondPlayer.name())]);
+	}
+	
+	function assertRentIsBroadwalkRent() {
+		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther('bw', 39));
+		var secondPlayer = testData.players()[1];
+				
+		assertChoices(state, [Choices.payRent(50, secondPlayer.id(), secondPlayer.name())]);
+	}
+	
 	function assertChoices(state, choices) {
 		_.each(state.choices(), function (choice, index) {
 			expect(choice.equals(choices[index])).to.be(true);
@@ -205,9 +221,9 @@
 		return [players[0].buyProperty('vn', players[0].money() - 1).move([0, 1], 40), players[1], players[2]];
 	}
 	
-	function playerOnEstateOwnedByOther() {
+	function playerOnEstateOwnedByOther(propertyId, squareIndex) {
 		var players = testData.players();
-		return [players[0].move([0, 1], 40), players[1].buyProperty('med', 1), players[2]];
+		return [players[0].move([0, squareIndex || 1], 40), players[1].buyProperty(propertyId || 'med', 1), players[2]];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithOneRailroad() {
