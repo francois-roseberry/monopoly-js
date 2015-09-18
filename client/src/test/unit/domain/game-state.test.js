@@ -45,8 +45,12 @@
 		});
 		
 		describe('when current player is on property owned by other player, offers to pay the rent of ', function () {
-			it('estate rent if that property is an estate', function () {
-				assertRentToPayIsEstateRent();
+			it('the estate rent if that property is an estate and owner does not own group', function () {
+				assertRentToPayIsEstateRentWhenOwnerDoesNotOwnGroup();
+			});
+			
+			it.only('double the estate rent if that property is an estate and owner owns group', function () {
+				assertRentToPayIsDoubleTheEstateRentWhenOwnerOwnsGroup();
 			});
 			
 			it('25$ if that property is a railroad and owner possess 1 railroad', function () {
@@ -169,7 +173,7 @@
 		assertChoices(state, [Choices.goBankrupt()]);
 	}
 	
-	function assertRentToPayIsEstateRent() {
+	function assertRentToPayIsEstateRentWhenOwnerDoesNotOwnGroup() {
 		assertRentIsMediterraneanAvenueRent();
 		assertRentIsBroadwalkRent();
 	}
@@ -188,6 +192,25 @@
 		assertChoices(state, [Choices.payRent(50, secondPlayer.id(), secondPlayer.name())]);
 	}
 	
+	function assertRentToPayIsDoubleTheEstateRentWhenOwnerOwnsGroup() {
+		assertRentIsDoubleMediterraneanAvenueRent();
+		assertRentIsDoubleBroadwalkRent();
+	}
+	
+	function assertRentIsDoubleMediterraneanAvenueRent() {
+		var state = turnEndStateWithPlayers(playerOnMediterraneanAvenueAndGroupOwned());
+		var secondPlayer = testData.players()[1];
+				
+		assertChoices(state, [Choices.payRent(4, secondPlayer.id(), secondPlayer.name())]);
+	}
+	
+	function assertRentIsDoubleBroadwalkRent() {
+		var state = turnEndStateWithPlayers(playerOnBroadwalkAndGroupOwned());
+		var secondPlayer = testData.players()[1];
+				
+		assertChoices(state, [Choices.payRent(100, secondPlayer.id(), secondPlayer.name())]);
+	}
+	
 	function assertChoices(state, choices) {
 		_.each(state.choices(), function (choice, index) {
 			expect(choice.equals(choices[index])).to.be(true);
@@ -204,44 +227,54 @@
 	
 	function playerOnEstate() {
 		var players = testData.players();
-		return [players[0].move([0, 1], 40), players[1], players[2]];
+		return [players[0].move([0, 1]), players[1], players[2]];
 	}
 	
 	function playerOnRailroad() {
 		var players = testData.players();
-		return [players[0].move([0, 5], 40), players[1], players[2]];
+		return [players[0].move([0, 5]), players[1], players[2]];
 	}
 	
 	function playerOnCompany() {
 		var players = testData.players();
-		return [players[0].move([0, 12], 40), players[1], players[2]];
+		return [players[0].move([0, 12]), players[1], players[2]];
 	}
 	
 	function playerOnOwnedEstate() {
 		var players = testData.players();
-		return [players[0].move([0, 1], 40).buyProperty('med', 1), players[1], players[2]];
+		return [players[0].move([0, 1]).buyProperty('med', 1), players[1], players[2]];
 	}
 	
 	function playerBrokeOnEstate() {
 		var players = testData.players();
-		return [players[0].pay(players[0].money() - 1).move([0, 1], 40), players[1], players[2]];
+		return [players[0].pay(players[0].money() - 1).move([0, 1]), players[1], players[2]];
 	}
 	
 	function playerOnEstateOwnedByOther(propertyId, squareIndex) {
 		var players = testData.players();
-		return [players[0].move([0, squareIndex || 1], 40), players[1].buyProperty(propertyId || 'med', 1), players[2]];
+		return [players[0].move([0, squareIndex || 1]), players[1].buyProperty(propertyId || 'med', 1), players[2]];
+	}
+	
+	function playerOnMediterraneanAvenueAndGroupOwned() {
+		var players = testData.players();
+		return [players[0].move([0, 1]), players[1].buyProperty('med', 1).buyProperty('baltic', 1), players[2]];
+	}
+	
+	function playerOnBroadwalkAndGroupOwned() {
+		var players = testData.players();
+		return [players[0].move([0, 39]), players[1].buyProperty('pk', 1).buyProperty('bw', 1), players[2]];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithOneRailroad() {
 		var players = testData.players();
 		var owner = players[1].buyProperty('rr-reading', 1);
-		return [players[0].move([0, 5], 40), owner, players[2]];
+		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithTwoRailroads() {
 		var players = testData.players();
 		var owner = players[1].buyProperty('rr-reading', 1).buyProperty('rr-penn', 1);
-		return [players[0].move([0, 5], 40), owner, players[2]];
+		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithThreeRailroads() {
@@ -249,7 +282,7 @@
 		var owner = players[1].buyProperty('rr-reading', 1)
 			.buyProperty('rr-penn', 1)
 			.buyProperty('rr-bo', 1);
-		return [players[0].move([0, 5], 40), owner, players[2]];
+		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithFourRailroads() {
@@ -258,27 +291,27 @@
 			.buyProperty('rr-penn', 1)
 			.buyProperty('rr-bo', 1)
 			.buyProperty('rr-short', 1);
-		return [players[0].move([0, 5], 40), owner, players[2]];
+		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
 	function playerOnCompanyOwnedByOther() {
 		var players = testData.players();
-		return [players[0].move([0, 12], 40), players[1].buyProperty('electric', 1), players[2]];
+		return [players[0].move([0, 12]), players[1].buyProperty('electric', 1), players[2]];
 	}
 	
 	function playerWithAlmostNoMoneyOnEstateOwnedByOther() {
 		var players = testData.players();
-		return [players[0].move([0, 1], 40).pay(1499), players[1].buyProperty('med', 1), players[2]];
+		return [players[0].move([0, 1]).pay(1499), players[1].buyProperty('med', 1), players[2]];
 	}
 	
 	function playerWithAlmostNoMoneyOnRailroadOwnedByOther() {
 		var players = testData.players();
-		return [players[0].move([0, 5], 40).pay(1499), players[1].buyProperty('rr-reading', 1), players[2]];
+		return [players[0].move([0, 5]).pay(1499), players[1].buyProperty('rr-reading', 1), players[2]];
 	}
 	
 	function playerWithAlmostNoMoneyOnCompanyOwnedByOther() {
 		var players = testData.players();
-		return [players[0].move([0, 12], 40).pay(1499), players[1].buyProperty('electric', 1), players[2]];
+		return [players[0].move([0, 12]).pay(1499), players[1].buyProperty('electric', 1), players[2]];
 	}
 	
 	function turnStartState() {

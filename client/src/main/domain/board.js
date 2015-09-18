@@ -4,6 +4,18 @@
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
+	exports.estatesInGroup = function (group) {
+		precondition(_.isNumber(group) && group >= 0 && group < 8,
+			'Listing estates of a group must requires the group index');
+		
+		return _.filter(exports.squares(), function (square) {
+			return square.match({
+				'estate': function () { return square.group() === group; },
+				_ : function () { return false; }
+			});
+		});
+	};
+	
 	exports.squares = function () {
 		return [
 			go(),
@@ -126,6 +138,7 @@
 		precondition(_.isNumber(rent) && rent > 0, 'Property must have a rent');
 		
 		return {
+			group: function() { return group; },
 			rent: function() { return rent; },
 			match: match('estate', [id, name, price, group])
 		};

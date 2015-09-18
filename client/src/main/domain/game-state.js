@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var Choices = require('./choices');
+	var Board = require('./board');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -63,9 +64,21 @@
 	}
 	
 	function estateRent(square) {
-		return function () {
-			return square.rent();
+		return function (ownerProperties) {
+			var multiplier = (ownsAllEstatesInGroup(square.group(), ownerProperties) ? 2 : 1);
+			return square.rent() * multiplier;
 		};
+	}
+	
+	function ownsAllEstatesInGroup(group, properties) {
+		var estatesInGroup = Board.estatesInGroup(group);
+		return _.every(estatesInGroup, function (estate) {
+			var id = estate.match({
+				'estate' : function (id) { return id; }
+			});
+			
+			return _.contains(properties, id);
+		});
 	}
 	
 	function railroadRent(ownerProperties) {
