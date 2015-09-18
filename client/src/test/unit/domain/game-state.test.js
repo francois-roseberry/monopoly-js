@@ -37,15 +37,11 @@
 		});
 		
 		it('when current player is on a property that is owned, does not offer to buy it', function () {
-			var state = turnEndStateWithPlayers(playerOnOwnedEstate());
-			
-			assertChoices(state, [Choices.finishTurn()]);
+			assertNoBuyPropertyChoiceWhenOnPropertyWithOwner();
 		});
 		
 		it('when current player is on a property that is too expensive, does not offer to buy it', function () {
-			var state = turnEndStateWithPlayers(playerBrokeOnEstate());
-			
-			assertChoices(state, [Choices.finishTurn()]);
+			assertNoBuyPropertyChoiceWhenOnPropertyTooExpensive();
 		});
 		
 		describe('when current player is on property owned by other player, offers to pay the rent of ', function () {
@@ -99,6 +95,16 @@
 				assertBankruptcyChoiceWhenPropertyRentIsTooHigh();
 		});
 	});
+	
+	function assertNoBuyPropertyChoiceWhenOnPropertyTooExpensive() {
+		var state = turnEndStateWithPlayers(playerBrokeOnEstate());
+		assertChoices(state, [Choices.finishTurn()]);
+	}
+	
+	function assertNoBuyPropertyChoiceWhenOnPropertyWithOwner() {
+		var state = turnEndStateWithPlayers(playerOnOwnedEstate());
+		assertChoices(state, [Choices.finishTurn()]);
+	}
 	
 	function assertBuyPropertyChoiceWhenOnPropertyWithoutOwner() {
 		assertBuyPropertyChoiceWhenOnEstateWithoutOwner();
