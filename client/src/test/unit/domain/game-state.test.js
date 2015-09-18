@@ -314,12 +314,6 @@
 		return [players[0].move([0, 12], 40).pay(1499), players[1].buyProperty('electric', 1), players[2]];
 	}
 	
-	/*function toChoiceIds(choices) {
-		return _.map(choices, function (choice) {
-			return choice.id;
-		});
-	}*/
-	
 	function turnStartState() {
 		return GameState.turnStartState({
 			squares: Board.squares(),
