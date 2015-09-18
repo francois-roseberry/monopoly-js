@@ -49,7 +49,7 @@
 				assertRentToPayIsEstateRentWhenOwnerDoesNotOwnGroup();
 			});
 			
-			it.only('double the estate rent if that property is an estate and owner owns group', function () {
+			it('double the estate rent if that property is an estate and owner owns group', function () {
 				assertRentToPayIsDoubleTheEstateRentWhenOwnerOwnsGroup();
 			});
 			
