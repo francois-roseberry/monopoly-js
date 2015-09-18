@@ -224,7 +224,7 @@
 	
 	function playerBrokeOnEstate() {
 		var players = testData.players();
-		return [players[0].buyProperty('vn', players[0].money() - 1).move([0, 1], 40), players[1], players[2]];
+		return [players[0].pay(players[0].money() - 1).move([0, 1], 40), players[1], players[2]];
 	}
 	
 	function playerOnEstateOwnedByOther(propertyId, squareIndex) {

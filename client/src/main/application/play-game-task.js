@@ -194,7 +194,7 @@
 	function movePlayer(state, dice) {
 		var newPlayers = _.map(state.players(), function (player, index) {
 			if (index === state.currentPlayerIndex()) {
-				return player.move(dice, state.squares().length);
+				return player.move(dice);
 			}
 			
 			return player;

@@ -25,7 +25,7 @@
 		});
 		
 		it('wraps around the board when moving past the end', function () {
-			var movedPlayer = players[0].move([0,3], 2);
+			var movedPlayer = players[0].move([0,41]);
 			
 			expect(movedPlayer.position()).to.eql(1);
 		});

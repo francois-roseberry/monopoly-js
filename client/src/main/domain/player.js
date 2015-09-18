@@ -7,6 +7,9 @@
 	var i18n = require('./i18n').i18n();
 	
 	exports.newPlayers = function (playerConfigurations) {
+		precondition(_.isArray(playerConfigurations) && playerConfigurations.length >= 3,
+			'Creating players require at least 3 player configurations');
+		
 		return _.map(playerConfigurations, function (playerConfiguration, index) {
 			return newPlayer({
 				id: 'player' + index,
@@ -74,9 +77,11 @@
 		return this._properties.slice();
 	};
 	
-	Player.prototype.move = function (dice, squareCount) {
+	Player.prototype.move = function (dice) {
 		precondition(_.isArray(dice) && dice.length === 2 && _.isNumber(dice[0]) && _.isNumber(dice[1]),
 			'Moving a player requires a dice with two numbers');
+			
+		var squareCount = 40;
 		
 		return newPlayer({
 			id: this.id(),
