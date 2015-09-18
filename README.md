@@ -3,6 +3,26 @@ Implementation of the Monopoly game in javascript, rendering done with D3
 
 Far from complete, right now players alternate, roll the dice, buy properties and pay rents (and eventually go bankrupt). That's it. Not very exciting but at least the main game flow is operational, from the beginning to the end.
 
+Features missing to be a complete game of Monopoly :
+* Calculating real rents (right now just railroad rents are implemented, others are just a flat 25$)
+* Building houses and hotels
+* When rent is too high, offer to mortgage and/or unbuild instead of going straight to bankruptcy
+* Double rolls roll again, and 3 in a row bring you to jail
+* Adding square effects - both positive, like "Go", or negative, like "Luxury Tax"
+* Differentiating between bankruptcy because of the bank or because of an opponent (to transfer possessions)
+* Chance and community cards
+* Trade
+* Bidding
+
+Those nice features I'd like to do after the basics are complete :
+* Ability to use different Monopoly boards (for ex. : french classic, zelda and star wars)
+* Migrate the game processing on a server, probably Node, and find free Node hosting like Heroku, in order to :
+* Save the game
+* Experiment with WebSockets with Node to add networking
+* Collect lots of game stats, like rentability, frequency, etc. in order to :
+* Experiment with different types of AI players - basic minimax, machine learning based on statistics, etc.
+
+
 ## Screenshots (with the french UI)
 
 ![Game configuration screenshot]
