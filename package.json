@@ -1,7 +1,7 @@
 {
-  "name": "flocking-js",
+  "name": "monopoly-js",
   "version": "1.0.0",
-  "description": "Flocking sample",
+  "description": "Javascript implementation of the Monopoly game",
   "main": "app.js",
   "repository": {
     "type": "git",
