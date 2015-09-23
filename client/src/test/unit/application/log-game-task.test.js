@@ -5,6 +5,7 @@
 	var LogGameTask = require('./log-game-task');
 	var Choices = require('./choices');
 	var Messages = require('./messages');
+	var Railroad = require('./railroad');
 	
 	var testData = require('./test-data');
 	
@@ -34,7 +35,7 @@
 			var message = Messages.logPropertyBought('Player', 'Property').id();
 			assertLogged([message], done);
 			
-			var choice = Choices.buyProperty('rr-reading', testData.players()[0].id(), 20);
+			var choice = Choices.buyProperty(Railroad.reading());
 			gameTask.handleChoicesTask().makeChoice(choice);
 		});
 		

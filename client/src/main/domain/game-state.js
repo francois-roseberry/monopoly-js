@@ -109,7 +109,7 @@
 			}
 			
 			if (!owner && currentPlayer.money() > price) {
-				return [Choices.buyProperty(id, name, price), Choices.finishTurn()];
+				return [Choices.buyProperty(square), Choices.finishTurn()];
 			}
 			
 			return [Choices.finishTurn()];

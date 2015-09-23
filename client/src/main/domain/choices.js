@@ -15,8 +15,8 @@
 		return FinishTurnChoice.newChoice();
 	};
 	
-	exports.buyProperty = function (propertyId, name, price) {
-		return BuyPropertyChoice.newChoice(propertyId, name, price);
+	exports.buyProperty = function (property) {
+		return BuyPropertyChoice.newChoice(property);
 	};
 	
 	exports.payRent = function (rent, toPlayerId, toPlayerName) {

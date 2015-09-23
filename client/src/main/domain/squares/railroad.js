@@ -4,6 +4,10 @@
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
+	exports.isRailroad = function (candidate) {
+		return candidate instanceof Railroad;
+	};
+	
 	exports.reading = function () {
 		return new Railroad('rr-reading', i18n.RAILROAD_READING);
 	};

@@ -6,7 +6,6 @@
 	var HandleChoicesTask = require('./handle-choices-task');
 	var Player = require('./player');
 	var GameState = require('./game-state');
-	var Board = require('./board');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -121,8 +120,7 @@
 	}
 	
 	function buyProperty(state) {
-		return function (id) {
-			var property = Board.propertyById(id);
+		return function (property) {
 			return Rx.Observable.return(transferOwnership(state, property));
 		};
 	}

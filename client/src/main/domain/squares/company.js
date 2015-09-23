@@ -4,6 +4,10 @@
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
+	exports.isCompany = function (candidate) {
+		return candidate instanceof Company;
+	};
+	
 	exports.electric = function () {
 		return new Company('electric', i18n.COMPANY_ELECTRIC);
 	};

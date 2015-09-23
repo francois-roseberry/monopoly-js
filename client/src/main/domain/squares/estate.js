@@ -4,6 +4,10 @@
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
+	exports.isEstate = function (candidate) {
+		return candidate instanceof Estate;
+	};
+	
 	exports.mediterranean = function (group) {
 		return new Estate('med', i18n.PROPERTY_MED, group, { value: 60, rent: 2});
 	};

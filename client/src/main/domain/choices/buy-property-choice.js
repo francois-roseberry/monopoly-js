@@ -3,20 +3,22 @@
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
+	var Estate = require('./estate');
+	var Company = require('./company');
+	var Railroad = require('./railroad');
 	
-	exports.newChoice = function (propertyId, name, price) {
-		precondition(_.isString(propertyId) && propertyId.length > 0, 'Buy property choice requires a property id');
-		precondition(_.isString(name), 'Buy property choice requires a property name');
-		precondition(_.isNumber(price) && price > 0, 'Buy property choice requires a price greater than 0');
+	exports.newChoice = function (property) {
+		precondition(Estate.isEstate(property) || Company.isCompany(property) || Railroad.isRailroad(property),
+			'Buy property choice requires a property');
 		
-		return new BuyPropertyChoice(propertyId, name, price);
+		return new BuyPropertyChoice(property);
 	};
 	
-	function BuyPropertyChoice(propertyId, name, price) {
+	function BuyPropertyChoice(property) {
 		this.id = 'buy-property';
-		this.name = i18n.CHOICE_BUY_PROPERTY.replace('{property}', name).replace('{price}', i18n.formatPrice(price));
-		this._propertyId = propertyId;
-		this._price = price;
+		this.name = i18n.CHOICE_BUY_PROPERTY.replace('{property}', property.name())
+			.replace('{price}', i18n.formatPrice(property.price()));
+		this._property = property;
 	}
 	
 	BuyPropertyChoice.prototype.equals = function (other) {
@@ -26,13 +28,13 @@
 		
 		var self = this;
 		return other.match({
-			'buy-property': function (propertyId, price) {
-				return self._propertyId === propertyId && self._price === price;
+			'buy-property': function (property) {
+				return self._property.equals(property);
 			}
 		});
 	};
 	
 	BuyPropertyChoice.prototype.match = function (visitor) {
-		return visitor[this.id](this._propertyId, this._price);
+		return visitor[this.id](this._property);
 	};
 }());

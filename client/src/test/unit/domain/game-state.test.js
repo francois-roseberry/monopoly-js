@@ -110,17 +110,17 @@
 	
 	function assertBuyPropertyChoiceWhenOnEstateWithoutOwner() {
 		var state = turnEndStateWithPlayers(playerOnEstate());
-		assertChoices(state, [Choices.buyProperty('med','',60), Choices.finishTurn()]);
+		assertChoices(state, [Choices.buyProperty(Board.propertyById('med')), Choices.finishTurn()]);
 	}
 	
 	function assertBuyPropertyChoiceWhenOnRailroadWithoutOwner() {
 		var state = turnEndStateWithPlayers(playerOnRailroad());
-		assertChoices(state, [Choices.buyProperty('rr-reading','',200), Choices.finishTurn()]);
+		assertChoices(state, [Choices.buyProperty(Railroad.reading()), Choices.finishTurn()]);
 	}
 	
 	function assertBuyPropertyChoiceWhenOnCompanyWithoutOwner() {
 		var state = turnEndStateWithPlayers(playerOnCompany());
-		assertChoices(state, [Choices.buyProperty('electric','',150), Choices.finishTurn()]);
+		assertChoices(state, [Choices.buyProperty(Company.electric()), Choices.finishTurn()]);
 	}
 	
 	function assertNoPayRentChoiceWhenAlreadyPaidPropertyRent() {

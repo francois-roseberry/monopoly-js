@@ -2,7 +2,9 @@
 	"use strict";
 	
 	var PlayerColors = require('./player-colors').colors();
-	/*var Board = require('./board');*/
+	var Estate = require('./estate');
+	var Company = require('./company');
+	var Railroad = require('./railroad');
 	
 	var precondition = require('./contract').precondition;
 	var i18n = require('./i18n').i18n();
@@ -96,10 +98,8 @@
 	};
 	
 	Player.prototype.buyProperty = function (property) {
-		precondition(property && _.isFunction(property.id),
-			'Buying a property with a player requires that property');
-		precondition(this.money() > property.price(),
-			'Buying a property requires the player to have enough money');
+		precondition(Estate.isEstate(property) || Company.isCompany(property) || Railroad.isRailroad(property),
+			'Buy property choice requires a property');
 		
 		return newPlayer({
 			id: this.id(),
@@ -121,7 +121,7 @@
 			return properties.concat([property]);
 		}
 		
-		var otherProperty = properties[index];/*Board.propertyById(propertyIds[index]);*/
+		var otherProperty = properties[index];
 		
 		if (property.compareTo(otherProperty) === 1) {
 			// It comes before, so insert it at index
