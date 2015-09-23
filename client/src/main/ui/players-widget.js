@@ -115,28 +115,13 @@
 				return property.id(); 
 			})
 			.text(function (property) {
-				return nameOfProperty(state, property);
+				return property.name();
 			})
 			.style('background-color', function (property) {
 				return colorOfProperty(state, property);
 			});
 			
 		selection.order();
-	}
-	
-	function nameOfProperty(state, property) {
-		return property.match({
-			'estate': function (id, name, price, group) {
-				return name;
-			},
-			'railroad': function (id, name, price) {
-				return name;
-			},
-			'company': function (id, name, price) {
-				return name;
-			},
-			_: _.noop
-		});
 	}
 	
 	function colorOfProperty(state, property) {

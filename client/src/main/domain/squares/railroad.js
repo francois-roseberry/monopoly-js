@@ -30,6 +30,10 @@
 		return this._id;
 	};
 	
+	Railroad.prototype.name = function () {
+		return this._name;
+	};
+	
 	Railroad.prototype.price = function () {
 		return this._price;
 	};

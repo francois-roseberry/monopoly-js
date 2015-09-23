@@ -22,6 +22,10 @@
 		return this._id;
 	};
 	
+	Company.prototype.name = function () {
+		return this._name;
+	};
+	
 	Company.prototype.price = function () {
 		return this._price;
 	};

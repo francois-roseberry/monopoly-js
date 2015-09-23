@@ -113,6 +113,10 @@
 		return this._id;
 	};
 	
+	Estate.prototype.name = function () {
+		return this._name;
+	};
+	
 	Estate.prototype.price = function () {
 		return this._price;
 	};

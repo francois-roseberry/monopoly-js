@@ -66,12 +66,11 @@
 			})
 			.map(function (states) {
 				var player = states.previous.players()[states.current.currentPlayerIndex()];
-				var newProperty = findNewProperty(states);	
-				var propertyName = nameOfProperty(newProperty);
+				var newProperty = findNewProperty(states);
 				
 				return {
 					player: player.name(),
-					property: propertyName
+					property: newProperty.name()
 				};
 			});
 	}
@@ -115,14 +114,6 @@
 			return !_.contains(_.map(previousProperties, function (property) { return property.id(); }), property.id());
 		})[0];
 		return newProperty;
-	}
-	
-	function nameOfProperty(property) {
-		return property.match({
-			'estate': function (id, name) { return name; },
-			'railroad': function (id, name) { return name; },
-			'company': function (id, name) { return name; }
-		});
 	}
 	
 	function combineWithPrevious(observable) {
