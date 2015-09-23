@@ -6,6 +6,7 @@
 	var HandleChoicesTask = require('./handle-choices-task');
 	var Player = require('./player');
 	var GameState = require('./game-state');
+	var Board = require('./board');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -120,8 +121,9 @@
 	}
 	
 	function buyProperty(state) {
-		return function (id, price) {
-			return Rx.Observable.return(transferOwnership(state, id, price));
+		return function (id) {
+			var property = Board.propertyById(id);
+			return Rx.Observable.return(transferOwnership(state, property));
 		};
 	}
 	
@@ -175,10 +177,10 @@
 		});
 	}
 	
-	function transferOwnership(state, id, price) {
+	function transferOwnership(state, property) {
 		var newPlayers = _.map(state.players(), function (player, index) {
 			if (index === state.currentPlayerIndex()) {
-				return player.buyProperty(id, price);
+				return player.buyProperty(property);
 			}
 			
 			return player;

@@ -95,19 +95,15 @@
 		});
 	};
 	
-	Player.prototype.buyProperty = function (id, price) {
-		precondition(_.isNumber(price) && this.money() > price,
+	Player.prototype.buyProperty = function (property) {
+		precondition(property, 'Buying a property with a player requires that property');
+		precondition(this.money() > property.price(),
 			'Buying a property requires the player to have enough money');
-			
-		// TODO : find the property corresponding to the id
-		var property = Board.propertyById(id);
-		
-		precondition(property, 'Player can only buy a real property');
 		
 		return newPlayer({
 			id: this.id(),
 			name: this.name(),
-			money: this.money() - price,
+			money: this.money() - property.price(),
 			position: this.position(),
 			color: this.color(),
 			type: this.type(),

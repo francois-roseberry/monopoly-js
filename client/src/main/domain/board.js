@@ -138,6 +138,7 @@
 		
 		return {
 			id: function () { return id; },
+			price: function () { return 150; },
 			match: match('company', [id, name, 150]),
 			compareTo: function (property) {
 				precondition(property, 'Comparing this property to another property requires that other property');
@@ -160,6 +161,7 @@
 		
 		return {
 			id: function () { return id; },
+			price: function () { return 200; },
 			match: match('railroad', [id, name, 200]),
 			compareTo: function (property) {
 				precondition(property, 'Comparing this property to another property requires that other property');
@@ -193,6 +195,7 @@
 		
 		return {
 			id: function() { return id; },
+			price: function () { return price; },
 			group: function() { return group; },
 			rent: function() { return rent; },
 			match: match('estate', [id, name, price, group]),

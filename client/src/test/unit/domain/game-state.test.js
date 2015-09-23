@@ -179,14 +179,14 @@
 	}
 	
 	function assertRentIsMediterraneanAvenueRent() {
-		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther('med'));
+		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther(Board.propertyById('med')));
 		var secondPlayer = testData.players()[1];
 				
 		assertChoices(state, [Choices.payRent(2, secondPlayer.id(), secondPlayer.name())]);
 	}
 	
 	function assertRentIsBroadwalkRent() {
-		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther('bw', 39));
+		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther(Board.propertyById('bw'), 39));
 		var secondPlayer = testData.players()[1];
 				
 		assertChoices(state, [Choices.payRent(50, secondPlayer.id(), secondPlayer.name())]);
@@ -242,7 +242,10 @@
 	
 	function playerOnOwnedEstate() {
 		var players = testData.players();
-		return [players[0].move([0, 1]).buyProperty('med', 1), players[1], players[2]];
+		return [
+			players[0].move([0, 1]).buyProperty(Board.propertyById('med')),
+			players[1], players[2]
+		];
 	}
 	
 	function playerBrokeOnEstate() {
@@ -250,68 +253,97 @@
 		return [players[0].pay(players[0].money() - 1).move([0, 1]), players[1], players[2]];
 	}
 	
-	function playerOnEstateOwnedByOther(propertyId, squareIndex) {
+	function playerOnEstateOwnedByOther(property, squareIndex) {
 		var players = testData.players();
-		return [players[0].move([0, squareIndex || 1]), players[1].buyProperty(propertyId || 'med', 1), players[2]];
+		return [
+			players[0].move([0, squareIndex || 1]),
+			players[1].buyProperty(property || Board.propertyById('med')),
+			players[2]
+		];
 	}
 	
 	function playerOnMediterraneanAvenueAndGroupOwned() {
 		var players = testData.players();
-		return [players[0].move([0, 1]), players[1].buyProperty('med', 1).buyProperty('baltic', 1), players[2]];
+		return [
+			players[0].move([0, 1]),
+			players[1].buyProperty(Board.propertyById('med')).buyProperty(Board.propertyById('baltic')),
+			players[2]
+		];
 	}
 	
 	function playerOnBroadwalkAndGroupOwned() {
 		var players = testData.players();
-		return [players[0].move([0, 39]), players[1].buyProperty('pk', 1).buyProperty('bw', 1), players[2]];
+		return [
+			players[0].move([0, 39]),
+			players[1].buyProperty(Board.propertyById('pk')).buyProperty(Board.propertyById('bw')),
+			players[2]
+		];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithOneRailroad() {
 		var players = testData.players();
-		var owner = players[1].buyProperty('rr-reading', 1);
+		var owner = players[1].buyProperty(Board.propertyById('rr-reading'));
 		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithTwoRailroads() {
 		var players = testData.players();
-		var owner = players[1].buyProperty('rr-reading', 1).buyProperty('rr-penn', 1);
+		var owner = players[1].buyProperty(Board.propertyById('rr-reading'))
+			.buyProperty(Board.propertyById('rr-penn'));
 		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithThreeRailroads() {
 		var players = testData.players();
-		var owner = players[1].buyProperty('rr-reading', 1)
-			.buyProperty('rr-penn', 1)
-			.buyProperty('rr-bo', 1);
+		var owner = players[1].buyProperty(Board.propertyById('rr-reading'))
+			.buyProperty(Board.propertyById('rr-penn'))
+			.buyProperty(Board.propertyById('rr-bo'));
 		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithFourRailroads() {
 		var players = testData.players();
-		var owner = players[1].buyProperty('rr-reading', 1)
-			.buyProperty('rr-penn', 1)
-			.buyProperty('rr-bo', 1)
-			.buyProperty('rr-short', 1);
+		var owner = players[1].buyProperty(Board.propertyById('rr-reading'))
+			.buyProperty(Board.propertyById('rr-penn'))
+			.buyProperty(Board.propertyById('rr-bo'))
+			.buyProperty(Board.propertyById('rr-short'));
 		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
 	function playerOnCompanyOwnedByOther() {
 		var players = testData.players();
-		return [players[0].move([0, 12]), players[1].buyProperty('electric', 1), players[2]];
+		return [
+			players[0].move([0, 12]),
+			players[1].buyProperty(Board.propertyById('electric')),
+			players[2]
+		];
 	}
 	
 	function playerWithAlmostNoMoneyOnEstateOwnedByOther() {
 		var players = testData.players();
-		return [players[0].move([0, 1]).pay(1499), players[1].buyProperty('med', 1), players[2]];
+		return [
+			players[0].move([0, 1]).pay(1499),
+			players[1].buyProperty(Board.propertyById('med')),
+			players[2]
+		];
 	}
 	
 	function playerWithAlmostNoMoneyOnRailroadOwnedByOther() {
 		var players = testData.players();
-		return [players[0].move([0, 5]).pay(1499), players[1].buyProperty('rr-reading', 1), players[2]];
+		return [
+			players[0].move([0, 5]).pay(1499),
+			players[1].buyProperty(Board.propertyById('rr-reading')),
+			players[2]
+		];
 	}
 	
 	function playerWithAlmostNoMoneyOnCompanyOwnedByOther() {
 		var players = testData.players();
-		return [players[0].move([0, 12]).pay(1499), players[1].buyProperty('electric', 1), players[2]];
+		return [
+			players[0].move([0, 12]).pay(1499),
+			players[1].buyProperty(Board.propertyById('electric')),
+			players[2]
+		];
 	}
 	
 	function turnStartState() {

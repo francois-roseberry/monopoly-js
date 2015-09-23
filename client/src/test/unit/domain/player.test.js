@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var Player = require('./player');
+	var Board = require('./board');
 	
 	var testData = require('./test-data');
 	
@@ -31,34 +32,29 @@
 		});
 		
 		describe('when buying property', function () {
-			var PROPERTY_ID = 'med';
-			var PRICE = 200;
+			var PROPERTY = Board.propertyById('med');
 			var newPlayer;
 			
 			beforeEach(function () {
-				newPlayer = players[0].buyProperty(PROPERTY_ID, PRICE);
+				newPlayer = players[0].buyProperty(PROPERTY);
 			});
 			
 			it('substract the price', function () {
-				expect(newPlayer.money()).to.eql(players[0].money() - PRICE);
-			});
-			
-			it('add it to the list', function () {
-				expect(newPlayer.properties()).to.eql(players[0].properties().concat([PROPERTY_ID]));
+				expect(newPlayer.money()).to.eql(players[0].money() - PROPERTY.price());
 			});
 			
 			it('insert them in order', function () {
 				expect(newPlayer.properties()).to.eql(['med']);
 				
-				newPlayer = newPlayer.buyProperty('rr-short', 0);
+				newPlayer = newPlayer.buyProperty(Board.propertyById('rr-short'));
 				
 				expect(newPlayer.properties()).to.eql(['med', 'rr-short']);
 				
-				newPlayer = newPlayer.buyProperty('bw', 0);
+				newPlayer = newPlayer.buyProperty(Board.propertyById('bw'));
 				
 				expect(newPlayer.properties()).to.eql(['med', 'bw', 'rr-short']);
 				
-				newPlayer = newPlayer.buyProperty('conn', 0);
+				newPlayer = newPlayer.buyProperty(Board.propertyById('conn'));
 				
 				expect(newPlayer.properties()).to.eql(['med', 'conn', 'bw', 'rr-short']);
 			});
