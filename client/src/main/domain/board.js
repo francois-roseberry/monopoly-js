@@ -8,13 +8,13 @@
 	var Railroad = require('./railroad');
 	var Estate = require('./estate');
 	
-	exports.estatesInGroup = function (group) {
-		precondition(_.isNumber(group) && group >= 0 && group < 8,
-			'Listing estates of a group must requires the group index');
+	exports.estatesInGroup = function (groupIndex) {
+		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 8,
+			'Listing estates of a group in board requires the group with an index');
 		
 		return _.filter(exports.squares(), function (square) {
 			return square.match({
-				'estate': function () { return square.group() === group; },
+				'estate': function () { return square.group().index === groupIndex; },
 				_ : function () { return false; }
 			});
 		});
@@ -41,50 +41,61 @@
 	};
 	
 	exports.squares = function () {
+		var groups = [
+			{ index: 0, properties: function () { return exports.estatesInGroup(0); }, color: 'midnightblue' },
+			{ index: 1, properties: function () { return exports.estatesInGroup(1); }, color: 'lightsky-blue' },
+			{ index: 2, properties: function () { return exports.estatesInGroup(2); }, color: 'mediumvioletred' },
+			{ index: 3, properties: function () { return exports.estatesInGroup(3); }, color: 'orange' },
+			{ index: 4, properties: function () { return exports.estatesInGroup(4); }, color: 'red' },
+			{ index: 5, properties: function () { return exports.estatesInGroup(5); }, color: 'yellow' },
+			{ index: 6, properties: function () { return exports.estatesInGroup(6); }, color: 'green' },
+			{ index: 7, properties: function () { return exports.estatesInGroup(7); }, color: 'blue' }
+		];
+		
 		return [
 			go(),
-			Estate.mediterranean(exports.estatesInGroup),
+			Estate.mediterranean(groups[0]),
 			communityChest(),
-			Estate.baltic(exports.estatesInGroup),
+			Estate.baltic(groups[0]),
 			incomeTax(),
 			Railroad.reading(),
-			Estate.east(exports.estatesInGroup),
+			Estate.east(groups[1]),
 			chance(),
-			Estate.vermont(exports.estatesInGroup),
-			Estate.connecticut(exports.estatesInGroup),
+			Estate.vermont(groups[1]),
+			Estate.connecticut(groups[1]),
 			
 			jail(),
-			Estate.charles(exports.estatesInGroup),
+			Estate.charles(groups[2]),
 			Company.electric(),
-			Estate.us(exports.estatesInGroup),
-			Estate.virginia(exports.estatesInGroup),
+			Estate.us(groups[2]),
+			Estate.virginia(groups[2]),
 			Railroad.pennsylvania(),
-			Estate.jack(exports.estatesInGroup),
+			Estate.jack(groups[3]),
 			communityChest(),
-			Estate.tennessee(exports.estatesInGroup),
-			Estate.newyork(exports.estatesInGroup),
+			Estate.tennessee(groups[3]),
+			Estate.newyork(groups[3]),
 			
 			parking(),
-			Estate.kentucky(exports.estatesInGroup),
+			Estate.kentucky(groups[4]),
 			chance(),
-			Estate.indiana(exports.estatesInGroup),
-			Estate.illinois(exports.estatesInGroup),
+			Estate.indiana(groups[4]),
+			Estate.illinois(groups[4]),
 			Railroad.bo(),
-			Estate.atlantic(exports.estatesInGroup),
-			Estate.ventnor(exports.estatesInGroup),
+			Estate.atlantic(groups[5]),
+			Estate.ventnor(groups[5]),
 			Company.water(),
-			Estate.marvin(exports.estatesInGroup),
+			Estate.marvin(groups[5]),
 			
 			goToJail(),
-			Estate.pacific(exports.estatesInGroup),
-			Estate.northCarolina(exports.estatesInGroup),
+			Estate.pacific(groups[6]),
+			Estate.northCarolina(groups[6]),
 			communityChest(),
-			Estate.pennsylvania(exports.estatesInGroup),
+			Estate.pennsylvania(groups[6]),
 			Railroad.short(),
 			chance(),
-			Estate.park(exports.estatesInGroup),
+			Estate.park(groups[7]),
 			luxuryTax(),
-			Estate.broadwalk(exports.estatesInGroup)
+			Estate.broadwalk(groups[7])
 		];
 	};
 	
@@ -135,50 +146,6 @@
 			match: match('luxury-tax', [i18n.LUXURY_TAX])
 		};
 	}
-	
-	/*function estate(id, name, group, price, rent) {
-		precondition(_.isString(id) && id.length > 0, 'Property must have an id');
-		precondition(_.isString(name) && name.length > 0, 'Property must have a name');
-		precondition(_.isNumber(group) && group >= 0 && group < 8, 'Property must have a group');
-		precondition(_.isNumber(price) && price > 0, 'Property must have a price');
-		precondition(_.isNumber(rent) && rent > 0, 'Property must have a rent');
-		
-		return {
-			id: function() { return id; },
-			price: function () { return price; },
-			group: function() { return group; },
-			rent: function() { return rent; },
-			match: match('estate', [id, name, price, group]),
-			compareTo: function (property) {
-				precondition(property, 'Comparing this property to another property requires that other property');
-				
-				return property.match({
-					'railroad': function () { return 1; },
-					'company': function () { return 1; },
-					'estate': function (otherId, otherName, otherPrice, otherGroup) {
-						if (id === otherId) {
-							return 0;
-						}
-						
-						if (group < otherGroup) {
-							return 1;
-						} else if (group > otherGroup) {
-							return -1;
-						}
-						var indexesInGroup = {};
-						_.each(exports.estatesInGroup(group), function (estate, index) {
-							indexesInGroup[estate.id()] = index;
-						});
-						if (indexesInGroup[id] < indexesInGroup[otherId]) {
-							return 1;
-						}
-						
-						return -1;
-					}
-				});
-			}
-		};
-	}*/
 	
 	function match(fn, args) {
 		return function (visitor) {

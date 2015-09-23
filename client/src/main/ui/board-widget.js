@@ -3,7 +3,6 @@
 	
 	var precondition = require('./contract').precondition;
 	var i18n = require('./i18n').i18n();
-	var groupColors = require('./group-colors').color;
 	
 	var Symbols = require('./symbols');
 	var TextWrapper = require('./text-wrapper');
@@ -150,7 +149,7 @@
 				.attr({
 					width: SQUARE_WIDTH,
 					height: SQUARE_HEIGHT / 5,
-					fill: groupColors(group),
+					fill: group.color,
 					stroke: 'black'
 				});
 				

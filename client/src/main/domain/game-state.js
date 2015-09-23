@@ -71,11 +71,9 @@
 	}
 	
 	function ownsAllEstatesInGroup(group, properties) {
-		var estatesInGroup = Board.estatesInGroup(group);
+		var estatesInGroup = group.properties();
 		return _.every(estatesInGroup, function (estate) {
-			var id = estate.match({
-				'estate' : function (id) { return id; }
-			});
+			var id = estate.id();
 			
 			return _.contains(properties, id);
 		});
