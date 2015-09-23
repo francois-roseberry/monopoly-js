@@ -127,7 +127,7 @@
 	function colorOfProperty(state, property) {
 		return property.match({
 			'estate': function (id, name, price, group) {
-				return group.color();
+				return group.color;
 			},
 			'railroad': function (id, name, price) {
 				return 'black';
