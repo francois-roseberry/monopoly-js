@@ -43,7 +43,7 @@
 	exports.squares = function () {
 		var groups = [
 			{ index: 0, properties: function () { return exports.estatesInGroup(0); }, color: 'midnightblue' },
-			{ index: 1, properties: function () { return exports.estatesInGroup(1); }, color: 'lightsky-blue' },
+			{ index: 1, properties: function () { return exports.estatesInGroup(1); }, color: 'lightskyblue' },
 			{ index: 2, properties: function () { return exports.estatesInGroup(2); }, color: 'mediumvioletred' },
 			{ index: 3, properties: function () { return exports.estatesInGroup(3); }, color: 'orange' },
 			{ index: 4, properties: function () { return exports.estatesInGroup(4); }, color: 'red' },
