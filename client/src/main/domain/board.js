@@ -6,6 +6,7 @@
 	
 	var Company = require('./company');
 	var Railroad = require('./railroad');
+	var Estate = require('./estate');
 	
 	exports.estatesInGroup = function (group) {
 		precondition(_.isNumber(group) && group >= 0 && group < 8,
@@ -42,48 +43,48 @@
 	exports.squares = function () {
 		return [
 			go(),
-			estate('med', i18n.PROPERTY_MED, 0, 60, 2),
+			Estate.mediterranean(exports.estatesInGroup),
 			communityChest(),
-			estate('baltic', i18n.PROPERTY_BALTIC, 0, 60, 4),
+			Estate.baltic(exports.estatesInGroup),
 			incomeTax(),
 			Railroad.reading(),
-			estate('east', i18n.PROPERTY_EAST, 1, 100, 6),
+			Estate.east(exports.estatesInGroup),
 			chance(),
-			estate('vt', i18n.PROPERTY_VT, 1, 100, 6),
-			estate('conn', i18n.PROPERTY_CONN, 1, 120, 8),
+			Estate.vermont(exports.estatesInGroup),
+			Estate.connecticut(exports.estatesInGroup),
 			
 			jail(),
-			estate('charles', i18n.PROPERTY_CHARLES, 2, 140, 10),
+			Estate.charles(exports.estatesInGroup),
 			Company.electric(),
-			estate('us', i18n.PROPERTY_US, 2, 140, 10),
-			estate('vn', i18n.PROPERTY_VN, 2, 160, 12),
+			Estate.us(exports.estatesInGroup),
+			Estate.virginia(exports.estatesInGroup),
 			Railroad.pennsylvania(),
-			estate('jack', i18n.PROPERTY_JACK, 3, 180, 14),
+			Estate.jack(exports.estatesInGroup),
 			communityChest(),
-			estate('tn', i18n.PROPERTY_TN, 3, 180, 14),
-			estate('ny', i18n.PROPERTY_NY, 3, 200, 16),
+			Estate.tennessee(exports.estatesInGroup),
+			Estate.newyork(exports.estatesInGroup),
 			
 			parking(),
-			estate('kt', i18n.PROPERTY_KT, 4, 220, 18),
+			Estate.kentucky(exports.estatesInGroup),
 			chance(),
-			estate('in', i18n.PROPERTY_IN, 4, 220, 18),
-			estate('il', i18n.PROPERTY_IL, 4, 240, 20),
+			Estate.indiana(exports.estatesInGroup),
+			Estate.illinois(exports.estatesInGroup),
 			Railroad.bo(),
-			estate('at', i18n.PROPERTY_AT, 5, 260, 22),
-			estate('vr', i18n.PROPERTY_VR, 5, 260, 22),
+			Estate.atlantic(exports.estatesInGroup),
+			Estate.ventnor(exports.estatesInGroup),
 			Company.water(),
-			estate('marvin', i18n.PROPERTY_MARVIN, 5, 280, 24),
+			Estate.marvin(exports.estatesInGroup),
 			
 			goToJail(),
-			estate('pa', i18n.PROPERTY_PA, 6, 300, 26),
-			estate('nc', i18n.PROPERTY_NC, 6, 300, 26),
+			Estate.pacific(exports.estatesInGroup),
+			Estate.northCarolina(exports.estatesInGroup),
 			communityChest(),
-			estate('penn', i18n.PROPERTY_PENN, 6, 320, 28),
+			Estate.pennsylvania(exports.estatesInGroup),
 			Railroad.short(),
 			chance(),
-			estate('pk', i18n.PROPERTY_PK, 7, 350, 35),
+			Estate.park(exports.estatesInGroup),
 			luxuryTax(),
-			estate('bw', i18n.PROPERTY_BW, 7, 400, 50)
+			Estate.broadwalk(exports.estatesInGroup)
 		];
 	};
 	
@@ -135,7 +136,7 @@
 		};
 	}
 	
-	function estate(id, name, group, price, rent) {
+	/*function estate(id, name, group, price, rent) {
 		precondition(_.isString(id) && id.length > 0, 'Property must have an id');
 		precondition(_.isString(name) && name.length > 0, 'Property must have a name');
 		precondition(_.isNumber(group) && group >= 0 && group < 8, 'Property must have a group');
@@ -177,7 +178,7 @@
 				});
 			}
 		};
-	}
+	}*/
 	
 	function match(fn, args) {
 		return function (visitor) {
