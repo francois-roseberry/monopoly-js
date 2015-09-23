@@ -16,6 +16,26 @@
 		});
 	};
 	
+	exports.propertyById = function (propertyId) {
+		precondition(_.isString(propertyId) && propertyId.length > 0,
+			'Trying to find a property in the board requires the property id');
+		
+		var match = _.find(exports.squares(), function (square) {
+			return square.match({
+				'estate': function (id) { return id === propertyId; },
+				'railroad': function (id) { return id === propertyId; },
+				'company': function (id) { return id === propertyId; },
+				_: function () { return false; }
+			});
+		});
+		
+		if (match === null) {
+			throw new Error('Could not find property with id : ' + propertyId);
+		}
+		
+		return match;
+	};
+	
 	exports.squares = function () {
 		return [
 			go(),
@@ -117,7 +137,20 @@
 		precondition(_.isString(name) && name.length > 0, 'Company must have a name');
 		
 		return {
-			match: match('company', [id, name, 150])
+			id: function () { return id; },
+			match: match('company', [id, name, 150]),
+			compareTo: function (property) {
+				precondition(property, 'Comparing this property to another property requires that other property');
+				
+				return property.match({
+					'railroad': function () { return -1; },
+					'estate': function () { return -1; },
+					'company': function (otherId) {
+						if (id === otherId) { return 0; }
+						return (otherId === 'electric' ? -1 : 1);
+					}
+				});
+			}
 		};
 	}
 	
@@ -126,7 +159,28 @@
 		precondition(_.isString(name) && name.length > 0, 'Railroad must have a name');
 		
 		return {
-			match: match('railroad', [id, name, 200])
+			id: function () { return id; },
+			match: match('railroad', [id, name, 200]),
+			compareTo: function (property) {
+				precondition(property, 'Comparing this property to another property requires that other property');
+				
+				return property.match({
+					'company': function () { return 1; },
+					'estate': function (id) { return -1; },
+					'railroad': function (otherId) {
+						if (id === otherId) { return 0; }
+						if (id === 'rr-reading') { return 1; }
+						if (id === 'rr-penn') {
+							if (otherId === 'rr-reading') { return -1; }
+							return 1;
+						}
+						if (id === 'rr-bo' && otherId === 'rr-short') {
+							return 1;
+						}
+						return -1;
+					}
+				});
+			}
 		};
 	}
 	
@@ -138,9 +192,38 @@
 		precondition(_.isNumber(rent) && rent > 0, 'Property must have a rent');
 		
 		return {
+			id: function() { return id; },
 			group: function() { return group; },
 			rent: function() { return rent; },
-			match: match('estate', [id, name, price, group])
+			match: match('estate', [id, name, price, group]),
+			compareTo: function (property) {
+				precondition(property, 'Comparing this property to another property requires that other property');
+				
+				return property.match({
+					'railroad': function () { return 1; },
+					'company': function () { return 1; },
+					'estate': function (otherId, otherName, otherPrice, otherGroup) {
+						if (id === otherId) {
+							return 0;
+						}
+						
+						if (group < otherGroup) {
+							return 1;
+						} else if (group > otherGroup) {
+							return -1;
+						}
+						var indexesInGroup = {};
+						_.each(exports.estatesInGroup(group), function (estate, index) {
+							indexesInGroup[estate.id()] = index;
+						});
+						if (indexesInGroup[id] < indexesInGroup[otherId]) {
+							return 1;
+						}
+						
+						return -1;
+					}
+				});
+			}
 		};
 	}
 	

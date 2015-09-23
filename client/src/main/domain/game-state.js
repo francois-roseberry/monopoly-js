@@ -163,22 +163,6 @@
 	};
 	
 	GameState.prototype.propertyById = function (propertyId) {
-		precondition(_.isString(propertyId) && propertyId.length > 0,
-			'Trying to find a property in a game state requires the property id');
-		
-		var match = _.find(this._squares, function (square) {
-			return square.match({
-				'estate': function (id) { return id === propertyId; },
-				'railroad': function (id) { return id === propertyId; },
-				'company': function (id) { return id === propertyId; },
-				_: function () { return false; }
-			});
-		});
-		
-		if (match === null) {
-			throw new Error('Could not find property with id : ' + propertyId);
-		}
-		
-		return match;
+		return Board.propertyById(propertyId);
 	};
 }());

@@ -104,7 +104,7 @@
 			.selectAll('.player-property')
 			.data(function (player) {
 				return player.properties();
-			});
+			}, function (propertyId) { return propertyId; });
 			
 		createPlayerProperties(playerPropertiesSelection, state);
 	}
@@ -122,6 +122,8 @@
 			.style('background-color', function (propertyId) {
 				return colorOfProperty(state, propertyId);
 			});
+			
+		selection.order();
 	}
 	
 	function nameOfProperty(state, propertyId) {

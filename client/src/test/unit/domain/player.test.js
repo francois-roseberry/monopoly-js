@@ -31,7 +31,7 @@
 		});
 		
 		describe('when buying property', function () {
-			var PROPERTY_ID = 'id';
+			var PROPERTY_ID = 'med';
 			var PRICE = 200;
 			var newPlayer;
 			
@@ -45,6 +45,22 @@
 			
 			it('add it to the list', function () {
 				expect(newPlayer.properties()).to.eql(players[0].properties().concat([PROPERTY_ID]));
+			});
+			
+			it('insert them in order', function () {
+				expect(newPlayer.properties()).to.eql(['med']);
+				
+				newPlayer = newPlayer.buyProperty('rr-short', 0);
+				
+				expect(newPlayer.properties()).to.eql(['med', 'rr-short']);
+				
+				newPlayer = newPlayer.buyProperty('bw', 0);
+				
+				expect(newPlayer.properties()).to.eql(['med', 'bw', 'rr-short']);
+				
+				newPlayer = newPlayer.buyProperty('conn', 0);
+				
+				expect(newPlayer.properties()).to.eql(['med', 'conn', 'bw', 'rr-short']);
 			});
 		});
 		

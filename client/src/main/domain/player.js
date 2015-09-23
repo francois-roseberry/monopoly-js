@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var PlayerColors = require('./player-colors').colors();
+	var Board = require('./board');
 	
 	var precondition = require('./contract').precondition;
 	var i18n = require('./i18n').i18n();
@@ -97,6 +98,11 @@
 	Player.prototype.buyProperty = function (id, price) {
 		precondition(_.isNumber(price) && this.money() > price,
 			'Buying a property requires the player to have enough money');
+			
+		// TODO : find the property corresponding to the id
+		var property = Board.propertyById(id);
+		
+		precondition(property, 'Player can only buy a real property');
 		
 		return newPlayer({
 			id: this.id(),
@@ -105,9 +111,31 @@
 			position: this.position(),
 			color: this.color(),
 			type: this.type(),
-			properties: this.properties().concat([id])
+			properties: insertProperty(property, this.properties())
 		});
 	};
+	
+	function insertProperty(property, propertyIds) {
+		return insertPropertyAt(property, 0, propertyIds);
+	}
+	
+	function insertPropertyAt(property, index, propertyIds) {
+		if (index === propertyIds.length) {
+			return propertyIds.concat([property.id()]);
+		}
+		
+		var otherProperty = Board.propertyById(propertyIds[index]);
+		
+		if (property.compareTo(otherProperty) === 1) {
+			// It comes before, so insert it at index
+			var newProperties = propertyIds.slice();
+			newProperties.splice(index, 0, property.id());
+			return newProperties;
+		}
+		
+		// It comes after, so look further in the array
+		return insertPropertyAt(property, index + 1, propertyIds);
+	}
 	
 	Player.prototype.pay = function (amount) {
 		precondition(_.isNumber(amount) && amount > 0,
