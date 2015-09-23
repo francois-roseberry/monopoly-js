@@ -111,10 +111,10 @@
 		var previousProperties = states.previous.players()[states.current.currentPlayerIndex()].properties();
 		var currentProperties = states.current.players()[states.current.currentPlayerIndex()].properties();
 		
-		var newPropertyId = _.filter(currentProperties, function (id) {
-			return !_.contains(previousProperties, id);
+		var newProperty = _.filter(currentProperties, function (property) {
+			return !_.contains(_.map(previousProperties, function (property) { return property.id(); }), property.id());
 		})[0];
-		return states.current.propertyById(newPropertyId);
+		return newProperty;
 	}
 	
 	function nameOfProperty(property) {

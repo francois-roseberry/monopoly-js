@@ -2,7 +2,7 @@
 	"use strict";
 	
 	var Choices = require('./choices');
-	var Board = require('./board');
+	//var Board = require('./board');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -48,9 +48,9 @@
 	
 	function choicesForSquare(square, players, currentPlayer, paid) {
 		return square.match({
-			'estate': choicesForProperty(players, currentPlayer, paid, estateRent(square)),
-			'railroad': choicesForProperty(players, currentPlayer, paid, railroadRent),
-			'company': choicesForProperty(players, currentPlayer, paid, companyRent),
+			'estate': choicesForProperty(square, players, currentPlayer, paid, estateRent(square)),
+			'railroad': choicesForProperty(square, players, currentPlayer, paid, railroadRent),
+			'company': choicesForProperty(square, players, currentPlayer, paid, companyRent),
 			_: onlyFinishTurn
 		});
 	}
@@ -75,7 +75,7 @@
 		return _.every(estatesInGroup, function (estate) {
 			var id = estate.id();
 			
-			return _.contains(properties, id);
+			return _.contains(_.map(properties, function (property) { return property.id(); }), id);
 		});
 	}
 	
@@ -86,8 +86,8 @@
 	
 	function railroadCountIn(properties) {
 		return _.reduce(properties, function (count, property) {
-			if (property === 'rr-reading' || property === 'rr-penn' ||
-				property === 'rr-bo' || property === 'rr-short') {
+			if (property.id() === 'rr-reading' || property.id() === 'rr-penn' ||
+				property.id() === 'rr-bo' || property.id() === 'rr-short') {
 				return count + 1;
 			}
 			
@@ -95,9 +95,9 @@
 		}, 0);
 	}
 	
-	function choicesForProperty(players, currentPlayer, paid, rentFunction) {
+	function choicesForProperty(square, players, currentPlayer, paid, rentFunction) {
 		return function (id, name, price) {
-			var owner = getOwner(players, id);
+			var owner = getOwner(players, square);
 			
 			if (!paid && owner && owner.id() !== currentPlayer.id()) {
 				var rent = rentFunction(owner.properties());
@@ -116,10 +116,10 @@
 		};
 	}
 	
-	function getOwner(players, propertyId) {
+	function getOwner(players, square) {
 		return _.find(players, function (player) {
 			return _.some(player.properties(), function (property) {
-				return property === propertyId;
+				return property.equals(square);
 			});
 		});
 	}
@@ -158,9 +158,5 @@
 	
 	GameState.prototype.choices = function () {
 		return this._choices;
-	};
-	
-	GameState.prototype.propertyById = function (propertyId) {
-		return Board.propertyById(propertyId);
 	};
 }());

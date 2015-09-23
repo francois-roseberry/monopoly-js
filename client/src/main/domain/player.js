@@ -2,7 +2,7 @@
 	"use strict";
 	
 	var PlayerColors = require('./player-colors').colors();
-	var Board = require('./board');
+	/*var Board = require('./board');*/
 	
 	var precondition = require('./contract').precondition;
 	var i18n = require('./i18n').i18n();
@@ -96,7 +96,8 @@
 	};
 	
 	Player.prototype.buyProperty = function (property) {
-		precondition(property, 'Buying a property with a player requires that property');
+		precondition(property && _.isFunction(property.id),
+			'Buying a property with a player requires that property');
 		precondition(this.money() > property.price(),
 			'Buying a property requires the player to have enough money');
 		
@@ -111,26 +112,26 @@
 		});
 	};
 	
-	function insertProperty(property, propertyIds) {
-		return insertPropertyAt(property, 0, propertyIds);
+	function insertProperty(property, properties) {
+		return insertPropertyAt(property, 0, properties);
 	}
 	
-	function insertPropertyAt(property, index, propertyIds) {
-		if (index === propertyIds.length) {
-			return propertyIds.concat([property.id()]);
+	function insertPropertyAt(property, index, properties) {
+		if (index === properties.length) {
+			return properties.concat([property]);
 		}
 		
-		var otherProperty = Board.propertyById(propertyIds[index]);
+		var otherProperty = properties[index];/*Board.propertyById(propertyIds[index]);*/
 		
 		if (property.compareTo(otherProperty) === 1) {
 			// It comes before, so insert it at index
-			var newProperties = propertyIds.slice();
-			newProperties.splice(index, 0, property.id());
+			var newProperties = properties.slice();
+			newProperties.splice(index, 0, property);
 			return newProperties;
 		}
 		
 		// It comes after, so look further in the array
-		return insertPropertyAt(property, index + 1, propertyIds);
+		return insertPropertyAt(property, index + 1, properties);
 	}
 	
 	Player.prototype.pay = function (amount) {

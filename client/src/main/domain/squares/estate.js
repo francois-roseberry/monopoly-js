@@ -167,4 +167,14 @@
 			}
 		});
 	};
+	
+	Estate.prototype.equals = function (other) {
+		precondition(other, 'Testing an estate for equality with something else requires that something else');
+		
+		if (this === other) {
+			return true;
+		}
+		
+		return other instanceof Estate && this._id === other._id;
+	};
 }());

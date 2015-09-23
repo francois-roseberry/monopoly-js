@@ -4,8 +4,6 @@
 	var precondition =  require('./contract').precondition;
 	var i18n = require('./i18n').i18n();
 	
-	var groupColors = require('./group-colors').color;
-	
 	exports.render = function (container, gameState) {
 		precondition(container, 'Players widget requires a container to render into');
 		precondition(gameState, 'Players widget requires an observable of the gameState');
@@ -104,7 +102,7 @@
 			.selectAll('.player-property')
 			.data(function (player) {
 				return player.properties();
-			}, function (propertyId) { return propertyId; });
+			}, function (property) { return property.id(); });
 			
 		createPlayerProperties(playerPropertiesSelection, state);
 	}
@@ -113,21 +111,20 @@
 		selection.enter()
 			.append('div')
 			.classed('player-property', true)
-			.attr('data-ui', function (propertyId) {
-				return propertyId; 
+			.attr('data-ui', function (property) {
+				return property.id(); 
 			})
-			.text(function (propertyId) {
-				return nameOfProperty(state, propertyId);
+			.text(function (property) {
+				return nameOfProperty(state, property);
 			})
-			.style('background-color', function (propertyId) {
-				return colorOfProperty(state, propertyId);
+			.style('background-color', function (property) {
+				return colorOfProperty(state, property);
 			});
 			
 		selection.order();
 	}
 	
-	function nameOfProperty(state, propertyId) {
-		var property = state.propertyById(propertyId);
+	function nameOfProperty(state, property) {
 		return property.match({
 			'estate': function (id, name, price, group) {
 				return name;
@@ -142,11 +139,10 @@
 		});
 	}
 	
-	function colorOfProperty(state, propertyId) {
-		var property = state.propertyById(propertyId);
+	function colorOfProperty(state, property) {
 		return property.match({
 			'estate': function (id, name, price, group) {
-				return groupColors(group);
+				return group.color();
 			},
 			'railroad': function (id, name, price) {
 				return 'black';

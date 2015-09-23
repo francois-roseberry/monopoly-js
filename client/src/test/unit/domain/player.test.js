@@ -45,19 +45,25 @@
 			});
 			
 			it('insert them in order', function () {
-				expect(newPlayer.properties()).to.eql(['med']);
+				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
 				
 				newPlayer = newPlayer.buyProperty(Railroad.short());
 				
-				expect(newPlayer.properties()).to.eql(['med', 'rr-short']);
+				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
+				expect(newPlayer.properties()[1].equals(Railroad.short())).to.be(true);
 				
 				newPlayer = newPlayer.buyProperty(Board.propertyById('bw'));
 				
-				expect(newPlayer.properties()).to.eql(['med', 'bw', 'rr-short']);
+				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
+				expect(newPlayer.properties()[1].equals(Board.propertyById('bw'))).to.be(true);
+				expect(newPlayer.properties()[2].equals(Railroad.short())).to.be(true);
 				
 				newPlayer = newPlayer.buyProperty(Board.propertyById('conn'));
 				
-				expect(newPlayer.properties()).to.eql(['med', 'conn', 'bw', 'rr-short']);
+				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
+				expect(newPlayer.properties()[1].equals(Board.propertyById('conn'))).to.be(true);
+				expect(newPlayer.properties()[2].equals(Board.propertyById('bw'))).to.be(true);
+				expect(newPlayer.properties()[3].equals(Railroad.short())).to.be(true);
 			});
 		});
 		

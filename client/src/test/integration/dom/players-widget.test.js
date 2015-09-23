@@ -101,9 +101,9 @@
 			_.each(currentState.players(), function (player) {
 				domContext.assertOneOf('.player-panel[data-ui=' + player.id() + '] .player-properties');
 				
-				_.each(player.properties(), function (propertyId) {
+				_.each(player.properties(), function (property) {
 					domContext.assertOneOf(
-						'.player-panel[data-ui=' + player.id() + '] .player-property[data-ui=' + propertyId + ']');
+						'.player-panel[data-ui=' + player.id() + '] .player-property[data-ui=' + property.id() + ']');
 				});
 			});
 		}

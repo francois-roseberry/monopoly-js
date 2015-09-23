@@ -51,4 +51,14 @@
 			}
 		});
 	};
+	
+	Company.prototype.equals = function (other) {
+		precondition(other, 'Testing a company for equality with something else requires that something else');
+		
+		if (this === other) {
+			return true;
+		}
+		
+		return other instanceof Company && this._id === other._id;
+	};
 }());

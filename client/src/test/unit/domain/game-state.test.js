@@ -9,16 +9,6 @@
 	
 	var testData = require('./test-data');
 	
-	describe('Any game state', function () {
-		it('can retrieve a property by its id', function () {
-			var state = turnStartState();
-			
-			expect(state.propertyById('rr-reading').match({
-				'railroad': function (id) { return id; }
-			})).to.eql('rr-reading');
-		});
-	});
-	
 	describe('A turnStart state', function () {
 		it('offers the roll-dice choice', function () {
 			var state = turnStartState();
