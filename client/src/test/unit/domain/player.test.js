@@ -3,6 +3,7 @@
 	
 	var Player = require('./player');
 	var Board = require('./board');
+	var Railroad = require('./railroad');
 	
 	var testData = require('./test-data');
 	
@@ -46,7 +47,7 @@
 			it('insert them in order', function () {
 				expect(newPlayer.properties()).to.eql(['med']);
 				
-				newPlayer = newPlayer.buyProperty(Board.propertyById('rr-short'));
+				newPlayer = newPlayer.buyProperty(Railroad.short());
 				
 				expect(newPlayer.properties()).to.eql(['med', 'rr-short']);
 				

@@ -5,6 +5,7 @@
 	var precondition = require('./contract').precondition;
 	
 	var Company = require('./company');
+	var Railroad = require('./railroad');
 	
 	exports.estatesInGroup = function (group) {
 		precondition(_.isNumber(group) && group >= 0 && group < 8,
@@ -45,7 +46,7 @@
 			communityChest(),
 			estate('baltic', i18n.PROPERTY_BALTIC, 0, 60, 4),
 			incomeTax(),
-			railroad('rr-reading', i18n.RAILROAD_READING),
+			Railroad.reading(),
 			estate('east', i18n.PROPERTY_EAST, 1, 100, 6),
 			chance(),
 			estate('vt', i18n.PROPERTY_VT, 1, 100, 6),
@@ -56,7 +57,7 @@
 			Company.electric(),
 			estate('us', i18n.PROPERTY_US, 2, 140, 10),
 			estate('vn', i18n.PROPERTY_VN, 2, 160, 12),
-			railroad('rr-penn', i18n.RAILROAD_PENN),
+			Railroad.pennsylvania(),
 			estate('jack', i18n.PROPERTY_JACK, 3, 180, 14),
 			communityChest(),
 			estate('tn', i18n.PROPERTY_TN, 3, 180, 14),
@@ -67,7 +68,7 @@
 			chance(),
 			estate('in', i18n.PROPERTY_IN, 4, 220, 18),
 			estate('il', i18n.PROPERTY_IL, 4, 240, 20),
-			railroad('rr-bo', i18n.RAILROAD_B_O),
+			Railroad.bo(),
 			estate('at', i18n.PROPERTY_AT, 5, 260, 22),
 			estate('vr', i18n.PROPERTY_VR, 5, 260, 22),
 			Company.water(),
@@ -78,7 +79,7 @@
 			estate('nc', i18n.PROPERTY_NC, 6, 300, 26),
 			communityChest(),
 			estate('penn', i18n.PROPERTY_PENN, 6, 320, 28),
-			railroad('rr-short', i18n.RAILROAD_SHORT),
+			Railroad.short(),
 			chance(),
 			estate('pk', i18n.PROPERTY_PK, 7, 350, 35),
 			luxuryTax(),
@@ -131,37 +132,6 @@
 	function luxuryTax() {
 		return {
 			match: match('luxury-tax', [i18n.LUXURY_TAX])
-		};
-	}
-	
-	function railroad(id, name) {
-		precondition(_.isString(id) && id.length > 0, 'Railroad must have an id');
-		precondition(_.isString(name) && name.length > 0, 'Railroad must have a name');
-		
-		return {
-			id: function () { return id; },
-			price: function () { return 200; },
-			match: match('railroad', [id, name, 200]),
-			compareTo: function (property) {
-				precondition(property, 'Comparing this property to another property requires that other property');
-				
-				return property.match({
-					'company': function () { return 1; },
-					'estate': function (id) { return -1; },
-					'railroad': function (otherId) {
-						if (id === otherId) { return 0; }
-						if (id === 'rr-reading') { return 1; }
-						if (id === 'rr-penn') {
-							if (otherId === 'rr-reading') { return -1; }
-							return 1;
-						}
-						if (id === 'rr-bo' && otherId === 'rr-short') {
-							return 1;
-						}
-						return -1;
-					}
-				});
-			}
 		};
 	}
 	

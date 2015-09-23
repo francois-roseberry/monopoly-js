@@ -4,6 +4,8 @@
 	var GameState = require('./game-state');
 	var Board = require('./board');
 	var Choices = require('./choices');
+	var Company = require('./company');
+	var Railroad = require('./railroad');
 	
 	var testData = require('./test-data');
 	
@@ -282,31 +284,31 @@
 	
 	function playerOnRailroadOwnedByOtherWithOneRailroad() {
 		var players = testData.players();
-		var owner = players[1].buyProperty(Board.propertyById('rr-reading'));
+		var owner = players[1].buyProperty(Railroad.reading());
 		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithTwoRailroads() {
 		var players = testData.players();
-		var owner = players[1].buyProperty(Board.propertyById('rr-reading'))
-			.buyProperty(Board.propertyById('rr-penn'));
+		var owner = players[1].buyProperty(Railroad.reading())
+			.buyProperty(Railroad.pennsylvania());
 		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithThreeRailroads() {
 		var players = testData.players();
-		var owner = players[1].buyProperty(Board.propertyById('rr-reading'))
-			.buyProperty(Board.propertyById('rr-penn'))
-			.buyProperty(Board.propertyById('rr-bo'));
+		var owner = players[1].buyProperty(Railroad.reading())
+			.buyProperty(Railroad.pennsylvania())
+			.buyProperty(Railroad.bo());
 		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
 	function playerOnRailroadOwnedByOtherWithFourRailroads() {
 		var players = testData.players();
-		var owner = players[1].buyProperty(Board.propertyById('rr-reading'))
-			.buyProperty(Board.propertyById('rr-penn'))
-			.buyProperty(Board.propertyById('rr-bo'))
-			.buyProperty(Board.propertyById('rr-short'));
+		var owner = players[1].buyProperty(Railroad.reading())
+			.buyProperty(Railroad.pennsylvania())
+			.buyProperty(Railroad.bo())
+			.buyProperty(Railroad.short());
 		return [players[0].move([0, 5]), owner, players[2]];
 	}
 	
@@ -314,7 +316,7 @@
 		var players = testData.players();
 		return [
 			players[0].move([0, 12]),
-			players[1].buyProperty(Board.propertyById('electric')),
+			players[1].buyProperty(Company.electric()),
 			players[2]
 		];
 	}
@@ -332,7 +334,7 @@
 		var players = testData.players();
 		return [
 			players[0].move([0, 5]).pay(1499),
-			players[1].buyProperty(Board.propertyById('rr-reading')),
+			players[1].buyProperty(Railroad.reading()),
 			players[2]
 		];
 	}
@@ -341,7 +343,7 @@
 		var players = testData.players();
 		return [
 			players[0].move([0, 12]).pay(1499),
-			players[1].buyProperty(Board.propertyById('electric')),
+			players[1].buyProperty(Company.electric()),
 			players[2]
 		];
 	}
