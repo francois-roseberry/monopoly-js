@@ -4,6 +4,8 @@
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
+	var Company = require('./company');
+	
 	exports.estatesInGroup = function (group) {
 		precondition(_.isNumber(group) && group >= 0 && group < 8,
 			'Listing estates of a group must requires the group index');
@@ -51,7 +53,7 @@
 			
 			jail(),
 			estate('charles', i18n.PROPERTY_CHARLES, 2, 140, 10),
-			company('electric', i18n.COMPANY_ELECTRIC),
+			Company.electric(),
 			estate('us', i18n.PROPERTY_US, 2, 140, 10),
 			estate('vn', i18n.PROPERTY_VN, 2, 160, 12),
 			railroad('rr-penn', i18n.RAILROAD_PENN),
@@ -68,7 +70,7 @@
 			railroad('rr-bo', i18n.RAILROAD_B_O),
 			estate('at', i18n.PROPERTY_AT, 5, 260, 22),
 			estate('vr', i18n.PROPERTY_VR, 5, 260, 22),
-			company('water', i18n.COMPANY_WATER),
+			Company.water(),
 			estate('marvin', i18n.PROPERTY_MARVIN, 5, 280, 24),
 			
 			goToJail(),
@@ -129,29 +131,6 @@
 	function luxuryTax() {
 		return {
 			match: match('luxury-tax', [i18n.LUXURY_TAX])
-		};
-	}
-	
-	function company(id, name) {
-		precondition(_.isString(id) && id.length > 0, 'Company must have an id');
-		precondition(_.isString(name) && name.length > 0, 'Company must have a name');
-		
-		return {
-			id: function () { return id; },
-			price: function () { return 150; },
-			match: match('company', [id, name, 150]),
-			compareTo: function (property) {
-				precondition(property, 'Comparing this property to another property requires that other property');
-				
-				return property.match({
-					'railroad': function () { return -1; },
-					'estate': function () { return -1; },
-					'company': function (otherId) {
-						if (id === otherId) { return 0; }
-						return (otherId === 'electric' ? -1 : 1);
-					}
-				});
-			}
 		};
 	}
 	

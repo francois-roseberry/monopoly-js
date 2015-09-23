@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var Board = require('./board');
+	var Company = require('./company');
 	
 	describe('Board property compare', function () {
 		describe('an estate', function () {
@@ -11,7 +12,7 @@
 			});
 			
 			it('is in front of a company', function () {
-				var comparison = Board.squares()[1].compareTo(Board.squares()[12]);
+				var comparison = Board.squares()[1].compareTo(Company.electric());
 				expect(comparison).to.be(1);
 			});
 			
@@ -48,7 +49,7 @@
 			});
 			
 			it('is in front of a company', function () {
-				var comparison = Board.squares()[5].compareTo(Board.squares()[12]);			
+				var comparison = Board.squares()[5].compareTo(Company.electric());			
 				expect(comparison).to.be(1);
 			});
 			
@@ -105,27 +106,27 @@
 		
 		describe('a company', function () {
 			it('is behind an estate', function () {
-				var comparison = Board.squares()[12].compareTo(Board.squares()[1]);
+				var comparison = Company.electric().compareTo(Board.squares()[1]);
 				expect(comparison).to.be(-1);
 			});
 			
 			it('is behind a railroad', function () {
-				var comparison = Board.squares()[12].compareTo(Board.squares()[5]);
+				var comparison = Company.electric().compareTo(Board.squares()[5]);
 				expect(comparison).to.be(-1);
 			});
 			
 			it('is equal to itself', function () {
-				var comparison = Board.squares()[12].compareTo(Board.squares()[12]);
+				var comparison = Company.electric().compareTo(Company.electric());
 				expect(comparison).to.be(0);
 			});
 			
 			it('if electric company, is in front of the waterworks', function () {
-				var comparison = Board.squares()[12].compareTo(Board.squares()[28]);
+				var comparison = Company.electric().compareTo(Company.water());
 				expect(comparison).to.be(1);
 			});
 			
 			it('if waterworks, is behind the electric company', function () {
-				var comparison = Board.squares()[28].compareTo(Board.squares()[12]);
+				var comparison = Company.water().compareTo(Company.electric());
 				expect(comparison).to.be(-1);
 			});
 		});
