@@ -34,6 +34,10 @@
 		return this._price;
 	};
 	
+	Company.prototype.rent = function () {
+		return 25;
+	};
+	
 	Company.prototype.group = function () {
 		return this._group;
 	};

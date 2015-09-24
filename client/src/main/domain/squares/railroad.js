@@ -34,6 +34,10 @@
 		return this._price;
 	};
 	
+	Railroad.prototype.rent = function () {
+		return 25;
+	};
+	
 	Railroad.prototype.group = function () {
 		return this._group;
 	};

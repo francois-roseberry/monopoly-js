@@ -49,18 +49,14 @@
 	function choicesForSquare(square, players, currentPlayer, paid) {
 		return square.match({
 			'estate': choicesForProperty(square, players, currentPlayer, paid, estateRent(square)),
-			'railroad': choicesForProperty(square, players, currentPlayer, paid, railroadRent),
-			'company': choicesForProperty(square, players, currentPlayer, paid, companyRent),
+			'railroad': choicesForProperty(square, players, currentPlayer, paid, railroadRent(square.rent)),
+			'company': choicesForProperty(square, players, currentPlayer, paid, square.rent),
 			_: onlyFinishTurn
 		});
 	}
 	
 	function onlyFinishTurn() {
 		return [Choices.finishTurn()];
-	}
-	
-	function companyRent() {
-		return 25;
 	}
 	
 	function estateRent(square) {
@@ -79,9 +75,11 @@
 		});
 	}
 	
-	function railroadRent(ownerProperties) {
-		var count = railroadCountIn(ownerProperties);
-		return 25 * Math.pow(2, count - 1);
+	function railroadRent(baseRent) {
+		return function (ownerProperties) {
+			var count = railroadCountIn(ownerProperties);
+			return baseRent() * Math.pow(2, count - 1);
+		};
 	}
 	
 	function railroadCountIn(properties) {
