@@ -8,94 +8,116 @@
 	var Railroad = require('./railroad');
 	var Estate = require('./estate');
 	
-	exports.estatesInGroup = function (groupIndex) {
-		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 8,
-			'Listing estates of a group in board requires the group with an index');
+	function estatesInGroup (groupIndex) {
+		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 10,
+			'Listing estates of a group in board requires the group index');
 		
 		return _.filter(exports.squares(), function (square) {
 			return square.match({
 				'estate': function () { return square.group().index === groupIndex; },
+				'company': function () { return square.group().index === groupIndex; },
+				'railroad': function () { return square.group().index === groupIndex; },
 				_ : function () { return false; }
 			});
 		});
-	};
+	}
 	
-	exports.propertyById = function (propertyId) {
-		precondition(_.isString(propertyId) && propertyId.length > 0,
-			'Trying to find a property in the board requires the property id');
+	exports.properties = function () {
+		var groups = [
+			{ index: 0, properties: function () { return estatesInGroup(0); }, color: 'midnightblue' },
+			{ index: 1, properties: function () { return estatesInGroup(1); }, color: 'lightskyblue' },
+			{ index: 2, properties: function () { return estatesInGroup(2); }, color: 'mediumvioletred' },
+			{ index: 3, properties: function () { return estatesInGroup(3); }, color: 'orange' },
+			{ index: 4, properties: function () { return estatesInGroup(4); }, color: 'red' },
+			{ index: 5, properties: function () { return estatesInGroup(5); }, color: 'yellow' },
+			{ index: 6, properties: function () { return estatesInGroup(6); }, color: 'green' },
+			{ index: 7, properties: function () { return estatesInGroup(7); }, color: 'blue' }
+		];
 		
-		var match = _.find(exports.squares(), function (square) {
-			return square.match({
-				'estate': function (id) { return id === propertyId; },
-				'railroad': function (id) { return id === propertyId; },
-				'company': function (id) { return id === propertyId; },
-				_: function () { return false; }
-			});
-		});
+		var railroadGroup = { index: 8, properties: function () { return estatesInGroup(8); }, color: 'black' };
+		var companyGroup = { index: 9, properties: function () { return estatesInGroup(9); }, color: 'lightgreen' };
 		
-		if (match === null) {
-			throw new Error('Could not find property with id : ' + propertyId);
-		}
-		
-		return match;
+		return {
+			mediterranean: 	Estate.create('md', i18n.PROPERTY_MED, groups[0], { value: 60, rent: 2}),
+			baltic:			Estate.create('bt', i18n.PROPERTY_BALTIC, groups[0], { value: 60, rent: 4}),
+			east:			Estate.create('et', i18n.PROPERTY_EAST, groups[1], { value: 100, rent: 6}),
+			vermont:		Estate.create('vt', i18n.PROPERTY_VT, groups[1], { value: 100, rent: 6}),
+			connecticut:	Estate.create('cn', i18n.PROPERTY_CONN, groups[1], { value: 120, rent: 8}),
+			charles:		Estate.create('cl', i18n.PROPERTY_CHARLES, groups[2], { value: 140, rent: 10}),
+			us:				Estate.create('us', i18n.PROPERTY_US, groups[2], { value: 140, rent: 10}),
+			virginia:		Estate.create('vn', i18n.PROPERTY_VN, groups[2], { value: 160, rent: 12}),
+			jack:			Estate.create('jk', i18n.PROPERTY_JACK, groups[3], { value: 180, rent: 14}),
+			tennessee:		Estate.create('tn', i18n.PROPERTY_TN, groups[3], { value: 180, rent: 14}),
+			newYork:		Estate.create('ny', i18n.PROPERTY_NY, groups[3], { value: 200, rent: 16}),
+			kentucky:		Estate.create('kt', i18n.PROPERTY_KT, groups[4], { value: 220, rent: 18}),
+			indiana:		Estate.create('in', i18n.PROPERTY_IN, groups[4], { value: 220, rent: 18}),
+			illinois:		Estate.create('il', i18n.PROPERTY_IL, groups[4], { value: 240, rent: 20}),
+			atlantic:		Estate.create('at', i18n.PROPERTY_AT, groups[5], { value: 260, rent: 22}),
+			ventnor:		Estate.create('vr', i18n.PROPERTY_VR, groups[5], { value: 260, rent: 22}),
+			marvin:			Estate.create('mv', i18n.PROPERTY_MARVIN, groups[5], { value: 280, rent: 24}),
+			pacific:		Estate.create('pa', i18n.PROPERTY_PA, groups[6], { value: 300, rent: 26}),
+			northCarolina:	Estate.create('nc', i18n.PROPERTY_NC, groups[6], { value: 300, rent: 26}),
+			pennsylvania:	Estate.create('pn', i18n.PROPERTY_PENN, groups[6], { value: 320, rent: 28}),
+			park:			Estate.create('pk', i18n.PROPERTY_PK, groups[7], { value: 350, rent: 35}),
+			broadwalk:		Estate.create('bw', i18n.PROPERTY_BW, groups[7], { value: 400, rent: 50}),
+			
+			readingRailroad:		Railroad.create('rr-reading', i18n.RAILROAD_READING, railroadGroup),
+			pennsylvaniaRailroad:	Railroad.create('rr-penn', i18n.RAILROAD_PENN, railroadGroup),
+			boRailroad:				Railroad.create('rr-bo', i18n.RAILROAD_B_O, railroadGroup),
+			shortRailroad:			Railroad.create('rr-short', i18n.RAILROAD_SHORT, railroadGroup),
+			
+			electricCompany:	Company.create('electric', i18n.COMPANY_ELECTRIC, companyGroup),
+			waterWorks:			Company.create('water', i18n.COMPANY_WATER, companyGroup)
+		};
 	};
 	
 	exports.squares = function () {
-		var groups = [
-			{ index: 0, properties: function () { return exports.estatesInGroup(0); }, color: 'midnightblue' },
-			{ index: 1, properties: function () { return exports.estatesInGroup(1); }, color: 'lightskyblue' },
-			{ index: 2, properties: function () { return exports.estatesInGroup(2); }, color: 'mediumvioletred' },
-			{ index: 3, properties: function () { return exports.estatesInGroup(3); }, color: 'orange' },
-			{ index: 4, properties: function () { return exports.estatesInGroup(4); }, color: 'red' },
-			{ index: 5, properties: function () { return exports.estatesInGroup(5); }, color: 'yellow' },
-			{ index: 6, properties: function () { return exports.estatesInGroup(6); }, color: 'green' },
-			{ index: 7, properties: function () { return exports.estatesInGroup(7); }, color: 'blue' }
-		];
+		var properties = exports.properties();
 		
 		return [
 			go(),
-			Estate.mediterranean(groups[0]),
+			properties.mediterranean,
 			communityChest(),
-			Estate.baltic(groups[0]),
+			properties.baltic,
 			incomeTax(),
-			Railroad.reading(),
-			Estate.east(groups[1]),
+			properties.readingRailroad,
+			properties.east,
 			chance(),
-			Estate.vermont(groups[1]),
-			Estate.connecticut(groups[1]),
+			properties.vermont,
+			properties.connecticut,
 			
 			jail(),
-			Estate.charles(groups[2]),
-			Company.electric(),
-			Estate.us(groups[2]),
-			Estate.virginia(groups[2]),
-			Railroad.pennsylvania(),
-			Estate.jack(groups[3]),
+			properties.charles,
+			properties.electricCompany,
+			properties.us,
+			properties.virginia,
+			properties.pennsylvaniaRailroad,
+			properties.jack,
 			communityChest(),
-			Estate.tennessee(groups[3]),
-			Estate.newyork(groups[3]),
+			properties.tennessee,
+			properties.newYork,
 			
 			parking(),
-			Estate.kentucky(groups[4]),
+			properties.kentucky,
 			chance(),
-			Estate.indiana(groups[4]),
-			Estate.illinois(groups[4]),
-			Railroad.bo(),
-			Estate.atlantic(groups[5]),
-			Estate.ventnor(groups[5]),
-			Company.water(),
-			Estate.marvin(groups[5]),
+			properties.indiana,
+			properties.illinois,
+			properties.boRailroad,
+			properties.atlantic,
+			properties.ventnor,
+			properties.waterWorks,
+			properties.marvin,
 			
 			goToJail(),
-			Estate.pacific(groups[6]),
-			Estate.northCarolina(groups[6]),
+			properties.pacific,
+			properties.northCarolina,
 			communityChest(),
-			Estate.pennsylvania(groups[6]),
-			Railroad.short(),
+			properties.pennsylvania,
+			properties.shortRailroad,
 			chance(),
-			Estate.park(groups[7]),
+			properties.park,
 			luxuryTax(),
-			Estate.broadwalk(groups[7])
+			properties.broadwalk
 		];
 	};
 	

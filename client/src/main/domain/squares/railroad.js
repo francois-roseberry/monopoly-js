@@ -1,32 +1,24 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
 	exports.isRailroad = function (candidate) {
 		return candidate instanceof Railroad;
 	};
 	
-	exports.reading = function () {
-		return new Railroad('rr-reading', i18n.RAILROAD_READING);
+	exports.create = function (id, name, group) {
+		precondition(_.isString(id) && id.length > 0, 'Railroad requires an id');
+		precondition(_.isString(name) && name.length > 0, 'Railroad requires a name');
+		precondition(group, 'Railroad requires a group');
+		
+		return new Railroad(id, name, group);
 	};
 	
-	exports.pennsylvania = function () {
-		return new Railroad('rr-penn', i18n.RAILROAD_PENN);
-	};
-	
-	exports.bo = function () {
-		return new Railroad('rr-bo', i18n.RAILROAD_B_O);
-	};
-	
-	exports.short = function () {
-		return new Railroad('rr-short', i18n.RAILROAD_SHORT);
-	};
-	
-	function Railroad(id, name) {
+	function Railroad(id, name, group) {
 		this._id = id;
 		this._name = name;
+		this._group = group;
 		this._price = 200;
 	}
 	
@@ -42,8 +34,12 @@
 		return this._price;
 	};
 	
+	Railroad.prototype.group = function () {
+		return this._group;
+	};
+	
 	Railroad.prototype.match = function (visitor) {
-		return matchWithDefault(visitor, 'railroad', [this._id, this._name, this._price]);
+		return matchWithDefault(visitor, 'railroad', [this._id, this._name, this._price, this._group]);
 	};
 	
 	function matchWithDefault(visitor, fn, args) {
@@ -62,15 +58,19 @@
 			'company': function () { return 1; },
 			'estate': function () { return -1; },
 			'railroad': function (otherId) {
-				if (id === otherId) { return 0; }
-				if (id === 'rr-reading') { return 1; }
-				if (id === 'rr-penn') {
-					if (otherId === 'rr-reading') { return -1; }
+				if (id === otherId) {
+					return 0;
+				}
+					
+				var indexesInGroup = {};
+				_.each(property.group().properties(), function (estate, index) {
+					indexesInGroup[estate.id()] = index;
+				});
+				
+				if (indexesInGroup[id] < indexesInGroup[otherId]) {
 					return 1;
 				}
-				if (id === 'rr-bo' && otherId === 'rr-short') {
-					return 1;
-				}
+				
 				return -1;
 			}
 		});

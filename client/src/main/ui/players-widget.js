@@ -118,24 +118,9 @@
 				return property.name();
 			})
 			.style('background-color', function (property) {
-				return colorOfProperty(state, property);
+				return property.group().color;
 			});
 			
 		selection.order();
-	}
-	
-	function colorOfProperty(state, property) {
-		return property.match({
-			'estate': function (id, name, price, group) {
-				return group.color;
-			},
-			'railroad': function (id, name, price) {
-				return 'black';
-			},
-			'company': function (id, name, price) {
-				return 'lightgreen';
-			},
-			_: _.noop
-		});
 	}
 }());

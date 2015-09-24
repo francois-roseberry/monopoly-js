@@ -5,7 +5,6 @@
 	var Board = require('./board');
 	var PlayerColors = require('./player-colors').colors();
 	var Choices = require('./choices');
-	var Railroad = require('./railroad');
 	
 	var testData = require('./test-data');
 	
@@ -82,9 +81,10 @@
 		});
 		
 		it('when buy-property is chosen, current player loses money', function (done) {
-			task.handleChoicesTask().makeChoice(Choices.buyProperty(Railroad.reading()));
+			var property = Board.properties().readingRailroad;
+			task.handleChoicesTask().makeChoice(Choices.buyProperty(property));
 			
-			assertCurrentPlayerHasLostMoney(task.gameState(), Railroad.reading().price(), done);
+			assertCurrentPlayerHasLostMoney(task.gameState(), property.price(), done);
 		});
 		
 		it('when pay-rent is chosen, transfer the rent from current player to owner', function (done) {

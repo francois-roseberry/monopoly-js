@@ -3,7 +3,6 @@
 	
 	var Player = require('./player');
 	var Board = require('./board');
-	var Railroad = require('./railroad');
 	
 	var testData = require('./test-data');
 	
@@ -33,7 +32,7 @@
 		});
 		
 		describe('when buying property', function () {
-			var PROPERTY = Board.propertyById('med');
+			var PROPERTY = Board.properties().mediterranean;
 			var newPlayer;
 			
 			beforeEach(function () {
@@ -47,23 +46,23 @@
 			it('insert them in order', function () {
 				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
 				
-				newPlayer = newPlayer.buyProperty(Railroad.short());
+				newPlayer = newPlayer.buyProperty(Board.properties().shortRailroad);
 				
 				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
-				expect(newPlayer.properties()[1].equals(Railroad.short())).to.be(true);
+				expect(newPlayer.properties()[1].equals(Board.properties().shortRailroad)).to.be(true);
 				
-				newPlayer = newPlayer.buyProperty(Board.propertyById('bw'));
-				
-				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
-				expect(newPlayer.properties()[1].equals(Board.propertyById('bw'))).to.be(true);
-				expect(newPlayer.properties()[2].equals(Railroad.short())).to.be(true);
-				
-				newPlayer = newPlayer.buyProperty(Board.propertyById('conn'));
+				newPlayer = newPlayer.buyProperty(Board.properties().broadwalk);
 				
 				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
-				expect(newPlayer.properties()[1].equals(Board.propertyById('conn'))).to.be(true);
-				expect(newPlayer.properties()[2].equals(Board.propertyById('bw'))).to.be(true);
-				expect(newPlayer.properties()[3].equals(Railroad.short())).to.be(true);
+				expect(newPlayer.properties()[1].equals(Board.properties().broadwalk)).to.be(true);
+				expect(newPlayer.properties()[2].equals(Board.properties().shortRailroad)).to.be(true);
+				
+				newPlayer = newPlayer.buyProperty(Board.properties().connecticut);
+				
+				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
+				expect(newPlayer.properties()[1].equals(Board.properties().connecticut)).to.be(true);
+				expect(newPlayer.properties()[2].equals(Board.properties().broadwalk)).to.be(true);
+				expect(newPlayer.properties()[3].equals(Board.properties().shortRailroad)).to.be(true);
 			});
 		});
 		

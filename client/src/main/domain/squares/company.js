@@ -1,25 +1,25 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
 	exports.isCompany = function (candidate) {
 		return candidate instanceof Company;
 	};
 	
-	exports.electric = function () {
-		return new Company('electric', i18n.COMPANY_ELECTRIC);
+	exports.create = function (id, name, group) {
+		precondition(_.isString(id) && id.length > 0, 'Company requires an id');
+		precondition(_.isString(name) && name.length > 0, 'Company requires a name');
+		precondition(group, 'Creating a company requires a group');
+		
+		return new Company(id, name, group);
 	};
 	
-	exports.water = function () {
-		return new Company('water', i18n.COMPANY_WATER);
-	};
-	
-	function Company(id, name) {
+	function Company(id, name, group) {				
 		this._id = id;
 		this._name = name;
 		this._price = 150;
+		this._group = group;
 	}
 	
 	Company.prototype.id = function () {
@@ -34,8 +34,12 @@
 		return this._price;
 	};
 	
+	Company.prototype.group = function () {
+		return this._group;
+	};
+	
 	Company.prototype.match = function (visitor) {
-		return matchWithDefault(visitor, 'company', [this._id, this._name, this._price]);
+		return matchWithDefault(visitor, 'company', [this._id, this._name, this._price, this._group]);
 	};
 	
 	function matchWithDefault(visitor, fn, args) {
@@ -54,8 +58,20 @@
 			'railroad': function () { return -1; },
 			'estate': function () { return -1; },
 			'company': function (otherId) {
-				if (id === otherId) { return 0; }
-				return (otherId === 'electric' ? -1 : 1);
+				if (id === otherId) {
+					return 0;
+				}
+				
+				var indexesInGroup = {};
+				_.each(property.group().properties(), function (estate, index) {
+					indexesInGroup[estate.id()] = index;
+				});
+				
+				if (indexesInGroup[id] < indexesInGroup[otherId]) {
+					return 1;
+				}
+				
+				return -1;
 			}
 		});
 	};

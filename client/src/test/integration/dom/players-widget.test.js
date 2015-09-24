@@ -4,7 +4,7 @@
 	var PlayersWidget = require('./players-widget');
 	var PlayGameTask = require('./play-game-task');
 	var Choices = require('./choices');
-	var Railroad = require('./railroad');
+	var Board = require('./board');
 	
 	var testData = require('./test-data');
 	var describeInDom = require('./dom-fixture').describeInDom;
@@ -114,7 +114,7 @@
 		}
 		
 		function buyPropertyWithFirstPlayer() {
-			task.handleChoicesTask().makeChoice(Choices.buyProperty(Railroad.reading()));
+			task.handleChoicesTask().makeChoice(Choices.buyProperty(Board.properties().readingRailroad));
 		}
 	});
 }());
