@@ -35,15 +35,15 @@
 	exports.RAILROAD_B_O = 'B.& O. Railroad';
 	exports.RAILROAD_SHORT = 'Short line';
 	
-	exports.PROPERTY_MED = 'Mediterranean Avenue';
-	exports.PROPERTY_BALTIC = 'Baltic Avenue';
-	exports.PROPERTY_EAST = "Oriental Avenue";
+	exports.PROPERTY_MD = 'Mediterranean Avenue';
+	exports.PROPERTY_BT = 'Baltic Avenue';
+	exports.PROPERTY_ET = "Oriental Avenue";
 	exports.PROPERTY_VT = 'Vermont Avenue';
-	exports.PROPERTY_CONN = 'Connecticut Avenue';
-	exports.PROPERTY_CHARLES = 'St.Charles Place';
+	exports.PROPERTY_CN = 'Connecticut Avenue';
+	exports.PROPERTY_CL = 'St.Charles Place';
 	exports.PROPERTY_US = 'States Avenue';
 	exports.PROPERTY_VN = 'Virginia Avenue';
-	exports.PROPERTY_JACK = 'St.James Place';
+	exports.PROPERTY_JK = 'St.James Place';
 	exports.PROPERTY_TN = 'Tennessee Avenue';
 	exports.PROPERTY_NY = 'New York Avenue';
 	exports.PROPERTY_KT = 'Kentucky Avenue';
@@ -51,10 +51,10 @@
 	exports.PROPERTY_IL = 'Illinois Avenue';
 	exports.PROPERTY_AT = 'Atlantic Avenue';
 	exports.PROPERTY_VR = 'Ventnor Avenue';
-	exports.PROPERTY_MARVIN = 'Marvin Gardens';
+	exports.PROPERTY_MN = 'Marvin Gardens';
 	exports.PROPERTY_PA = 'Pacific Avenue';
 	exports.PROPERTY_NC = 'North Carolina Avenue';
-	exports.PROPERTY_PENN = 'Pennsylvania Avenue';
+	exports.PROPERTY_PN = 'Pennsylvania Avenue';
 	exports.PROPERTY_PK = 'Park Place';
 	exports.PROPERTY_BW = 'Boardwalk';
 	

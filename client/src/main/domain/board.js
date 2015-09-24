@@ -8,9 +8,9 @@
 	var Railroad = require('./railroad');
 	var Estate = require('./estate');
 	
-	function estatesInGroup (groupIndex) {
+	function groupMembers(groupIndex) {
 		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 10,
-			'Listing estates of a group in board requires the group index');
+			'Listing members of a group in board requires the group index');
 		
 		return _.filter(exports.squares(), function (square) {
 			return square.match({
@@ -24,29 +24,29 @@
 	
 	exports.properties = function () {
 		var groups = [
-			{ index: 0, properties: function () { return estatesInGroup(0); }, color: 'midnightblue' },
-			{ index: 1, properties: function () { return estatesInGroup(1); }, color: 'lightskyblue' },
-			{ index: 2, properties: function () { return estatesInGroup(2); }, color: 'mediumvioletred' },
-			{ index: 3, properties: function () { return estatesInGroup(3); }, color: 'orange' },
-			{ index: 4, properties: function () { return estatesInGroup(4); }, color: 'red' },
-			{ index: 5, properties: function () { return estatesInGroup(5); }, color: 'yellow' },
-			{ index: 6, properties: function () { return estatesInGroup(6); }, color: 'green' },
-			{ index: 7, properties: function () { return estatesInGroup(7); }, color: 'blue' }
+			{ index: 0, properties: function () { return groupMembers(0); }, color: 'midnightblue' },
+			{ index: 1, properties: function () { return groupMembers(1); }, color: 'lightskyblue' },
+			{ index: 2, properties: function () { return groupMembers(2); }, color: 'mediumvioletred' },
+			{ index: 3, properties: function () { return groupMembers(3); }, color: 'orange' },
+			{ index: 4, properties: function () { return groupMembers(4); }, color: 'red' },
+			{ index: 5, properties: function () { return groupMembers(5); }, color: 'yellow' },
+			{ index: 6, properties: function () { return groupMembers(6); }, color: 'green' },
+			{ index: 7, properties: function () { return groupMembers(7); }, color: 'blue' }
 		];
 		
-		var railroadGroup = { index: 8, properties: function () { return estatesInGroup(8); }, color: 'black' };
-		var companyGroup = { index: 9, properties: function () { return estatesInGroup(9); }, color: 'lightgreen' };
+		var railroadGroup = { index: 8, properties: function () { return groupMembers(8); }, color: 'black' };
+		var companyGroup =  { index: 9, properties: function () { return groupMembers(9); }, color: 'lightgreen' };
 		
 		return {
-			mediterranean: 	Estate.create('md', i18n.PROPERTY_MED, groups[0], { value: 60, rent: 2}),
-			baltic:			Estate.create('bt', i18n.PROPERTY_BALTIC, groups[0], { value: 60, rent: 4}),
-			east:			Estate.create('et', i18n.PROPERTY_EAST, groups[1], { value: 100, rent: 6}),
+			mediterranean: 	Estate.create('md', i18n.PROPERTY_MD, groups[0], { value: 60,  rent: 2}),
+			baltic:			Estate.create('bt', i18n.PROPERTY_BT, groups[0], { value: 60,  rent: 4}),
+			east:			Estate.create('et', i18n.PROPERTY_ET, groups[1], { value: 100, rent: 6}),
 			vermont:		Estate.create('vt', i18n.PROPERTY_VT, groups[1], { value: 100, rent: 6}),
-			connecticut:	Estate.create('cn', i18n.PROPERTY_CONN, groups[1], { value: 120, rent: 8}),
-			charles:		Estate.create('cl', i18n.PROPERTY_CHARLES, groups[2], { value: 140, rent: 10}),
+			connecticut:	Estate.create('cn', i18n.PROPERTY_CN, groups[1], { value: 120, rent: 8}),
+			charles:		Estate.create('cl', i18n.PROPERTY_CL, groups[2], { value: 140, rent: 10}),
 			us:				Estate.create('us', i18n.PROPERTY_US, groups[2], { value: 140, rent: 10}),
 			virginia:		Estate.create('vn', i18n.PROPERTY_VN, groups[2], { value: 160, rent: 12}),
-			jack:			Estate.create('jk', i18n.PROPERTY_JACK, groups[3], { value: 180, rent: 14}),
+			jack:			Estate.create('jk', i18n.PROPERTY_JK, groups[3], { value: 180, rent: 14}),
 			tennessee:		Estate.create('tn', i18n.PROPERTY_TN, groups[3], { value: 180, rent: 14}),
 			newYork:		Estate.create('ny', i18n.PROPERTY_NY, groups[3], { value: 200, rent: 16}),
 			kentucky:		Estate.create('kt', i18n.PROPERTY_KT, groups[4], { value: 220, rent: 18}),
@@ -54,10 +54,10 @@
 			illinois:		Estate.create('il', i18n.PROPERTY_IL, groups[4], { value: 240, rent: 20}),
 			atlantic:		Estate.create('at', i18n.PROPERTY_AT, groups[5], { value: 260, rent: 22}),
 			ventnor:		Estate.create('vr', i18n.PROPERTY_VR, groups[5], { value: 260, rent: 22}),
-			marvin:			Estate.create('mv', i18n.PROPERTY_MARVIN, groups[5], { value: 280, rent: 24}),
+			marvin:			Estate.create('mv', i18n.PROPERTY_MN, groups[5], { value: 280, rent: 24}),
 			pacific:		Estate.create('pa', i18n.PROPERTY_PA, groups[6], { value: 300, rent: 26}),
 			northCarolina:	Estate.create('nc', i18n.PROPERTY_NC, groups[6], { value: 300, rent: 26}),
-			pennsylvania:	Estate.create('pn', i18n.PROPERTY_PENN, groups[6], { value: 320, rent: 28}),
+			pennsylvania:	Estate.create('pn', i18n.PROPERTY_PN, groups[6], { value: 320, rent: 28}),
 			park:			Estate.create('pk', i18n.PROPERTY_PK, groups[7], { value: 350, rent: 35}),
 			broadwalk:		Estate.create('bw', i18n.PROPERTY_BW, groups[7], { value: 400, rent: 50}),
 			

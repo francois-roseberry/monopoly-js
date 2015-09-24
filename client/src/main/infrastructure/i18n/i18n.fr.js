@@ -35,15 +35,15 @@
 	exports.RAILROAD_B_O = 'Chemin de fer B.& O.';
 	exports.RAILROAD_SHORT = 'Chemin de fer Petit Réseau';
 	
-	exports.PROPERTY_MED = 'Avenue de la Méditerrannée';
-	exports.PROPERTY_BALTIC = 'Avenue de la Baltique';
-	exports.PROPERTY_EAST = "Avenue de l'Orient";
+	exports.PROPERTY_MD = 'Avenue de la Méditerrannée';
+	exports.PROPERTY_BT = 'Avenue de la Baltique';
+	exports.PROPERTY_ET = "Avenue de l'Orient";
 	exports.PROPERTY_VT = 'Avenue Vermont';
-	exports.PROPERTY_CONN = 'Avenue Connecticut';
-	exports.PROPERTY_CHARLES = 'Place St-Charles';
+	exports.PROPERTY_CN = 'Avenue Connecticut';
+	exports.PROPERTY_CL = 'Place St-Charles';
 	exports.PROPERTY_US = 'Avenue des États-Unis';
 	exports.PROPERTY_VN = 'Avenue Virginie';
-	exports.PROPERTY_JACK = 'Place St-Jacques';
+	exports.PROPERTY_JK = 'Place St-Jacques';
 	exports.PROPERTY_TN = 'Avenue Tennessee';
 	exports.PROPERTY_NY = 'Avenue New York';
 	exports.PROPERTY_KT = 'Avenue Kentucky';
@@ -51,10 +51,10 @@
 	exports.PROPERTY_IL = 'Avenue Illinois';
 	exports.PROPERTY_AT = 'Avenue Atlantique';
 	exports.PROPERTY_VR = 'Avenue Ventnor';
-	exports.PROPERTY_MARVIN = 'Jardins Marvin';
+	exports.PROPERTY_MN = 'Jardins Marvin';
 	exports.PROPERTY_PA = 'Avenue Pacifique';
 	exports.PROPERTY_NC = 'Avenue Caroline du Nord';
-	exports.PROPERTY_PENN = 'Avenue Pennsylvanie';
+	exports.PROPERTY_PN = 'Avenue Pennsylvanie';
 	exports.PROPERTY_PK = 'Place du parc';
 	exports.PROPERTY_BW = 'Promenade';
 	
