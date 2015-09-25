@@ -47,35 +47,35 @@
 				var state = turnEndStateWithPlayers(playerOnRailroadOwnedByOtherWithOneRailroad());
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(25, secondPlayer.id(), secondPlayer.name())]);
+				assertChoices(state, [Choices.payRent(25, secondPlayer)]);
 			});
 			
 			it('50$ if that property is a railroad and owner possess 2 railroads', function () {
 				var state = turnEndStateWithPlayers(playerOnRailroadOwnedByOtherWithTwoRailroads());
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(50, secondPlayer.id(), secondPlayer.name())]);
+				assertChoices(state, [Choices.payRent(50, secondPlayer)]);
 			});
 			
 			it('100$ if that property is a railroad and owner possess 3 railroads', function () {
 				var state = turnEndStateWithPlayers(playerOnRailroadOwnedByOtherWithThreeRailroads());
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(100, secondPlayer.id(), secondPlayer.name())]);
+				assertChoices(state, [Choices.payRent(100, secondPlayer)]);
 			});
 			
 			it('200$ if that property is a railroad and owner possess 4 railroads', function () {
 				var state = turnEndStateWithPlayers(playerOnRailroadOwnedByOtherWithFourRailroads());
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(200, secondPlayer.id(), secondPlayer.name())]);
+				assertChoices(state, [Choices.payRent(200, secondPlayer)]);
 			});
 			
 			it('25$ if that property is a company', function () {
 				var state = turnEndStateWithPlayers(playerOnCompanyOwnedByOther());
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(25, secondPlayer.id(), secondPlayer.name())]);
+				assertChoices(state, [Choices.payRent(25, secondPlayer)]);
 			});
 		});
 		
@@ -172,14 +172,14 @@
 		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther(Board.properties().mediterranean));
 		var secondPlayer = testData.players()[1];
 				
-		assertChoices(state, [Choices.payRent(2, secondPlayer.id(), secondPlayer.name())]);
+		assertChoices(state, [Choices.payRent(2, secondPlayer)]);
 	}
 	
 	function assertRentIsBroadwalkRent() {
 		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther(Board.properties().broadwalk, 39));
 		var secondPlayer = testData.players()[1];
 				
-		assertChoices(state, [Choices.payRent(50, secondPlayer.id(), secondPlayer.name())]);
+		assertChoices(state, [Choices.payRent(50, secondPlayer)]);
 	}
 	
 	function assertRentToPayIsDoubleTheEstateRentWhenOwnerOwnsGroup() {
@@ -191,14 +191,14 @@
 		var state = turnEndStateWithPlayers(playerOnMediterraneanAvenueAndGroupOwned());
 		var secondPlayer = testData.players()[1];
 				
-		assertChoices(state, [Choices.payRent(4, secondPlayer.id(), secondPlayer.name())]);
+		assertChoices(state, [Choices.payRent(4, secondPlayer)]);
 	}
 	
 	function assertRentIsDoubleBroadwalkRent() {
 		var state = turnEndStateWithPlayers(playerOnBroadwalkAndGroupOwned());
 		var secondPlayer = testData.players()[1];
 				
-		assertChoices(state, [Choices.payRent(100, secondPlayer.id(), secondPlayer.name())]);
+		assertChoices(state, [Choices.payRent(100, secondPlayer)]);
 	}
 	
 	function assertChoices(state, choices) {

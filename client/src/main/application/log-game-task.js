@@ -69,8 +69,8 @@
 				var newProperty = findNewProperty(states);
 				
 				return {
-					player: player.name(),
-					property: newProperty.name()
+					player: player,
+					property: newProperty
 				};
 			});
 	}
@@ -99,8 +99,8 @@
 					states.current.players()[states.current.currentPlayerIndex()].money();
 				
 				return {
-					fromPlayer: fromPlayer.name(),
-					toPlayer: toPlayer.name(),
+					fromPlayer: fromPlayer,
+					toPlayer: toPlayer,
 					amount: amount
 				};
 			});
@@ -136,7 +136,7 @@
 		return {
 			firstDie : dice[0],
 			secondDie: dice[1],
-			player: state.players()[state.currentPlayerIndex()].name()
+			player: state.players()[state.currentPlayerIndex()]
 		};
 	}
 	

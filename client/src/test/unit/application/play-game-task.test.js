@@ -90,7 +90,7 @@
 		it('when pay-rent is chosen, transfer the rent from current player to owner', function (done) {
 			var rent = 100;
 			var owner = getSecondPlayer(task.gameState());
-			task.handleChoicesTask().makeChoice(Choices.payRent(rent, owner.id(), owner.name()));
+			task.handleChoicesTask().makeChoice(Choices.payRent(rent, owner));
 			
 			assertCurrentPlayerHasPaidToOwner(task.gameState(), rent, 1, done);
 		});

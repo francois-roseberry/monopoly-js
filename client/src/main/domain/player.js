@@ -7,6 +7,10 @@
 	var precondition = require('./contract').precondition;
 	var i18n = require('./i18n').i18n();
 	
+	exports.isPlayer = function (candidate) {
+		return candidate instanceof Player;
+	};
+	
 	exports.newPlayers = function (playerConfigurations) {
 		precondition(_.isArray(playerConfigurations) && playerConfigurations.length >= 3,
 			'Creating players require at least 3 player configurations');

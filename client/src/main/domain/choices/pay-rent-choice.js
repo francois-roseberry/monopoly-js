@@ -4,13 +4,14 @@
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
-	exports.newChoice = function (rent, toPlayerId, toPlayerName) {
+	var Player = require('./player');
+	
+	exports.newChoice = function (rent, toPlayer) {
 		precondition(_.isNumber(rent) && rent > 0, 'Pay rent choice requires a rent greater than 0');
-		precondition(_.isString(toPlayerId) && toPlayerId.length > 0,
-			'Pay rent choice requires the id of the player to pay to');
-		precondition(_.isString(toPlayerName), 'Pay rent choice requires the name of the player to pay to');
+		precondition(toPlayer && Player.isPlayer(toPlayer),
+			'Pay rent choice requires the player to pay to');
 		
-		return new PayRentChoice(rent, toPlayerId, toPlayerName);
+		return new PayRentChoice(rent, toPlayer.id(), toPlayer.name());
 	};
 	
 	function PayRentChoice(rent, toPlayerId, toPlayerName) {

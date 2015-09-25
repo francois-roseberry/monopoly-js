@@ -68,7 +68,7 @@
 					return [Choices.goBankrupt()];
 				}
 				
-				return [Choices.payRent(rent, owner.id(), owner.name())];
+				return [Choices.payRent(rent, owner)];
 			}
 			
 			if (!owner && currentPlayer.money() > price) {

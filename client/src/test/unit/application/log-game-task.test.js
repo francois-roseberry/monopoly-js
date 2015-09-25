@@ -12,18 +12,31 @@
 	describe('The log game task', function () {
 		var gameTask;
 		var logTask;
+		var logs;
+		var firstPlayer;
+		var secondPlayer;
 		
 		beforeEach(function () {
 			gameTask = PlayGameTask.start(testData.gameConfiguration());
 			logTask = LogGameTask.start(gameTask);
+			logs = [];
+			logTask.messages().subscribe(function (log) {
+				logs.push(log);
+			});
+			
+			gameTask.gameState().take(1)
+				.subscribe(function (state) {
+					firstPlayer = state.players()[0];
+					secondPlayer = state.players()[1];
+				});
 		});
 		
 		it('when dice finishes rolling, sends a message', function (done) {
 			gameTask.rollDiceTaskCreated().take(1).subscribe(function (task) {
 				task.diceRolled().last().subscribe(function () {
 					assertLogged([
-						Messages.logDiceRoll('Player', 2, 3).id(),
-						Messages.logDoubleDiceRoll('Player', 5).id()
+						Messages.logDiceRoll(firstPlayer, 2, 3).id(),
+						Messages.logDoubleDiceRoll(firstPlayer, 5).id()
 					], done);
 				});
 			});
@@ -31,24 +44,24 @@
 			gameTask.handleChoicesTask().makeChoice(Choices.rollDice());
 		});
 		
-		it('when player buys property, sends a message', function (done) {
-			var message = Messages.logPropertyBought('Player', 'Property').id();
-			assertLogged([message], done);
-			
+		it('when player buys property, sends a message', function () {
 			var choice = Choices.buyProperty(Board.properties().readingRailroad);
 			gameTask.handleChoicesTask().makeChoice(choice);
+			
+			var message = Messages.logPropertyBought(firstPlayer, Board.properties().readingRailroad);
+			expect(logs.length).to.eql(1);
+			expect(logs[0].equals(message)).to.be(true);
 		});
 		
-		it('when player pays rent, sends a message', function (done) {
+		it('when player pays rent, sends a message', function () {
 			var rent = 20;
-			var fromPlayerName = testData.players()[0].name();
-			var toPlayerName = testData.players()[1].name();
-			var message = Messages.logRentPaid(rent, fromPlayerName, toPlayerName).id();
 			
-			assertLogged([message], done);
-			
-			var choice = Choices.payRent(rent, testData.players()[1].id(), toPlayerName);
+			var choice = Choices.payRent(rent, secondPlayer);
 			gameTask.handleChoicesTask().makeChoice(choice);
+			
+			var message = Messages.logRentPaid(rent, firstPlayer, secondPlayer);
+			expect(logs.length).to.eql(1);
+			expect(logs[0].equals(message)).to.be(true);
 		});
 		
 		function assertLogged(logs, done) {
