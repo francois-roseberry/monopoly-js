@@ -22,6 +22,10 @@ Those nice features I'd like to do after the basics are complete :
 * Collect lots of game stats, like rentability, frequency, etc. in order to :
 * Experiment with different types of AI players - basic minimax, machine learning based on statistics, etc.
 
+## Demo
+
+[Click here and enjoy !](http://francois-roseberry.github.io/monopoly-js/demo/)
+UI is available in english and french, depending on your browser language. Other languages will default to english. Monopoly board is the one we have in US/Canada.
 
 ## Screenshots (with the french UI)
 
@@ -30,11 +34,6 @@ Those nice features I'd like to do after the basics are complete :
 
 ![In-game screenshot]
 (http://francois-roseberry.github.io/monopoly-js/screenshots/in-game.png)
-
-## Demo
-
-[Click here and enjoy !](http://francois-roseberry.github.io/monopoly-js/demo/)
-UI is available in english and french, depending on your browser language. Other languages will default to english. Monopoly board is the one we have in US/Canada.
 
 ## Development setup
 
