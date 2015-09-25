@@ -23,9 +23,25 @@
 			group: group,
 			type: 'estate',
 			price: prices.value,
-			rent: prices.rent
+			rent: estateRent(prices.rent, group)
 		});
 	};
+	
+	function estateRent(baseRent, group) {
+		return function (ownerProperties) {
+			var multiplier = (ownsAllEstatesInGroup(group, ownerProperties) ? 2 : 1);
+			return baseRent * multiplier;
+		};
+	}
+	
+	function ownsAllEstatesInGroup(group, properties) {
+		var estatesInGroup = group.properties();
+		return _.every(estatesInGroup, function (estate) {
+			var id = estate.id();
+			
+			return _.contains(_.map(properties, function (property) { return property.id(); }), id);
+		});
+	}
 	
 	exports.newCompany = function (id, name, group) {
 		precondition(_.isString(id) && id.length > 0, 'Company requires an id');
@@ -38,7 +54,7 @@
 			group: group,
 			type: 'company',
 			price: 150,
-			rent: 25
+			rent: function () { return 25; }
 		});
 	};
 	
@@ -53,9 +69,30 @@
 			group: group,
 			type: 'railroad',
 			price: 200,
-			rent: 25
+			rent: railroadRent(25, group)
 		});
 	};
+	
+	function railroadRent(baseRent, group) {
+		return function (ownerProperties) {
+			var count = railroadCountIn(group, ownerProperties);
+			return baseRent * Math.pow(2, count - 1);
+		};
+	}
+	
+	function railroadCountIn(group, properties) {
+		return _.reduce(properties, function (count, property) {
+			if (_.contains(_.map(group.properties(), propertyId), property.id())) {
+				return count + 1;
+			}
+			
+			return count;
+		}, 0);
+	}
+	
+	function propertyId(property) {
+		return property.id();
+	}
 	
 	function Property(info) {
 		this._id = info.id;
@@ -78,8 +115,8 @@
 		return this._price;
 	};
 	
-	Property.prototype.rent = function () {
-		return this._rent;
+	Property.prototype.rent = function (ownerProperties) {
+		return this._rent(ownerProperties);
 	};
 	
 	Property.prototype.group = function () {

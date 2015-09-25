@@ -47,9 +47,9 @@
 	
 	function choicesForSquare(square, players, currentPlayer, paid) {
 		return square.match({
-			'estate': choicesForProperty(square, players, currentPlayer, paid, estateRent(square)),
-			'railroad': choicesForProperty(square, players, currentPlayer, paid, railroadRent(square)),
-			'company': choicesForProperty(square, players, currentPlayer, paid, companyRent(square)),
+			'estate': choicesForProperty(square, players, currentPlayer, paid),
+			'railroad': choicesForProperty(square, players, currentPlayer, paid),
+			'company': choicesForProperty(square, players, currentPlayer, paid),
 			_: onlyFinishTurn
 		});
 	}
@@ -58,55 +58,12 @@
 		return [Choices.finishTurn()];
 	}
 	
-	function companyRent(square) {
-		return function () {
-			return square.rent();
-		};
-	}
-	
-	function estateRent(square) {
-		return function (ownerProperties) {
-			var multiplier = (ownsAllEstatesInGroup(square.group(), ownerProperties) ? 2 : 1);
-			return square.rent() * multiplier;
-		};
-	}
-	
-	function ownsAllEstatesInGroup(group, properties) {
-		var estatesInGroup = group.properties();
-		return _.every(estatesInGroup, function (estate) {
-			var id = estate.id();
-			
-			return _.contains(_.map(properties, function (property) { return property.id(); }), id);
-		});
-	}
-	
-	function railroadRent(square) {
-		return function (ownerProperties) {
-			var count = railroadCountIn(square.group(), ownerProperties);
-			return square.rent() * Math.pow(2, count - 1);
-		};
-	}
-	
-	function railroadCountIn(group, properties) {
-		return _.reduce(properties, function (count, property) {
-			if (_.contains(_.map(group.properties(), propertyId), property.id())) {
-				return count + 1;
-			}
-			
-			return count;
-		}, 0);
-	}
-	
-	function propertyId(property) {
-		return property.id();
-	}
-	
-	function choicesForProperty(square, players, currentPlayer, paid, rentFunction) {
+	function choicesForProperty(square, players, currentPlayer, paid) {
 		return function (id, name, price) {
 			var owner = getOwner(players, square);
 			
 			if (!paid && owner && owner.id() !== currentPlayer.id()) {
-				var rent = rentFunction(owner.properties());
+				var rent = square.rent(owner.properties());
 				if (currentPlayer.money() <= rent) {
 					return [Choices.goBankrupt()];
 				}
