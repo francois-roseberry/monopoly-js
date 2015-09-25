@@ -118,7 +118,7 @@
 				return property.name();
 			})
 			.style('background-color', function (property) {
-				return property.group().color;
+				return property.group().color();
 			});
 			
 		selection.order();

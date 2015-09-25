@@ -3,6 +3,8 @@
 	
 	var precondition = require('./contract').precondition;
 	
+	var PropertyGroup = require('./property-group');
+	
 	exports.isProperty = function (candidate) {
 		return candidate instanceof Property;
 	};
@@ -10,10 +12,7 @@
 	exports.newEstate = function (id, name, group, prices) {
 		precondition(_.isString(id) && id.length > 0, 'Estate requires an id');
 		precondition(_.isString(name) && name.length > 0, 'Estate requires a name');
-		precondition(_.isNumber(group.index) && group.index >= 0 && group.index < 8,
-			'Estate requires a group with an id');
-		precondition(_.isFunction(group.properties),
-			'Estate requires its group to have a function to list all properties in group');
+		precondition(group && PropertyGroup.isGroup(group), 'Estate requires a group');
 		precondition(_.isNumber(prices.value) && prices.value > 0, 'Estate must have a price');
 		precondition(_.isNumber(prices.rent) && prices.rent > 0, 'Estate must have a rent');
 		
@@ -46,7 +45,7 @@
 	exports.newCompany = function (id, name, group) {
 		precondition(_.isString(id) && id.length > 0, 'Company requires an id');
 		precondition(_.isString(name) && name.length > 0, 'Company requires a name');
-		precondition(group, 'Creating a company requires a group');
+		precondition(group && PropertyGroup.isGroup(group), 'Creating a company requires a group');
 		
 		return new Property({
 			id: id,
@@ -61,7 +60,7 @@
 	exports.newRailroad = function (id, name, group) {
 		precondition(_.isString(id) && id.length > 0, 'Railroad requires an id');
 		precondition(_.isString(name) && name.length > 0, 'Railroad requires a name');
-		precondition(group, 'Railroad requires a group');
+		precondition(group && PropertyGroup.isGroup(group), 'Railroad requires a group');
 		
 		return new Property({
 			id: id,
@@ -143,9 +142,10 @@
 			return 0;
 		}
 		
-		if (this._group.index < property._group.index) {
+		var groupComparison = this._group.compareTo(property._group);
+		if (groupComparison === 1) {
 			return 1;
-		} else if (this._group.index > property._group.index) {
+		} else if (groupComparison === -1) {
 			return -1;
 		}
 		

@@ -5,35 +5,31 @@
 	var precondition = require('./contract').precondition;
 	
 	var Property = require('./property');
+	var PropertyGroup = require('./property-group');
 	
 	function groupMembers(groupIndex) {
 		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 10,
 			'Listing members of a group in board requires the group index');
 		
-		return _.filter(exports.squares(), function (square) {
-			return square.match({
-				'estate': function () { return square.group().index === groupIndex; },
-				'company': function () { return square.group().index === groupIndex; },
-				'railroad': function () { return square.group().index === groupIndex; },
-				_ : function () { return false; }
-			});
+		return _.filter(exports.properties(), function (square) {
+			return square.group().index() === groupIndex;
 		});
 	}
 	
 	exports.properties = function () {
 		var groups = [
-			{ index: 0, properties: function () { return groupMembers(0); }, color: 'midnightblue' },
-			{ index: 1, properties: function () { return groupMembers(1); }, color: 'lightskyblue' },
-			{ index: 2, properties: function () { return groupMembers(2); }, color: 'mediumvioletred' },
-			{ index: 3, properties: function () { return groupMembers(3); }, color: 'orange' },
-			{ index: 4, properties: function () { return groupMembers(4); }, color: 'red' },
-			{ index: 5, properties: function () { return groupMembers(5); }, color: 'yellow' },
-			{ index: 6, properties: function () { return groupMembers(6); }, color: 'green' },
-			{ index: 7, properties: function () { return groupMembers(7); }, color: 'blue' }
+			PropertyGroup.newGroup(0, 'midnightblue', groupMembers),
+			PropertyGroup.newGroup(1, 'lightskyblue', groupMembers),
+			PropertyGroup.newGroup(2, 'mediumvioletred', groupMembers),
+			PropertyGroup.newGroup(3, 'orange', groupMembers),
+			PropertyGroup.newGroup(4, 'red', groupMembers),
+			PropertyGroup.newGroup(5, 'yellow', groupMembers),
+			PropertyGroup.newGroup(6, 'green', groupMembers),
+			PropertyGroup.newGroup(7, 'blue', groupMembers)
 		];
 		
-		var railroadGroup = { index: 8, properties: function () { return groupMembers(8); }, color: 'black' };
-		var companyGroup =  { index: 9, properties: function () { return groupMembers(9); }, color: 'lightgreen' };
+		var railroadGroup = PropertyGroup.newGroup(8, 'black', groupMembers);
+		var companyGroup =  PropertyGroup.newGroup(9, 'lightgreen', groupMembers);
 		
 		return {
 			mediterranean: 	Property.newEstate('md', i18n.PROPERTY_MD, groups[0], { value: 60,  rent: 2}),

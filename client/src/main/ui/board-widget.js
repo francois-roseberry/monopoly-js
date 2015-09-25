@@ -149,7 +149,7 @@
 				.attr({
 					width: SQUARE_WIDTH,
 					height: SQUARE_HEIGHT / 5,
-					fill: group.color,
+					fill: group.color(),
 					stroke: 'black'
 				});
 				
