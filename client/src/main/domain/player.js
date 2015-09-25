@@ -87,12 +87,13 @@
 			'Moving a player requires a dice with two numbers');
 			
 		var squareCount = 40;
+		var newPosition = this.position() + dice[0] + dice[1];
 		
 		return newPlayer({
 			id: this.id(),
 			name: this.name(),
-			money: this.money(),
-			position: (this.position() + dice[0] + dice[1]) % squareCount,
+			money: this.money() + (newPosition > squareCount ? 200 : 0),
+			position: newPosition % squareCount,
 			color: this.color(),
 			type: this.type(),
 			properties: this.properties()

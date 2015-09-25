@@ -31,6 +31,12 @@
 			expect(movedPlayer.position()).to.eql(1);
 		});
 		
+		it('earns 200$ when wrapping around the board', function () {
+			var movedPlayer = players[0].move([0,41]);
+			
+			expect(movedPlayer.money()).to.eql(players[0].money() + 200);
+		});
+		
 		describe('when buying property', function () {
 			var PROPERTY = Board.properties().mediterranean;
 			var newPlayer;
