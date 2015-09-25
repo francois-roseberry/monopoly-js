@@ -6,7 +6,7 @@
 	
 	var Company = require('./company');
 	var Railroad = require('./railroad');
-	var Estate = require('./estate');
+	var Property = require('./property');
 	
 	function groupMembers(groupIndex) {
 		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 10,
@@ -38,28 +38,28 @@
 		var companyGroup =  { index: 9, properties: function () { return groupMembers(9); }, color: 'lightgreen' };
 		
 		return {
-			mediterranean: 	Estate.create('md', i18n.PROPERTY_MD, groups[0], { value: 60,  rent: 2}),
-			baltic:			Estate.create('bt', i18n.PROPERTY_BT, groups[0], { value: 60,  rent: 4}),
-			east:			Estate.create('et', i18n.PROPERTY_ET, groups[1], { value: 100, rent: 6}),
-			vermont:		Estate.create('vt', i18n.PROPERTY_VT, groups[1], { value: 100, rent: 6}),
-			connecticut:	Estate.create('cn', i18n.PROPERTY_CN, groups[1], { value: 120, rent: 8}),
-			charles:		Estate.create('cl', i18n.PROPERTY_CL, groups[2], { value: 140, rent: 10}),
-			us:				Estate.create('us', i18n.PROPERTY_US, groups[2], { value: 140, rent: 10}),
-			virginia:		Estate.create('vn', i18n.PROPERTY_VN, groups[2], { value: 160, rent: 12}),
-			jack:			Estate.create('jk', i18n.PROPERTY_JK, groups[3], { value: 180, rent: 14}),
-			tennessee:		Estate.create('tn', i18n.PROPERTY_TN, groups[3], { value: 180, rent: 14}),
-			newYork:		Estate.create('ny', i18n.PROPERTY_NY, groups[3], { value: 200, rent: 16}),
-			kentucky:		Estate.create('kt', i18n.PROPERTY_KT, groups[4], { value: 220, rent: 18}),
-			indiana:		Estate.create('in', i18n.PROPERTY_IN, groups[4], { value: 220, rent: 18}),
-			illinois:		Estate.create('il', i18n.PROPERTY_IL, groups[4], { value: 240, rent: 20}),
-			atlantic:		Estate.create('at', i18n.PROPERTY_AT, groups[5], { value: 260, rent: 22}),
-			ventnor:		Estate.create('vr', i18n.PROPERTY_VR, groups[5], { value: 260, rent: 22}),
-			marvin:			Estate.create('mv', i18n.PROPERTY_MN, groups[5], { value: 280, rent: 24}),
-			pacific:		Estate.create('pa', i18n.PROPERTY_PA, groups[6], { value: 300, rent: 26}),
-			northCarolina:	Estate.create('nc', i18n.PROPERTY_NC, groups[6], { value: 300, rent: 26}),
-			pennsylvania:	Estate.create('pn', i18n.PROPERTY_PN, groups[6], { value: 320, rent: 28}),
-			park:			Estate.create('pk', i18n.PROPERTY_PK, groups[7], { value: 350, rent: 35}),
-			broadwalk:		Estate.create('bw', i18n.PROPERTY_BW, groups[7], { value: 400, rent: 50}),
+			mediterranean: 	Property.newEstate('md', i18n.PROPERTY_MD, groups[0], { value: 60,  rent: 2}),
+			baltic:			Property.newEstate('bt', i18n.PROPERTY_BT, groups[0], { value: 60,  rent: 4}),
+			east:			Property.newEstate('et', i18n.PROPERTY_ET, groups[1], { value: 100, rent: 6}),
+			vermont:		Property.newEstate('vt', i18n.PROPERTY_VT, groups[1], { value: 100, rent: 6}),
+			connecticut:	Property.newEstate('cn', i18n.PROPERTY_CN, groups[1], { value: 120, rent: 8}),
+			charles:		Property.newEstate('cl', i18n.PROPERTY_CL, groups[2], { value: 140, rent: 10}),
+			us:				Property.newEstate('us', i18n.PROPERTY_US, groups[2], { value: 140, rent: 10}),
+			virginia:		Property.newEstate('vn', i18n.PROPERTY_VN, groups[2], { value: 160, rent: 12}),
+			jack:			Property.newEstate('jk', i18n.PROPERTY_JK, groups[3], { value: 180, rent: 14}),
+			tennessee:		Property.newEstate('tn', i18n.PROPERTY_TN, groups[3], { value: 180, rent: 14}),
+			newYork:		Property.newEstate('ny', i18n.PROPERTY_NY, groups[3], { value: 200, rent: 16}),
+			kentucky:		Property.newEstate('kt', i18n.PROPERTY_KT, groups[4], { value: 220, rent: 18}),
+			indiana:		Property.newEstate('in', i18n.PROPERTY_IN, groups[4], { value: 220, rent: 18}),
+			illinois:		Property.newEstate('il', i18n.PROPERTY_IL, groups[4], { value: 240, rent: 20}),
+			atlantic:		Property.newEstate('at', i18n.PROPERTY_AT, groups[5], { value: 260, rent: 22}),
+			ventnor:		Property.newEstate('vr', i18n.PROPERTY_VR, groups[5], { value: 260, rent: 22}),
+			marvin:			Property.newEstate('mv', i18n.PROPERTY_MN, groups[5], { value: 280, rent: 24}),
+			pacific:		Property.newEstate('pa', i18n.PROPERTY_PA, groups[6], { value: 300, rent: 26}),
+			northCarolina:	Property.newEstate('nc', i18n.PROPERTY_NC, groups[6], { value: 300, rent: 26}),
+			pennsylvania:	Property.newEstate('pn', i18n.PROPERTY_PN, groups[6], { value: 320, rent: 28}),
+			park:			Property.newEstate('pk', i18n.PROPERTY_PK, groups[7], { value: 350, rent: 35}),
+			broadwalk:		Property.newEstate('bw', i18n.PROPERTY_BW, groups[7], { value: 400, rent: 50}),
 			
 			readingRailroad:		Railroad.create('rr-reading', i18n.RAILROAD_READING, railroadGroup),
 			pennsylvaniaRailroad:	Railroad.create('rr-penn', i18n.RAILROAD_PENN, railroadGroup),

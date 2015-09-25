@@ -3,11 +3,11 @@
 	
 	var precondition = require('./contract').precondition;
 	
-	exports.isEstate = function (candidate) {
-		return candidate instanceof Estate;
+	exports.isProperty = function (candidate) {
+		return candidate instanceof Property;
 	};
 	
-	exports.create = function (id, name, group, prices) {
+	exports.newEstate = function (id, name, group, prices) {
 		precondition(_.isString(id) && id.length > 0, 'Estate requires an id');
 		precondition(_.isString(name) && name.length > 0, 'Estate requires a name');
 		precondition(_.isNumber(group.index) && group.index >= 0 && group.index < 8,
@@ -17,39 +17,47 @@
 		precondition(_.isNumber(prices.value) && prices.value > 0, 'Estate must have a price');
 		precondition(_.isNumber(prices.rent) && prices.rent > 0, 'Estate must have a rent');
 		
-		return new Estate(id, name, group, prices);
+		return new Property({
+			id: id,
+			name: name,
+			group: group,
+			type: 'estate',
+			price: prices.value,
+			rent: prices.rent
+		});
 	};
 	
-	function Estate(id, name, group, prices) {
-		this._id = id;
-		this._name = name;
-		this._group = group;
-		this._price = prices.value;
-		this._rent = prices.rent;
+	function Property(info) {
+		this._id = info.id;
+		this._name = info.name;
+		this._group = info.group;
+		this._price = info.price;
+		this._rent = info.rent;
+		this._type = info.type;
 	}
 	
-	Estate.prototype.id = function () {
+	Property.prototype.id = function () {
 		return this._id;
 	};
 	
-	Estate.prototype.name = function () {
+	Property.prototype.name = function () {
 		return this._name;
 	};
 	
-	Estate.prototype.price = function () {
+	Property.prototype.price = function () {
 		return this._price;
 	};
 	
-	Estate.prototype.rent = function () {
+	Property.prototype.rent = function () {
 		return this._rent;
 	};
 	
-	Estate.prototype.group = function () {
+	Property.prototype.group = function () {
 		return this._group;
 	};
 	
-	Estate.prototype.match = function (visitor) {
-		return matchWithDefault(visitor, 'estate', [this._id, this._name, this._price, this._group]);
+	Property.prototype.match = function (visitor) {
+		return matchWithDefault(visitor, this._type, [this._id, this._name, this._price, this._group]);
 	};
 	
 	function matchWithDefault(visitor, fn, args) {
@@ -60,8 +68,9 @@
 		return visitor['_']();
 	}
 	
-	Estate.prototype.compareTo = function (property) {
-		precondition(property, 'Comparing this property to another property requires that other property');
+	Property.prototype.compareTo = function (property) {
+		precondition(property,
+			'Comparing this property to another property requires that other property');
 		
 		var id = this._id;
 		var group = this._group;
@@ -93,13 +102,13 @@
 		});
 	};
 	
-	Estate.prototype.equals = function (other) {
-		precondition(other, 'Testing an estate for equality with something else requires that something else');
+	Property.prototype.equals = function (other) {
+		precondition(other, 'Testing a property for equality with something else requires that something else');
 		
 		if (this === other) {
 			return true;
 		}
 		
-		return other instanceof Estate && this._id === other._id;
+		return other instanceof Property && this._id === other._id;
 	};
 }());

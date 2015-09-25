@@ -2,7 +2,7 @@
 	"use strict";
 	
 	var PlayerColors = require('./player-colors').colors();
-	var Estate = require('./estate');
+	var Property = require('./property');
 	var Company = require('./company');
 	var Railroad = require('./railroad');
 	
@@ -98,8 +98,8 @@
 	};
 	
 	Player.prototype.buyProperty = function (property) {
-		precondition(Estate.isEstate(property) || Company.isCompany(property) || Railroad.isRailroad(property),
-			'Buy property choice requires a property');
+		precondition(Property.isProperty(property) || Company.isCompany(property) || Railroad.isRailroad(property),
+			'Player buying property requires a property');
 		
 		return newPlayer({
 			id: this.id(),
