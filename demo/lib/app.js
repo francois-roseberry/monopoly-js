@@ -4,7 +4,6 @@
 	
 	var precondition = require('./contract').precondition;
 	var i18n = require('./i18n').i18n();
-	var groupColors = require('./group-colors').color;
 	
 	var Symbols = require('./symbols');
 	var TextWrapper = require('./text-wrapper');
@@ -151,7 +150,7 @@
 				.attr({
 					width: SQUARE_WIDTH,
 					height: SQUARE_HEIGHT / 5,
-					fill: groupColors(group),
+					fill: group.color(),
 					stroke: 'black'
 				});
 				
@@ -242,70 +241,121 @@
 		return transforms[rowIndex];
 	}
 }());
-},{"./contract":7,"./group-colors":17,"./i18n":21,"./symbols":34,"./text-wrapper":35}],2:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./symbols":35,"./text-wrapper":36}],2:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
-	exports.estatesInGroup = function (group) {
-		precondition(_.isNumber(group) && group >= 0 && group < 8,
-			'Listing estates of a group must requires the group index');
+	var Property = require('./property');
+	var PropertyGroup = require('./property-group');
+	
+	function groupMembers(groupIndex) {
+		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 10,
+			'Listing members of a group in board requires the group index');
 		
-		return _.filter(exports.squares(), function (square) {
-			return square.match({
-				'estate': function () { return square.group() === group; },
-				_ : function () { return false; }
-			});
+		return _.filter(exports.properties(), function (square) {
+			return square.group().index() === groupIndex;
 		});
+	}
+	
+	exports.properties = function () {
+		var groups = [
+			PropertyGroup.newGroup(0, 'midnightblue', groupMembers),
+			PropertyGroup.newGroup(1, 'lightskyblue', groupMembers),
+			PropertyGroup.newGroup(2, 'mediumvioletred', groupMembers),
+			PropertyGroup.newGroup(3, 'orange', groupMembers),
+			PropertyGroup.newGroup(4, 'red', groupMembers),
+			PropertyGroup.newGroup(5, 'yellow', groupMembers),
+			PropertyGroup.newGroup(6, 'green', groupMembers),
+			PropertyGroup.newGroup(7, 'blue', groupMembers)
+		];
+		
+		var railroadGroup = PropertyGroup.newGroup(8, 'black', groupMembers);
+		var companyGroup =  PropertyGroup.newGroup(9, 'lightgreen', groupMembers);
+		
+		return {
+			mediterranean: 	Property.newEstate('md', i18n.PROPERTY_MD, groups[0], { value: 60,  rent: 2}),
+			baltic:			Property.newEstate('bt', i18n.PROPERTY_BT, groups[0], { value: 60,  rent: 4}),
+			east:			Property.newEstate('et', i18n.PROPERTY_ET, groups[1], { value: 100, rent: 6}),
+			vermont:		Property.newEstate('vt', i18n.PROPERTY_VT, groups[1], { value: 100, rent: 6}),
+			connecticut:	Property.newEstate('cn', i18n.PROPERTY_CN, groups[1], { value: 120, rent: 8}),
+			charles:		Property.newEstate('cl', i18n.PROPERTY_CL, groups[2], { value: 140, rent: 10}),
+			us:				Property.newEstate('us', i18n.PROPERTY_US, groups[2], { value: 140, rent: 10}),
+			virginia:		Property.newEstate('vn', i18n.PROPERTY_VN, groups[2], { value: 160, rent: 12}),
+			jack:			Property.newEstate('jk', i18n.PROPERTY_JK, groups[3], { value: 180, rent: 14}),
+			tennessee:		Property.newEstate('tn', i18n.PROPERTY_TN, groups[3], { value: 180, rent: 14}),
+			newYork:		Property.newEstate('ny', i18n.PROPERTY_NY, groups[3], { value: 200, rent: 16}),
+			kentucky:		Property.newEstate('kt', i18n.PROPERTY_KT, groups[4], { value: 220, rent: 18}),
+			indiana:		Property.newEstate('in', i18n.PROPERTY_IN, groups[4], { value: 220, rent: 18}),
+			illinois:		Property.newEstate('il', i18n.PROPERTY_IL, groups[4], { value: 240, rent: 20}),
+			atlantic:		Property.newEstate('at', i18n.PROPERTY_AT, groups[5], { value: 260, rent: 22}),
+			ventnor:		Property.newEstate('vr', i18n.PROPERTY_VR, groups[5], { value: 260, rent: 22}),
+			marvin:			Property.newEstate('mv', i18n.PROPERTY_MN, groups[5], { value: 280, rent: 24}),
+			pacific:		Property.newEstate('pa', i18n.PROPERTY_PA, groups[6], { value: 300, rent: 26}),
+			northCarolina:	Property.newEstate('nc', i18n.PROPERTY_NC, groups[6], { value: 300, rent: 26}),
+			pennsylvania:	Property.newEstate('pn', i18n.PROPERTY_PN, groups[6], { value: 320, rent: 28}),
+			park:			Property.newEstate('pk', i18n.PROPERTY_PK, groups[7], { value: 350, rent: 35}),
+			broadwalk:		Property.newEstate('bw', i18n.PROPERTY_BW, groups[7], { value: 400, rent: 50}),
+			
+			readingRailroad:		Property.newRailroad('rr-reading', i18n.RAILROAD_READING, railroadGroup),
+			pennsylvaniaRailroad:	Property.newRailroad('rr-penn', i18n.RAILROAD_PENN, railroadGroup),
+			boRailroad:				Property.newRailroad('rr-bo', i18n.RAILROAD_B_O, railroadGroup),
+			shortRailroad:			Property.newRailroad('rr-short', i18n.RAILROAD_SHORT, railroadGroup),
+			
+			electricCompany:	Property.newCompany('electric', i18n.COMPANY_ELECTRIC, companyGroup),
+			waterWorks:			Property.newCompany('water', i18n.COMPANY_WATER, companyGroup)
+		};
 	};
 	
 	exports.squares = function () {
+		var properties = exports.properties();
+		
 		return [
 			go(),
-			estate('med', i18n.PROPERTY_MED, 0, 60, 2),
+			properties.mediterranean,
 			communityChest(),
-			estate('baltic', i18n.PROPERTY_BALTIC, 0, 60, 4),
+			properties.baltic,
 			incomeTax(),
-			railroad('rr-reading', i18n.RAILROAD_READING),
-			estate('east', i18n.PROPERTY_EAST, 1, 100, 6),
+			properties.readingRailroad,
+			properties.east,
 			chance(),
-			estate('vt', i18n.PROPERTY_VT, 1, 100, 6),
-			estate('conn', i18n.PROPERTY_CONN, 1, 120, 8),
+			properties.vermont,
+			properties.connecticut,
 			
 			jail(),
-			estate('charles', i18n.PROPERTY_CHARLES, 2, 140, 10),
-			company('electric', i18n.COMPANY_ELECTRIC),
-			estate('us', i18n.PROPERTY_US, 2, 140, 10),
-			estate('vn', i18n.PROPERTY_VN, 2, 160, 12),
-			railroad('rr-penn', i18n.RAILROAD_PENN),
-			estate('jack', i18n.PROPERTY_JACK, 3, 180, 14),
+			properties.charles,
+			properties.electricCompany,
+			properties.us,
+			properties.virginia,
+			properties.pennsylvaniaRailroad,
+			properties.jack,
 			communityChest(),
-			estate('tn', i18n.PROPERTY_TN, 3, 180, 14),
-			estate('ny', i18n.PROPERTY_NY, 3, 200, 16),
+			properties.tennessee,
+			properties.newYork,
 			
 			parking(),
-			estate('kt', i18n.PROPERTY_KT, 4, 220, 18),
+			properties.kentucky,
 			chance(),
-			estate('in', i18n.PROPERTY_IN, 4, 220, 18),
-			estate('il', i18n.PROPERTY_IL, 4, 240, 20),
-			railroad('rr-bo', i18n.RAILROAD_B_O),
-			estate('at', i18n.PROPERTY_AT, 5, 260, 22),
-			estate('vr', i18n.PROPERTY_VR, 5, 260, 22),
-			company('water', i18n.COMPANY_WATER),
-			estate('marvin', i18n.PROPERTY_MARVIN, 5, 280, 24),
+			properties.indiana,
+			properties.illinois,
+			properties.boRailroad,
+			properties.atlantic,
+			properties.ventnor,
+			properties.waterWorks,
+			properties.marvin,
 			
 			goToJail(),
-			estate('pa', i18n.PROPERTY_PA, 6, 300, 26),
-			estate('nc', i18n.PROPERTY_NC, 6, 300, 26),
+			properties.pacific,
+			properties.northCarolina,
 			communityChest(),
-			estate('penn', i18n.PROPERTY_PENN, 6, 320, 28),
-			railroad('rr-short', i18n.RAILROAD_SHORT),
+			properties.pennsylvania,
+			properties.shortRailroad,
 			chance(),
-			estate('pk', i18n.PROPERTY_PK, 7, 350, 35),
+			properties.park,
 			luxuryTax(),
-			estate('bw', i18n.PROPERTY_BW, 7, 400, 50)
+			properties.broadwalk
 		];
 	};
 	
@@ -357,38 +407,6 @@
 		};
 	}
 	
-	function company(id, name) {
-		precondition(_.isString(id) && id.length > 0, 'Company must have an id');
-		precondition(_.isString(name) && name.length > 0, 'Company must have a name');
-		
-		return {
-			match: match('company', [id, name, 150])
-		};
-	}
-	
-	function railroad(id, name) {
-		precondition(_.isString(id) && id.length > 0, 'Railroad must have an id');
-		precondition(_.isString(name) && name.length > 0, 'Railroad must have a name');
-		
-		return {
-			match: match('railroad', [id, name, 200])
-		};
-	}
-	
-	function estate(id, name, group, price, rent) {
-		precondition(_.isString(id) && id.length > 0, 'Property must have an id');
-		precondition(_.isString(name) && name.length > 0, 'Property must have a name');
-		precondition(_.isNumber(group) && group >= 0 && group < 8, 'Property must have a group');
-		precondition(_.isNumber(price) && price > 0, 'Property must have a price');
-		precondition(_.isNumber(rent) && rent > 0, 'Property must have a rent');
-		
-		return {
-			group: function() { return group; },
-			rent: function() { return rent; },
-			match: match('estate', [id, name, price, group])
-		};
-	}
-	
 	function match(fn, args) {
 		return function (visitor) {
 			if (_.isFunction(visitor[fn])) {
@@ -399,7 +417,7 @@
 		};
 	}
 }());
-},{"./contract":7,"./i18n":21}],3:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./property":32,"./property-group":31}],3:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -428,20 +446,19 @@
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
+	var Property = require('./property');
 	
-	exports.newChoice = function (propertyId, name, price) {
-		precondition(_.isString(propertyId) && propertyId.length > 0, 'Buy property choice requires a property id');
-		precondition(_.isString(name), 'Buy property choice requires a property name');
-		precondition(_.isNumber(price) && price > 0, 'Buy property choice requires a price greater than 0');
+	exports.newChoice = function (property) {
+		precondition(Property.isProperty(property), 'Buy property choice requires a property');
 		
-		return new BuyPropertyChoice(propertyId, name, price);
+		return new BuyPropertyChoice(property);
 	};
 	
-	function BuyPropertyChoice(propertyId, name, price) {
+	function BuyPropertyChoice(property) {
 		this.id = 'buy-property';
-		this.name = i18n.CHOICE_BUY_PROPERTY.replace('{property}', name).replace('{price}', i18n.formatPrice(price));
-		this._propertyId = propertyId;
-		this._price = price;
+		this.name = i18n.CHOICE_BUY_PROPERTY.replace('{property}', property.name())
+			.replace('{price}', i18n.formatPrice(property.price()));
+		this._property = property;
 	}
 	
 	BuyPropertyChoice.prototype.equals = function (other) {
@@ -451,17 +468,17 @@
 		
 		var self = this;
 		return other.match({
-			'buy-property': function (propertyId, price) {
-				return self._propertyId === propertyId && self._price === price;
+			'buy-property': function (property) {
+				return self._property.equals(property);
 			}
 		});
 	};
 	
 	BuyPropertyChoice.prototype.match = function (visitor) {
-		return visitor[this.id](this._propertyId, this._price);
+		return visitor[this.id](this._property);
 	};
 }());
-},{"./contract":7,"./i18n":21}],5:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./property":32}],5:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -479,8 +496,8 @@
 		return FinishTurnChoice.newChoice();
 	};
 	
-	exports.buyProperty = function (propertyId, name, price) {
-		return BuyPropertyChoice.newChoice(propertyId, name, price);
+	exports.buyProperty = function (property) {
+		return BuyPropertyChoice.newChoice(property);
 	};
 	
 	exports.payRent = function (rent, toPlayerId, toPlayerName) {
@@ -491,7 +508,7 @@
 		return GoBankruptChoice.newChoice();
 	};
 }());
-},{"./buy-property-choice":4,"./finish-turn-choice":10,"./go-bankrupt-choice":16,"./pay-rent-choice":26,"./roll-dice-choice":32}],6:[function(require,module,exports){
+},{"./buy-property-choice":4,"./finish-turn-choice":10,"./go-bankrupt-choice":16,"./pay-rent-choice":25,"./roll-dice-choice":33}],6:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -730,7 +747,7 @@
 		return visitor[this.id]();
 	};
 }());
-},{"./i18n":21}],11:[function(require,module,exports){
+},{"./i18n":20}],11:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -943,12 +960,11 @@
 		selection.exit().remove();
 	}
 }());
-},{"./contract":7,"./i18n":21,"./popup":31}],13:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./popup":30}],13:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var Choices = require('./choices');
-	var Board = require('./board');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -994,9 +1010,9 @@
 	
 	function choicesForSquare(square, players, currentPlayer, paid) {
 		return square.match({
-			'estate': choicesForProperty(players, currentPlayer, paid, estateRent(square)),
-			'railroad': choicesForProperty(players, currentPlayer, paid, railroadRent),
-			'company': choicesForProperty(players, currentPlayer, paid, companyRent),
+			'estate': choicesForProperty(square, players, currentPlayer, paid),
+			'railroad': choicesForProperty(square, players, currentPlayer, paid),
+			'company': choicesForProperty(square, players, currentPlayer, paid),
 			_: onlyFinishTurn
 		});
 	}
@@ -1005,69 +1021,31 @@
 		return [Choices.finishTurn()];
 	}
 	
-	function companyRent() {
-		return 25;
-	}
-	
-	function estateRent(square) {
-		return function (ownerProperties) {
-			var multiplier = (ownsAllEstatesInGroup(square.group(), ownerProperties) ? 2 : 1);
-			return square.rent() * multiplier;
-		};
-	}
-	
-	function ownsAllEstatesInGroup(group, properties) {
-		var estatesInGroup = Board.estatesInGroup(group);
-		return _.every(estatesInGroup, function (estate) {
-			var id = estate.match({
-				'estate' : function (id) { return id; }
-			});
-			
-			return _.contains(properties, id);
-		});
-	}
-	
-	function railroadRent(ownerProperties) {
-		var count = railroadCountIn(ownerProperties);
-		return 25 * Math.pow(2, count - 1);
-	}
-	
-	function railroadCountIn(properties) {
-		return _.reduce(properties, function (count, property) {
-			if (property === 'rr-reading' || property === 'rr-penn' ||
-				property === 'rr-bo' || property === 'rr-short') {
-				return count + 1;
-			}
-			
-			return count;
-		}, 0);
-	}
-	
-	function choicesForProperty(players, currentPlayer, paid, rentFunction) {
+	function choicesForProperty(square, players, currentPlayer, paid) {
 		return function (id, name, price) {
-			var owner = getOwner(players, id);
+			var owner = getOwner(players, square);
 			
 			if (!paid && owner && owner.id() !== currentPlayer.id()) {
-				var rent = rentFunction(owner.properties());
+				var rent = square.rent(owner.properties());
 				if (currentPlayer.money() <= rent) {
 					return [Choices.goBankrupt()];
 				}
 				
-				return [Choices.payRent(rent, owner.id(), owner.name())];
+				return [Choices.payRent(rent, owner)];
 			}
 			
 			if (!owner && currentPlayer.money() > price) {
-				return [Choices.buyProperty(id, name, price), Choices.finishTurn()];
+				return [Choices.buyProperty(square), Choices.finishTurn()];
 			}
 			
 			return [Choices.finishTurn()];
 		};
 	}
 	
-	function getOwner(players, propertyId) {
+	function getOwner(players, square) {
 		return _.find(players, function (player) {
 			return _.some(player.properties(), function (property) {
-				return property === propertyId;
+				return property.equals(square);
 			});
 		});
 	}
@@ -1107,28 +1085,8 @@
 	GameState.prototype.choices = function () {
 		return this._choices;
 	};
-	
-	GameState.prototype.propertyById = function (propertyId) {
-		precondition(_.isString(propertyId) && propertyId.length > 0,
-			'Trying to find a property in a game state requires the property id');
-		
-		var match = _.find(this._squares, function (square) {
-			return square.match({
-				'estate': function (id) { return id === propertyId; },
-				'railroad': function (id) { return id === propertyId; },
-				'company': function (id) { return id === propertyId; },
-				_: function () { return false; }
-			});
-		});
-		
-		if (match === null) {
-			throw new Error('Could not find property with id : ' + propertyId);
-		}
-		
-		return match;
-	};
 }());
-},{"./board":2,"./choices":5,"./contract":7}],14:[function(require,module,exports){
+},{"./choices":5,"./contract":7}],14:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1187,7 +1145,7 @@
 		return this._statusChanged.asObservable();
 	};
 }());
-},{"./board":2,"./configure-game-task":6,"./play-game-task":27}],15:[function(require,module,exports){
+},{"./board":2,"./configure-game-task":6,"./play-game-task":26}],15:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1221,7 +1179,7 @@
 		};
 	}
 }());
-},{"./contract":7,"./game-configuration-widget":12,"./monopoly-game-widget":25}],16:[function(require,module,exports){
+},{"./contract":7,"./game-configuration-widget":12,"./monopoly-game-widget":24}],16:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1244,21 +1202,7 @@
 		return visitor[this.id]();
 	};
 }());
-},{"./i18n":21}],17:[function(require,module,exports){
-(function() {
-	"use strict";
-	
-	var precondition = require('./contract').precondition;
-	
-	exports.color = function (groupIndex) {
-		var colors = ['midnightblue', 'lightskyblue', 'mediumvioletred', 'orange', 'red', 'yellow', 'green', 'blue'];
-		
-		precondition(colors[groupIndex], 'No color has been defined for group ' + groupIndex);
-		
-		return colors[groupIndex];
-	};
-}());
-},{"./contract":7}],18:[function(require,module,exports){
+},{"./i18n":20}],17:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1324,7 +1268,7 @@
 		};
 	}
 }());
-},{"./contract":7}],19:[function(require,module,exports){
+},{"./contract":7}],18:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1340,13 +1284,14 @@
 	exports.CHOICE_FINISH_TURN = 'Finish turn';
 	exports.CHOICE_BUY_PROPERTY = 'Buy {property} for {price}';
 	exports.CHOICE_PAY_RENT = 'Pay {rent} to {toPlayer}';
+	exports.CHOICE_GO_BANKRUPT = 'Go bankrupt';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
 	exports.LOG_DOUBLE_DICE_ROLL = '{player} rolled a double of {dice}';
 	exports.LOG_PROPERTY_BOUGHT = '{player} bought {property}';
 	exports.LOG_RENT_PAID = '{fromPlayer} paid {amount} to {toPlayer}';
-	exports.CHOICE_GO_BANKRUPT = 'Go bankrupt';
+	exports.LOG_SALARY = "{player} passed GO and received $200";
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -1362,15 +1307,15 @@
 	exports.RAILROAD_B_O = 'B.& O. Railroad';
 	exports.RAILROAD_SHORT = 'Short line';
 	
-	exports.PROPERTY_MED = 'Mediterranean Avenue';
-	exports.PROPERTY_BALTIC = 'Baltic Avenue';
-	exports.PROPERTY_EAST = "Oriental Avenue";
+	exports.PROPERTY_MD = 'Mediterranean Avenue';
+	exports.PROPERTY_BT = 'Baltic Avenue';
+	exports.PROPERTY_ET = "Oriental Avenue";
 	exports.PROPERTY_VT = 'Vermont Avenue';
-	exports.PROPERTY_CONN = 'Connecticut Avenue';
-	exports.PROPERTY_CHARLES = 'St.Charles Place';
+	exports.PROPERTY_CN = 'Connecticut Avenue';
+	exports.PROPERTY_CL = 'St.Charles Place';
 	exports.PROPERTY_US = 'States Avenue';
 	exports.PROPERTY_VN = 'Virginia Avenue';
-	exports.PROPERTY_JACK = 'St.James Place';
+	exports.PROPERTY_JK = 'St.James Place';
 	exports.PROPERTY_TN = 'Tennessee Avenue';
 	exports.PROPERTY_NY = 'New York Avenue';
 	exports.PROPERTY_KT = 'Kentucky Avenue';
@@ -1378,10 +1323,10 @@
 	exports.PROPERTY_IL = 'Illinois Avenue';
 	exports.PROPERTY_AT = 'Atlantic Avenue';
 	exports.PROPERTY_VR = 'Ventnor Avenue';
-	exports.PROPERTY_MARVIN = 'Marvin Gardens';
+	exports.PROPERTY_MN = 'Marvin Gardens';
 	exports.PROPERTY_PA = 'Pacific Avenue';
 	exports.PROPERTY_NC = 'North Carolina Avenue';
-	exports.PROPERTY_PENN = 'Pennsylvania Avenue';
+	exports.PROPERTY_PN = 'Pennsylvania Avenue';
 	exports.PROPERTY_PK = 'Park Place';
 	exports.PROPERTY_BW = 'Boardwalk';
 	
@@ -1398,7 +1343,7 @@
 		return '$' + price;
 	};
 }());
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1421,6 +1366,7 @@
 	exports.LOG_DOUBLE_DICE_ROLL = '{player} a obtenu un doublé de {dice}';
 	exports.LOG_PROPERTY_BOUGHT = '{player} a acheté {property}';
 	exports.LOG_RENT_PAID = '{fromPlayer} a payé {amount} à {toPlayer}';
+	exports.LOG_SALARY = "{player} a passé GO et reçu $200";
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -1436,15 +1382,15 @@
 	exports.RAILROAD_B_O = 'Chemin de fer B.& O.';
 	exports.RAILROAD_SHORT = 'Chemin de fer Petit Réseau';
 	
-	exports.PROPERTY_MED = 'Avenue de la Méditerrannée';
-	exports.PROPERTY_BALTIC = 'Avenue de la Baltique';
-	exports.PROPERTY_EAST = "Avenue de l'Orient";
+	exports.PROPERTY_MD = 'Avenue de la Méditerrannée';
+	exports.PROPERTY_BT = 'Avenue de la Baltique';
+	exports.PROPERTY_ET = "Avenue de l'Orient";
 	exports.PROPERTY_VT = 'Avenue Vermont';
-	exports.PROPERTY_CONN = 'Avenue Connecticut';
-	exports.PROPERTY_CHARLES = 'Place St-Charles';
+	exports.PROPERTY_CN = 'Avenue Connecticut';
+	exports.PROPERTY_CL = 'Place St-Charles';
 	exports.PROPERTY_US = 'Avenue des États-Unis';
 	exports.PROPERTY_VN = 'Avenue Virginie';
-	exports.PROPERTY_JACK = 'Place St-Jacques';
+	exports.PROPERTY_JK = 'Place St-Jacques';
 	exports.PROPERTY_TN = 'Avenue Tennessee';
 	exports.PROPERTY_NY = 'Avenue New York';
 	exports.PROPERTY_KT = 'Avenue Kentucky';
@@ -1452,10 +1398,10 @@
 	exports.PROPERTY_IL = 'Avenue Illinois';
 	exports.PROPERTY_AT = 'Avenue Atlantique';
 	exports.PROPERTY_VR = 'Avenue Ventnor';
-	exports.PROPERTY_MARVIN = 'Jardins Marvin';
+	exports.PROPERTY_MN = 'Jardins Marvin';
 	exports.PROPERTY_PA = 'Avenue Pacifique';
 	exports.PROPERTY_NC = 'Avenue Caroline du Nord';
-	exports.PROPERTY_PENN = 'Avenue Pennsylvanie';
+	exports.PROPERTY_PN = 'Avenue Pennsylvanie';
 	exports.PROPERTY_PK = 'Place du parc';
 	exports.PROPERTY_BW = 'Promenade';
 	
@@ -1472,7 +1418,7 @@
 		return price + ' $';
 	};
 }());
-},{}],21:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function () {
     'use strict';
     var frenchString = require('./i18n.fr');
@@ -1511,7 +1457,7 @@
         window.applicationLanguage = applicationLanguage;
     }
 }());
-},{"./i18n.en":19,"./i18n.fr":20}],22:[function(require,module,exports){
+},{"./i18n.en":18,"./i18n.fr":19}],21:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1549,6 +1495,12 @@
 			.subscribe(function (info) {
 				messages.onNext(Messages.logRentPaid(info.amount, info.fromPlayer, info.toPlayer));
 			});
+			
+		onSalaryEarned(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (player) {
+				messages.onNext(Messages.logSalaryReceived(player));
+			});
 	}
 	
 	function diceMessage(dice) {
@@ -1580,12 +1532,11 @@
 			})
 			.map(function (states) {
 				var player = states.previous.players()[states.current.currentPlayerIndex()];
-				var newProperty = findNewProperty(states);	
-				var propertyName = nameOfProperty(newProperty);
+				var newProperty = findNewProperty(states);
 				
 				return {
-					player: player.name(),
-					property: propertyName
+					player: player,
+					property: newProperty
 				};
 			});
 	}
@@ -1614,29 +1565,34 @@
 					states.current.players()[states.current.currentPlayerIndex()].money();
 				
 				return {
-					fromPlayer: fromPlayer.name(),
-					toPlayer: toPlayer.name(),
+					fromPlayer: fromPlayer,
+					toPlayer: toPlayer,
 					amount: amount
 				};
 			});
+	}
+	
+	function onSalaryEarned(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+		.filter(function (states) {
+			var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
+			var previousPlayer = states.previous.players()[states.current.currentPlayerIndex()];
+			
+			return currentPlayer.money() === (previousPlayer.money() + 200);
+		})
+		.map(function (states) {
+			return states.current.players()[states.current.currentPlayerIndex()];
+		});
 	}
 	
 	function findNewProperty(states) {
 		var previousProperties = states.previous.players()[states.current.currentPlayerIndex()].properties();
 		var currentProperties = states.current.players()[states.current.currentPlayerIndex()].properties();
 		
-		var newPropertyId = _.filter(currentProperties, function (id) {
-			return !_.contains(previousProperties, id);
+		var newProperty = _.filter(currentProperties, function (property) {
+			return !_.contains(_.map(previousProperties, function (property) { return property.id(); }), property.id());
 		})[0];
-		return states.current.propertyById(newPropertyId);
-	}
-	
-	function nameOfProperty(property) {
-		return property.match({
-			'estate': function (id, name) { return name; },
-			'railroad': function (id, name) { return name; },
-			'company': function (id, name) { return name; }
-		});
+		return newProperty;
 	}
 	
 	function combineWithPrevious(observable) {
@@ -1659,7 +1615,7 @@
 		return {
 			firstDie : dice[0],
 			secondDie: dice[1],
-			player: state.players()[state.currentPlayerIndex()].name()
+			player: state.players()[state.currentPlayerIndex()]
 		};
 	}
 	
@@ -1667,7 +1623,7 @@
 		return this._messages.asObservable();
 	};
 }());
-},{"./contract":7,"./messages":24}],23:[function(require,module,exports){
+},{"./contract":7,"./messages":23}],22:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1690,15 +1646,18 @@
 		});
 	};
 }());
-},{"./contract":7}],24:[function(require,module,exports){
+},{"./contract":7}],23:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
+	var Player = require('./player');
+	var Property = require('./property');
+	
 	exports.logDiceRoll = function (player, die1, die2) {
-		precondition(_.isString(player) && player.length > 0,
+		precondition(player && Player.isPlayer(player),
 			'A log about dice roll requires the name of the player who rolled the dice');
 		precondition(_.isNumber(die1) && die1 >= 1 && die1 <= 6,
 			'A log about dice roll requires a first die between 1 and 6');
@@ -1706,7 +1665,7 @@
 			'A log about dice roll requires a first die between 1 and 6');
 		
 		var message = i18n.LOG_DICE_ROLL
-					.replace('{player}', player)
+					.replace('{player}', player.name())
 					.replace('{die1}', die1)
 					.replace('{die2}', die2);
 						
@@ -1714,27 +1673,27 @@
 	};
 	
 	exports.logDoubleDiceRoll = function (player, dice) {
-		precondition(_.isString(player) && player.length > 0,
-			'A log about double dice roll requires the name of the player who rolled the dice');
-		precondition(_.isNumber(dice) && dice >= 1 && dice <= 6,
-			'A log about dice roll requires a first die between 1 and 6');
+		precondition(player && Player.isPlayer(player),
+			'A log about double dice roll requires the player who rolled the dice');
+		precondition(_.isNumber(dice) && dice,
+			'A log about double dice roll requires dice to be greater than 1');
 		
 		var message = i18n.LOG_DOUBLE_DICE_ROLL
-						.replace('{player}', player)
+						.replace('{player}', player.name())
 						.replace('{dice}', dice);
 						
 		return new Log('double-dice-roll', message);
 	};
 	
 	exports.logPropertyBought = function (player, property) {
-		precondition(_.isString(player) && player.length > 0,
-			'A log about property bought requires the name of the player who bought');
-		precondition(_.isString(property) && property.length > 0,
-			'A log about property bought requires the name of the property that was bought');
+		precondition(player && Player.isPlayer(player),
+			'A log about property bought requires the player who bought');
+		precondition(property && Property.isProperty(property),
+			'A log about property bought requires the property that was bought');
 		
 		var message = i18n.LOG_PROPERTY_BOUGHT
-						.replace('{player}', player)
-						.replace('{property}', property);
+						.replace('{player}', player.name())
+						.replace('{property}', property.name());
 						
 		return new Log('property-bought', message);
 	};
@@ -1742,17 +1701,27 @@
 	exports.logRentPaid = function (amount, fromPlayer, toPlayer) {
 		precondition(_.isNumber(amount) && amount > 0,
 			'A log about rent paid requires an amount greater than 0');
-		precondition(_.isString(fromPlayer) && fromPlayer.length > 0,
-			'A log about rent paid requires the name of the player who paid');
-		precondition(_.isString(toPlayer) && toPlayer.length > 0,
-			'A log about rent paid requires the name of the player who received the payment');
+		precondition(fromPlayer && Player.isPlayer(fromPlayer),
+			'A log about rent paid requires of the player who paid');
+		precondition(toPlayer && Player.isPlayer(toPlayer),
+			'A log about rent paid requires of the player who received the payment');
 		
 		var message = i18n.LOG_RENT_PAID
 						.replace('{amount}', i18n.formatPrice(amount))
-						.replace('{fromPlayer}', fromPlayer)
-						.replace('{toPlayer}', toPlayer);
+						.replace('{fromPlayer}', fromPlayer.name())
+						.replace('{toPlayer}', toPlayer.name());
 		
 		return new Log('rent-paid', message);
+	};
+	
+	exports.logSalaryReceived = function (player) {
+		precondition(player && Player.isPlayer(player),
+			'A log about player salary requires the player');
+			
+		var message = i18n.LOG_SALARY
+						.replace('{player}', player.name());
+						
+		return new Log('salary-earned', message);
 	};
 	
 	exports.simpleLog = function () {
@@ -1771,8 +1740,12 @@
 	Log.prototype.message = function () {
 		return this._message;
 	};
+	
+	Log.prototype.equals = function (other) {
+		return other instanceof Log && this._id === other._id && this._message === other._message;
+	};
 }());
-},{"./contract":7,"./i18n":21}],25:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./player":28,"./property":32}],24:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1814,20 +1787,21 @@
 	};
 }());
 
-},{"./board-widget":1,"./contract":7,"./dice-widget":8,"./game-choices-widget":11,"./i18n":21,"./log-game-widget":23,"./players-widget":30}],26:[function(require,module,exports){
+},{"./board-widget":1,"./contract":7,"./dice-widget":8,"./game-choices-widget":11,"./i18n":20,"./log-game-widget":22,"./players-widget":29}],25:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
-	exports.newChoice = function (rent, toPlayerId, toPlayerName) {
+	var Player = require('./player');
+	
+	exports.newChoice = function (rent, toPlayer) {
 		precondition(_.isNumber(rent) && rent > 0, 'Pay rent choice requires a rent greater than 0');
-		precondition(_.isString(toPlayerId) && toPlayerId.length > 0,
-			'Pay rent choice requires the id of the player to pay to');
-		precondition(_.isString(toPlayerName), 'Pay rent choice requires the name of the player to pay to');
+		precondition(toPlayer && Player.isPlayer(toPlayer),
+			'Pay rent choice requires the player to pay to');
 		
-		return new PayRentChoice(rent, toPlayerId, toPlayerName);
+		return new PayRentChoice(rent, toPlayer.id(), toPlayer.name());
 	};
 	
 	function PayRentChoice(rent, toPlayerId, toPlayerName) {
@@ -1855,7 +1829,7 @@
 		return visitor[this.id](this._rent, this._toPlayerId, this._toPlayerName);
 	};
 }());
-},{"./contract":7,"./i18n":21}],27:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./player":28}],26:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1978,8 +1952,8 @@
 	}
 	
 	function buyProperty(state) {
-		return function (id, price) {
-			return Rx.Observable.return(transferOwnership(state, id, price));
+		return function (property) {
+			return Rx.Observable.return(transferOwnership(state, property));
 		};
 	}
 	
@@ -2033,10 +2007,10 @@
 		});
 	}
 	
-	function transferOwnership(state, id, price) {
+	function transferOwnership(state, property) {
 		var newPlayers = _.map(state.players(), function (player, index) {
 			if (index === state.currentPlayerIndex()) {
-				return player.buyProperty(id, price);
+				return player.buyProperty(property);
 			}
 			
 			return player;
@@ -2073,7 +2047,7 @@
 		});
 	}
 }());
-},{"./contract":7,"./game-state":13,"./handle-choices-task":18,"./log-game-task":22,"./player":29,"./roll-dice-task":33}],28:[function(require,module,exports){
+},{"./contract":7,"./game-state":13,"./handle-choices-task":17,"./log-game-task":21,"./player":28,"./roll-dice-task":34}],27:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2083,14 +2057,19 @@
 		];
 	};
 }());
-},{}],29:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var PlayerColors = require('./player-colors').colors();
+	var Property = require('./property');
 	
 	var precondition = require('./contract').precondition;
 	var i18n = require('./i18n').i18n();
+	
+	exports.isPlayer = function (candidate) {
+		return candidate instanceof Player;
+	};
 	
 	exports.newPlayers = function (playerConfigurations) {
 		precondition(_.isArray(playerConfigurations) && playerConfigurations.length >= 3,
@@ -2168,32 +2147,54 @@
 			'Moving a player requires a dice with two numbers');
 			
 		var squareCount = 40;
+		var newPosition = this.position() + dice[0] + dice[1];
 		
 		return newPlayer({
 			id: this.id(),
 			name: this.name(),
-			money: this.money(),
-			position: (this.position() + dice[0] + dice[1]) % squareCount,
+			money: this.money() + (newPosition > squareCount ? 200 : 0),
+			position: newPosition % squareCount,
 			color: this.color(),
 			type: this.type(),
 			properties: this.properties()
 		});
 	};
 	
-	Player.prototype.buyProperty = function (id, price) {
-		precondition(_.isNumber(price) && this.money() > price,
-			'Buying a property requires the player to have enough money');
+	Player.prototype.buyProperty = function (property) {
+		precondition(property && Property.isProperty(property), 'Player buying property requires a property');
 		
 		return newPlayer({
 			id: this.id(),
 			name: this.name(),
-			money: this.money() - price,
+			money: this.money() - property.price(),
 			position: this.position(),
 			color: this.color(),
 			type: this.type(),
-			properties: this.properties().concat([id])
+			properties: insertProperty(property, this.properties())
 		});
 	};
+	
+	function insertProperty(property, properties) {
+		return insertPropertyAt(property, 0, properties);
+	}
+	
+	function insertPropertyAt(property, index, properties) {
+		if (index === properties.length) {
+			return properties.concat([property]);
+		}
+		
+		var otherProperty = properties[index];
+		
+		if (property.compareTo(otherProperty) === 1) {
+			// It comes before, so insert it at index
+			var newProperties = properties.slice();
+			newProperties.splice(index, 0, property);
+			return newProperties;
+		}
+		
+		// It comes after, so look further in the array
+		return insertPropertyAt(property, index + 1, properties);
+	}
 	
 	Player.prototype.pay = function (amount) {
 		precondition(_.isNumber(amount) && amount > 0,
@@ -2223,14 +2224,12 @@
 		});
 	}
 }());
-},{"./contract":7,"./i18n":21,"./player-colors":28}],30:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./player-colors":27,"./property":32}],29:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var precondition =  require('./contract').precondition;
 	var i18n = require('./i18n').i18n();
-	
-	var groupColors = require('./group-colors').color;
 	
 	exports.render = function (container, gameState) {
 		precondition(container, 'Players widget requires a container to render into');
@@ -2330,7 +2329,7 @@
 			.selectAll('.player-property')
 			.data(function (player) {
 				return player.properties();
-			});
+			}, function (property) { return property.id(); });
 			
 		createPlayerProperties(playerPropertiesSelection, state);
 	}
@@ -2339,50 +2338,20 @@
 		selection.enter()
 			.append('div')
 			.classed('player-property', true)
-			.attr('data-ui', function (propertyId) {
-				return propertyId; 
+			.attr('data-ui', function (property) {
+				return property.id(); 
 			})
-			.text(function (propertyId) {
-				return nameOfProperty(state, propertyId);
+			.text(function (property) {
+				return property.name();
 			})
-			.style('background-color', function (propertyId) {
-				return colorOfProperty(state, propertyId);
+			.style('background-color', function (property) {
+				return property.group().color();
 			});
-	}
-	
-	function nameOfProperty(state, propertyId) {
-		var property = state.propertyById(propertyId);
-		return property.match({
-			'estate': function (id, name, price, group) {
-				return name;
-			},
-			'railroad': function (id, name, price) {
-				return name;
-			},
-			'company': function (id, name, price) {
-				return name;
-			},
-			_: _.noop
-		});
-	}
-	
-	function colorOfProperty(state, propertyId) {
-		var property = state.propertyById(propertyId);
-		return property.match({
-			'estate': function (id, name, price, group) {
-				return groupColors(group);
-			},
-			'railroad': function (id, name, price) {
-				return 'black';
-			},
-			'company': function (id, name, price) {
-				return 'lightgreen';
-			},
-			_: _.noop
-		});
+			
+		selection.order();
 	}
 }());
-},{"./contract":7,"./group-colors":17,"./i18n":21}],31:[function(require,module,exports){
+},{"./contract":7,"./i18n":20}],30:[function(require,module,exports){
 (function () {
     'use strict';
 
@@ -2470,7 +2439,228 @@
         closedSubject.onCompleted();
     }
 }());
+},{"./contract":7}],31:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var precondition = require('./contract').precondition;
+	
+	exports.isGroup = function (candidate) {
+		return candidate instanceof PropertyGroup;
+	};
+	
+	exports.newGroup = function (index, color, properties) {
+		precondition(_.isNumber(index), 'PropertyGroup requires an index');
+		precondition(_.isString(color), 'PropertyGroup requires a color');
+		precondition(_.isFunction(properties), 'PropertyGroup requires a function to list its properties');
+		
+		return new PropertyGroup(index, color, properties);
+	};
+	
+	function PropertyGroup(index, color, properties) {
+		this._index = index;
+		this._color = color;
+		this._properties = properties;
+	}
+	
+	PropertyGroup.prototype.index = function () {
+		return this._index;
+	};
+	
+	PropertyGroup.prototype.color = function () {
+		return this._color;
+	};
+	
+	PropertyGroup.prototype.properties = function () {
+		return this._properties(this._index);
+	};
+	
+	PropertyGroup.prototype.compareTo = function (other) {
+		precondition(other && other instanceof PropertyGroup,
+			'Comparing this group to another group requires that other group');
+			
+		if (this._index === other._index) {
+			return 0;
+		}
+		
+		return (this._index < other._index ? 1 : -1);
+	};
+}());
 },{"./contract":7}],32:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var precondition = require('./contract').precondition;
+	
+	var PropertyGroup = require('./property-group');
+	
+	exports.isProperty = function (candidate) {
+		return candidate instanceof Property;
+	};
+	
+	exports.newEstate = function (id, name, group, prices) {
+		precondition(_.isString(id) && id.length > 0, 'Estate requires an id');
+		precondition(_.isString(name) && name.length > 0, 'Estate requires a name');
+		precondition(group && PropertyGroup.isGroup(group), 'Estate requires a group');
+		precondition(_.isNumber(prices.value) && prices.value > 0, 'Estate must have a price');
+		precondition(_.isNumber(prices.rent) && prices.rent > 0, 'Estate must have a rent');
+		
+		return new Property({
+			id: id,
+			name: name,
+			group: group,
+			type: 'estate',
+			price: prices.value,
+			rent: estateRent(prices.rent, group)
+		});
+	};
+	
+	function estateRent(baseRent, group) {
+		return function (ownerProperties) {
+			var multiplier = (ownsAllEstatesInGroup(group, ownerProperties) ? 2 : 1);
+			return baseRent * multiplier;
+		};
+	}
+	
+	function ownsAllEstatesInGroup(group, properties) {
+		var estatesInGroup = group.properties();
+		return _.every(estatesInGroup, function (estate) {
+			var id = estate.id();
+			
+			return _.contains(_.map(properties, function (property) { return property.id(); }), id);
+		});
+	}
+	
+	exports.newCompany = function (id, name, group) {
+		precondition(_.isString(id) && id.length > 0, 'Company requires an id');
+		precondition(_.isString(name) && name.length > 0, 'Company requires a name');
+		precondition(group && PropertyGroup.isGroup(group), 'Creating a company requires a group');
+		
+		return new Property({
+			id: id,
+			name: name,
+			group: group,
+			type: 'company',
+			price: 150,
+			rent: function () { return 25; }
+		});
+	};
+	
+	exports.newRailroad = function (id, name, group) {
+		precondition(_.isString(id) && id.length > 0, 'Railroad requires an id');
+		precondition(_.isString(name) && name.length > 0, 'Railroad requires a name');
+		precondition(group && PropertyGroup.isGroup(group), 'Railroad requires a group');
+		
+		return new Property({
+			id: id,
+			name: name,
+			group: group,
+			type: 'railroad',
+			price: 200,
+			rent: railroadRent(25, group)
+		});
+	};
+	
+	function railroadRent(baseRent, group) {
+		return function (ownerProperties) {
+			var count = railroadCountIn(group, ownerProperties);
+			return baseRent * Math.pow(2, count - 1);
+		};
+	}
+	
+	function railroadCountIn(group, properties) {
+		return _.reduce(properties, function (count, property) {
+			if (_.contains(_.map(group.properties(), propertyId), property.id())) {
+				return count + 1;
+			}
+			
+			return count;
+		}, 0);
+	}
+	
+	function propertyId(property) {
+		return property.id();
+	}
+	
+	function Property(info) {
+		this._id = info.id;
+		this._name = info.name;
+		this._group = info.group;
+		this._price = info.price;
+		this._rent = info.rent;
+		this._type = info.type;
+	}
+	
+	Property.prototype.id = function () {
+		return this._id;
+	};
+	
+	Property.prototype.name = function () {
+		return this._name;
+	};
+	
+	Property.prototype.price = function () {
+		return this._price;
+	};
+	
+	Property.prototype.rent = function (ownerProperties) {
+		return this._rent(ownerProperties);
+	};
+	
+	Property.prototype.group = function () {
+		return this._group;
+	};
+	
+	Property.prototype.match = function (visitor) {
+		return matchWithDefault(visitor, this._type, [this._id, this._name, this._price, this._group]);
+	};
+	
+	function matchWithDefault(visitor, fn, args) {
+		if (_.isFunction(visitor[fn])) {
+			return visitor[fn].apply(visitor, args);
+		}
+		
+		return visitor['_']();
+	}
+	
+	Property.prototype.compareTo = function (property) {
+		precondition(property && property instanceof Property,
+			'Comparing this property to another property requires that other property');
+		
+		if (this._id === property._id) {
+			return 0;
+		}
+		
+		var groupComparison = this._group.compareTo(property._group);
+		if (groupComparison === 1) {
+			return 1;
+		} else if (groupComparison === -1) {
+			return -1;
+		}
+		
+		var indexesInGroup = {};
+		_.each(property._group.properties(), function (estate, index) {
+			indexesInGroup[estate.id()] = index;
+		});
+		
+		if (indexesInGroup[this._id] < indexesInGroup[property._id]) {
+			return 1;
+		}
+		
+		return -1;		
+	};
+	
+	Property.prototype.equals = function (other) {
+		precondition(other, 'Testing a property for equality with something else requires that something else');
+		
+		if (this === other) {
+			return true;
+		}
+		
+		return other instanceof Property && this._id === other._id;
+	};
+}());
+},{"./contract":7,"./property-group":31}],33:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2493,7 +2683,7 @@
 		return visitor[this.id]();
 	};
 }());
-},{"./i18n":21}],33:[function(require,module,exports){
+},{"./i18n":20}],34:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2528,7 +2718,7 @@
 		return this._diceRolled.asObservable();
 	};
 }());
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2559,7 +2749,7 @@
 			'L 136 10 L 140 18 L 124 18 L 120 13 L 20 13 L 20 20 Z">';
 	};
 }());
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 (function () {
     'use strict';
 
