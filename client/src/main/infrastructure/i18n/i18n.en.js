@@ -13,13 +13,14 @@
 	exports.CHOICE_FINISH_TURN = 'Finish turn';
 	exports.CHOICE_BUY_PROPERTY = 'Buy {property} for {price}';
 	exports.CHOICE_PAY_RENT = 'Pay {rent} to {toPlayer}';
+	exports.CHOICE_GO_BANKRUPT = 'Go bankrupt';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
 	exports.LOG_DOUBLE_DICE_ROLL = '{player} rolled a double of {dice}';
 	exports.LOG_PROPERTY_BOUGHT = '{player} bought {property}';
 	exports.LOG_RENT_PAID = '{fromPlayer} paid {amount} to {toPlayer}';
-	exports.CHOICE_GO_BANKRUPT = 'Go bankrupt';
+	exports.LOG_SALARY = "{player} passed GO and received $200";
 	
 	// Squares
 	exports.CHANCE = 'Chance';

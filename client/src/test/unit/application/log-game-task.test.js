@@ -64,10 +64,29 @@
 			expect(logs[0].equals(message)).to.be(true);
 		});
 		
+		it('when player wraps around the board, sends a message', function (done) {
+			gameTask = gameTaskWithCheatedDice(21);
+			logTask = LogGameTask.start(gameTask);
+			logTask.messages().skip(1).take(1).subscribe(function (log) {
+				expect(log.equals(Messages.logSalaryReceived(firstPlayer))).to.be(true);
+			}, done, done);
+			
+			gameTask.handleChoicesTask().makeChoice(Choices.rollDice());
+		});
+		
 		function assertLogged(logs, done) {
 			logTask.messages().take(1).subscribe(function (log) {
 				expect(logs).to.contain(log.id());
 			}, done, done);
+		}
+		
+		function gameTaskWithCheatedDice(dieValue) {
+			return PlayGameTask.start({ squares: Board.squares(), players: testData.playersConfiguration(), options: { 
+				fastDice: true,
+				dieFunction: function () {
+					return dieValue;
+				}
+			}});
 		}
 	});
 }());

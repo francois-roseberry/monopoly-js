@@ -35,6 +35,12 @@
 			.subscribe(function (info) {
 				messages.onNext(Messages.logRentPaid(info.amount, info.fromPlayer, info.toPlayer));
 			});
+			
+		onSalaryEarned(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (player) {
+				messages.onNext(Messages.logSalaryReceived(player));
+			});
 	}
 	
 	function diceMessage(dice) {
@@ -104,6 +110,19 @@
 					amount: amount
 				};
 			});
+	}
+	
+	function onSalaryEarned(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+		.filter(function (states) {
+			var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
+			var previousPlayer = states.previous.players()[states.current.currentPlayerIndex()];
+			
+			return currentPlayer.money() === (previousPlayer.money() + 200);
+		})
+		.map(function (states) {
+			return states.current.players()[states.current.currentPlayerIndex()];
+		});
 	}
 	
 	function findNewProperty(states) {

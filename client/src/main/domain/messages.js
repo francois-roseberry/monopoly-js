@@ -26,8 +26,8 @@
 	exports.logDoubleDiceRoll = function (player, dice) {
 		precondition(player && Player.isPlayer(player),
 			'A log about double dice roll requires the player who rolled the dice');
-		precondition(_.isNumber(dice) && dice >= 1 && dice <= 6,
-			'A log about dice roll requires a first die between 1 and 6');
+		precondition(_.isNumber(dice) && dice,
+			'A log about double dice roll requires dice to be greater than 1');
 		
 		var message = i18n.LOG_DOUBLE_DICE_ROLL
 						.replace('{player}', player.name())
@@ -63,6 +63,16 @@
 						.replace('{toPlayer}', toPlayer.name());
 		
 		return new Log('rent-paid', message);
+	};
+	
+	exports.logSalaryReceived = function (player) {
+		precondition(player && Player.isPlayer(player),
+			'A log about player salary requires the player');
+			
+		var message = i18n.LOG_SALARY
+						.replace('{player}', player.name());
+						
+		return new Log('salary-earned', message);
 	};
 	
 	exports.simpleLog = function () {
