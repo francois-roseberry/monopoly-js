@@ -82,20 +82,23 @@
 	
 	function railroadRent(square) {
 		return function (ownerProperties) {
-			var count = railroadCountIn(ownerProperties);
+			var count = railroadCountIn(square.group(), ownerProperties);
 			return square.rent() * Math.pow(2, count - 1);
 		};
 	}
 	
-	function railroadCountIn(properties) {
+	function railroadCountIn(group, properties) {
 		return _.reduce(properties, function (count, property) {
-			if (property.id() === 'rr-reading' || property.id() === 'rr-penn' ||
-				property.id() === 'rr-bo' || property.id() === 'rr-short') {
+			if (_.contains(_.map(group.properties(), propertyId), property.id())) {
 				return count + 1;
 			}
 			
 			return count;
 		}, 0);
+	}
+	
+	function propertyId(property) {
+		return property.id();
 	}
 	
 	function choicesForProperty(square, players, currentPlayer, paid, rentFunction) {
