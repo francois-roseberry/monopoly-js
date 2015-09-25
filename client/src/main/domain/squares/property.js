@@ -27,6 +27,36 @@
 		});
 	};
 	
+	exports.newCompany = function (id, name, group) {
+		precondition(_.isString(id) && id.length > 0, 'Company requires an id');
+		precondition(_.isString(name) && name.length > 0, 'Company requires a name');
+		precondition(group, 'Creating a company requires a group');
+		
+		return new Property({
+			id: id,
+			name: name,
+			group: group,
+			type: 'company',
+			price: 150,
+			rent: 25
+		});
+	};
+	
+	exports.newRailroad = function (id, name, group) {
+		precondition(_.isString(id) && id.length > 0, 'Railroad requires an id');
+		precondition(_.isString(name) && name.length > 0, 'Railroad requires a name');
+		precondition(group, 'Railroad requires a group');
+		
+		return new Property({
+			id: id,
+			name: name,
+			group: group,
+			type: 'railroad',
+			price: 200,
+			rent: 25
+		});
+	};
+	
 	function Property(info) {
 		this._id = info.id;
 		this._name = info.name;
@@ -69,37 +99,29 @@
 	}
 	
 	Property.prototype.compareTo = function (property) {
-		precondition(property,
+		precondition(property && property instanceof Property,
 			'Comparing this property to another property requires that other property');
 		
-		var id = this._id;
-		var group = this._group;
-		return property.match({
-			'railroad': function () { return 1; },
-			'company': function () { return 1; },
-			'estate': function (otherId, otherName, otherPrice, otherGroup) {
-				if (id === otherId) {
-					return 0;
-				}
-				
-				if (group.index < otherGroup.index) {
-					return 1;
-				} else if (group.index > otherGroup.index) {
-					return -1;
-				}
-				
-				var indexesInGroup = {};
-				_.each(group.properties(), function (estate, index) {
-					indexesInGroup[estate.id()] = index;
-				});
-				
-				if (indexesInGroup[id] < indexesInGroup[otherId]) {
-					return 1;
-				}
-				
-				return -1;
-			}
+		if (this._id === property._id) {
+			return 0;
+		}
+		
+		if (this._group.index < property._group.index) {
+			return 1;
+		} else if (this._group.index > property._group.index) {
+			return -1;
+		}
+		
+		var indexesInGroup = {};
+		_.each(property._group.properties(), function (estate, index) {
+			indexesInGroup[estate.id()] = index;
 		});
+		
+		if (indexesInGroup[this._id] < indexesInGroup[property._id]) {
+			return 1;
+		}
+		
+		return -1;		
 	};
 	
 	Property.prototype.equals = function (other) {

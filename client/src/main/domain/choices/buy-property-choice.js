@@ -4,12 +4,9 @@
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	var Property = require('./property');
-	var Company = require('./company');
-	var Railroad = require('./railroad');
 	
 	exports.newChoice = function (property) {
-		precondition(Property.isProperty(property) || Company.isCompany(property) || Railroad.isRailroad(property),
-			'Buy property choice requires a property');
+		precondition(Property.isProperty(property), 'Buy property choice requires a property');
 		
 		return new BuyPropertyChoice(property);
 	};

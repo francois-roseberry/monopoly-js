@@ -3,8 +3,6 @@
 	
 	var PlayerColors = require('./player-colors').colors();
 	var Property = require('./property');
-	var Company = require('./company');
-	var Railroad = require('./railroad');
 	
 	var precondition = require('./contract').precondition;
 	var i18n = require('./i18n').i18n();
@@ -98,8 +96,7 @@
 	};
 	
 	Player.prototype.buyProperty = function (property) {
-		precondition(Property.isProperty(property) || Company.isCompany(property) || Railroad.isRailroad(property),
-			'Player buying property requires a property');
+		precondition(property && Property.isProperty(property), 'Player buying property requires a property');
 		
 		return newPlayer({
 			id: this.id(),

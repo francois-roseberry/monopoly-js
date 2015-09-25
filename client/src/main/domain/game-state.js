@@ -2,7 +2,6 @@
 	"use strict";
 	
 	var Choices = require('./choices');
-	//var Board = require('./board');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -49,14 +48,20 @@
 	function choicesForSquare(square, players, currentPlayer, paid) {
 		return square.match({
 			'estate': choicesForProperty(square, players, currentPlayer, paid, estateRent(square)),
-			'railroad': choicesForProperty(square, players, currentPlayer, paid, railroadRent(square.rent)),
-			'company': choicesForProperty(square, players, currentPlayer, paid, square.rent),
+			'railroad': choicesForProperty(square, players, currentPlayer, paid, railroadRent(square)),
+			'company': choicesForProperty(square, players, currentPlayer, paid, companyRent(square)),
 			_: onlyFinishTurn
 		});
 	}
 	
 	function onlyFinishTurn() {
 		return [Choices.finishTurn()];
+	}
+	
+	function companyRent(square) {
+		return function () {
+			return square.rent();
+		};
 	}
 	
 	function estateRent(square) {
@@ -75,10 +80,10 @@
 		});
 	}
 	
-	function railroadRent(baseRent) {
+	function railroadRent(square) {
 		return function (ownerProperties) {
 			var count = railroadCountIn(ownerProperties);
-			return baseRent() * Math.pow(2, count - 1);
+			return square.rent() * Math.pow(2, count - 1);
 		};
 	}
 	

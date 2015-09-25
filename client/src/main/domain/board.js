@@ -4,8 +4,6 @@
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
-	var Company = require('./company');
-	var Railroad = require('./railroad');
 	var Property = require('./property');
 	
 	function groupMembers(groupIndex) {
@@ -61,13 +59,13 @@
 			park:			Property.newEstate('pk', i18n.PROPERTY_PK, groups[7], { value: 350, rent: 35}),
 			broadwalk:		Property.newEstate('bw', i18n.PROPERTY_BW, groups[7], { value: 400, rent: 50}),
 			
-			readingRailroad:		Railroad.create('rr-reading', i18n.RAILROAD_READING, railroadGroup),
-			pennsylvaniaRailroad:	Railroad.create('rr-penn', i18n.RAILROAD_PENN, railroadGroup),
-			boRailroad:				Railroad.create('rr-bo', i18n.RAILROAD_B_O, railroadGroup),
-			shortRailroad:			Railroad.create('rr-short', i18n.RAILROAD_SHORT, railroadGroup),
+			readingRailroad:		Property.newRailroad('rr-reading', i18n.RAILROAD_READING, railroadGroup),
+			pennsylvaniaRailroad:	Property.newRailroad('rr-penn', i18n.RAILROAD_PENN, railroadGroup),
+			boRailroad:				Property.newRailroad('rr-bo', i18n.RAILROAD_B_O, railroadGroup),
+			shortRailroad:			Property.newRailroad('rr-short', i18n.RAILROAD_SHORT, railroadGroup),
 			
-			electricCompany:	Company.create('electric', i18n.COMPANY_ELECTRIC, companyGroup),
-			waterWorks:			Company.create('water', i18n.COMPANY_WATER, companyGroup)
+			electricCompany:	Property.newCompany('electric', i18n.COMPANY_ELECTRIC, companyGroup),
+			waterWorks:			Property.newCompany('water', i18n.COMPANY_WATER, companyGroup)
 		};
 	};
 	
