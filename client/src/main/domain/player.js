@@ -92,7 +92,7 @@
 		return newPlayer({
 			id: this.id(),
 			name: this.name(),
-			money: this.money() + (newPosition > squareCount ? 200 : 0),
+			money: this.money() + (newPosition >= squareCount ? 200 : 0),
 			position: newPosition % squareCount,
 			color: this.color(),
 			type: this.type(),

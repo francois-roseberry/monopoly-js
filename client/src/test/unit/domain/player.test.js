@@ -26,13 +26,13 @@
 		});
 		
 		it('wraps around the board when moving past the end', function () {
-			var movedPlayer = players[0].move([0,41]);
+			var movedPlayer = players[0].move([0,40]);
 			
-			expect(movedPlayer.position()).to.eql(1);
+			expect(movedPlayer.position()).to.eql(0);
 		});
 		
 		it('earns 200$ when wrapping around the board', function () {
-			var movedPlayer = players[0].move([0,41]);
+			var movedPlayer = players[0].move([0,40]);
 			
 			expect(movedPlayer.money()).to.eql(players[0].money() + 200);
 		});
