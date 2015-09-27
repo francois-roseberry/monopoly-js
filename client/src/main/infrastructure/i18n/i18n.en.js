@@ -29,6 +29,7 @@
 	exports.COMMUNITY_CHEST = 'Community Chest';
 	exports.INCOME_TAX = 'Income Tax';
 	exports.LUXURY_TAX = 'Luxury Tax';
+	exports.LUXURY_TAX_DESCRIPTION = "Pay $75";
 	
 	exports.COMPANY_WATER = 'Water Works';
 	exports.COMPANY_ELECTRIC = "Electric Company";

@@ -98,6 +98,7 @@
 			},
 			'luxury-tax': function (name) {
 				writeText(container, name, 14);
+				writeTextLine(container, i18n.LUXURY_TAX_DESCRIPTION, SQUARE_HEIGHT - 12);
 			},
 			'company': renderCompany(container),
 			'go': renderStart(container),

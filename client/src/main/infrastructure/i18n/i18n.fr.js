@@ -29,6 +29,7 @@
 	exports.COMMUNITY_CHEST = 'Caisse commune';
 	exports.INCOME_TAX = 'Impôt sur le revenu';
 	exports.LUXURY_TAX = 'Taxe de luxe';
+	exports.LUXURY_TAX_DESCRIPTION = "Payez 75$";
 	
 	exports.COMPANY_WATER = 'Aqueduc';
 	exports.COMPANY_ELECTRIC = "Compagnie d'électricité";
