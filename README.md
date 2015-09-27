@@ -8,7 +8,7 @@ Features missing to be a complete game of Monopoly :
 * Building houses and hotels
 * When rent is too high, offer to mortgage and/or unbuild instead of going straight to bankruptcy
 * Double rolls roll again, and 3 in a row bring you to jail
-* Adding square effects for "Luxury Tax", "Revenue Tax" and "Go to jail"
+* Adding square effects for "Revenue Tax" and "Go to jail"
 * Differentiating between bankruptcy because of the bank or because of an opponent (to transfer possessions)
 * Chance and community cards
 * Trade
