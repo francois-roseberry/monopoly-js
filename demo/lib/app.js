@@ -99,6 +99,7 @@
 			},
 			'luxury-tax': function (name) {
 				writeText(container, name, 14);
+				writeText(container, i18n.LUXURY_TAX_DESCRIPTION, SQUARE_HEIGHT - 8, 10);
 			},
 			'company': renderCompany(container),
 			'go': renderStart(container),
@@ -206,25 +207,14 @@
 		};
 	}
 	
-	function writeText(container, text, y) {
-		TextWrapper.wrap(container, text.toUpperCase(), y, SQUARE_WIDTH);
+	function writeText(container, text, y, fontSize) {
+		TextWrapper.wrap(container, text.toUpperCase(), fontSize || 8, y, SQUARE_WIDTH);
 	}
 	
 	function writePrice(container, price) {
 		var priceString = i18n.PRICE_STRING
 			.replace('{price}', i18n.formatPrice(price));
-		writeTextLine(container, priceString, SQUARE_HEIGHT - 8);
-	}
-	
-	function writeTextLine(container, text, y) {
-		var textElement = container.append('text')
-			.text(text)
-			.attr({
-				y: y,
-				'font-size': 10
-			});
-		var textWidth = textElement.node().getComputedTextLength();
-		textElement.attr('x', (SQUARE_WIDTH - textWidth) / 2);
+		writeText(container, priceString, SQUARE_HEIGHT - 8, 10);
 	}
 	
 	function transformForRow(rowIndex) {
@@ -241,7 +231,7 @@
 		return transforms[rowIndex];
 	}
 }());
-},{"./contract":7,"./i18n":20,"./symbols":35,"./text-wrapper":36}],2:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./symbols":36,"./text-wrapper":37}],2:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -417,7 +407,7 @@
 		};
 	}
 }());
-},{"./contract":7,"./i18n":20,"./property":32,"./property-group":31}],3:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./property":33,"./property-group":32}],3:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -446,7 +436,9 @@
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
+	
 	var Property = require('./property');
+	var GameState = require('./game-state');
 	
 	exports.newChoice = function (property) {
 		precondition(Property.isProperty(property), 'Buy property choice requires a property');
@@ -477,8 +469,32 @@
 	BuyPropertyChoice.prototype.match = function (visitor) {
 		return visitor[this.id](this._property);
 	};
+	
+	BuyPropertyChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	BuyPropertyChoice.prototype.computeNextState = function (state) {
+		return transferOwnership(state, this._property);
+	};
+	
+	function transferOwnership(state, property) {
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.buyProperty(property);
+			}
+			
+			return player;
+		});
+		
+		return GameState.turnEndState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex()
+		});
+	}
 }());
-},{"./contract":7,"./i18n":20,"./property":32}],5:[function(require,module,exports){
+},{"./contract":7,"./game-state":13,"./i18n":20,"./property":33}],5:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -487,6 +503,7 @@
 	var BuyPropertyChoice = require('./buy-property-choice');
 	var PayRentChoice = require('./pay-rent-choice');
 	var GoBankruptChoice = require('./go-bankrupt-choice');
+	var PayTaxChoice = require('./pay-tax-choice');
 
 	exports.rollDice = function () {
 		return RollDiceChoice.newChoice();
@@ -507,8 +524,12 @@
 	exports.goBankrupt = function () {
 		return GoBankruptChoice.newChoice();
 	};
+	
+	exports.payTax = function (amount) {
+		return PayTaxChoice.newChoice(amount);
+	};
 }());
-},{"./buy-property-choice":4,"./finish-turn-choice":10,"./go-bankrupt-choice":16,"./pay-rent-choice":25,"./roll-dice-choice":33}],6:[function(require,module,exports){
+},{"./buy-property-choice":4,"./finish-turn-choice":10,"./go-bankrupt-choice":16,"./pay-rent-choice":25,"./pay-tax-choice":26,"./roll-dice-choice":34}],6:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -729,6 +750,7 @@
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
+	var GameState = require('./game-state');
 	
 	exports.newChoice = function() {
 		return new FinishTurnChoice();
@@ -746,8 +768,20 @@
 	FinishTurnChoice.prototype.match = function (visitor) {
 		return visitor[this.id]();
 	};
+	
+	FinishTurnChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	FinishTurnChoice.prototype.computeNextState = function (state) {
+		return GameState.turnStartState({
+			squares: state.squares(),
+			players: state.players(),
+			currentPlayerIndex: (state.currentPlayerIndex() + 1) % state.players().length
+		});
+	};
 }());
-},{"./i18n":20}],11:[function(require,module,exports){
+},{"./game-state":13,"./i18n":20}],11:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -960,7 +994,7 @@
 		selection.exit().remove();
 	}
 }());
-},{"./contract":7,"./i18n":20,"./popup":30}],13:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./popup":31}],13:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1013,8 +1047,23 @@
 			'estate': choicesForProperty(square, players, currentPlayer, paid),
 			'railroad': choicesForProperty(square, players, currentPlayer, paid),
 			'company': choicesForProperty(square, players, currentPlayer, paid),
+			'luxury-tax': payLuxuryTax(currentPlayer, paid),
 			_: onlyFinishTurn
 		});
+	}
+	
+	function payLuxuryTax(currentPlayer, paid) {
+		return function () {
+			if (!paid) {
+				if (currentPlayer.money() < 75) {
+					return [Choices.goBankrupt()];
+				}
+
+				return [Choices.payTax(75)];
+			}
+			
+			return [Choices.finishTurn()];
+		};
 	}
 	
 	function onlyFinishTurn() {
@@ -1145,7 +1194,7 @@
 		return this._statusChanged.asObservable();
 	};
 }());
-},{"./board":2,"./configure-game-task":6,"./play-game-task":26}],15:[function(require,module,exports){
+},{"./board":2,"./configure-game-task":6,"./play-game-task":27}],15:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1185,6 +1234,8 @@
 	
 	var i18n = require('./i18n').i18n();
 	
+	var GameState = require('./game-state');
+	
 	exports.newChoice = function() {
 		return new GoBankruptChoice();
 	};
@@ -1201,8 +1252,34 @@
 	GoBankruptChoice.prototype.match = function (visitor) {
 		return visitor[this.id]();
 	};
+	
+	GoBankruptChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	GoBankruptChoice.prototype.computeNextState = function (state) {
+		return goBankruptNextState(state);
+	};
+	
+	function goBankruptNextState(state) {
+		var newPlayers = _.filter(state.players(), function (player, index) {
+			return index !== state.currentPlayerIndex();
+		});
+		
+		if (newPlayers.length === 1) {
+			return GameState.gameFinishedState(state.squares(), newPlayers[0]);
+		}
+		
+		var newPlayerIndex = state.currentPlayerIndex() % newPlayers.length;
+		
+		return GameState.turnStartState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: newPlayerIndex
+		});
+	}
 }());
-},{"./i18n":20}],17:[function(require,module,exports){
+},{"./game-state":13,"./i18n":20}],17:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1285,6 +1362,7 @@
 	exports.CHOICE_BUY_PROPERTY = 'Buy {property} for {price}';
 	exports.CHOICE_PAY_RENT = 'Pay {rent} to {toPlayer}';
 	exports.CHOICE_GO_BANKRUPT = 'Go bankrupt';
+	exports.CHOICE_PAY_TAX = 'Pay a {amount} tax';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
@@ -1292,12 +1370,14 @@
 	exports.LOG_PROPERTY_BOUGHT = '{player} bought {property}';
 	exports.LOG_RENT_PAID = '{fromPlayer} paid {amount} to {toPlayer}';
 	exports.LOG_SALARY = "{player} passed GO and received $200";
+	exports.LOG_TAX_PAID = "{player} paid a {amount} tax";
 	
 	// Squares
 	exports.CHANCE = 'Chance';
 	exports.COMMUNITY_CHEST = 'Community Chest';
 	exports.INCOME_TAX = 'Income Tax';
 	exports.LUXURY_TAX = 'Luxury Tax';
+	exports.LUXURY_TAX_DESCRIPTION = "Pay $75";
 	
 	exports.COMPANY_WATER = 'Water Works';
 	exports.COMPANY_ELECTRIC = "Electric Company";
@@ -1338,7 +1418,7 @@
 	exports.PLAYER_TYPE_COMPUTER = 'Computer';
 	
 	// Price formatting
-	exports.PRICE_STRING = 'PRICE {price}';
+	exports.PRICE_STRING = 'Price {price}';
 	exports.formatPrice = function (price) {
 		return '$' + price;
 	};
@@ -1360,6 +1440,7 @@
 	exports.CHOICE_BUY_PROPERTY = 'Acheter {property} pour {price}';
 	exports.CHOICE_PAY_RENT = 'Payer {rent} à {toPlayer}';
 	exports.CHOICE_GO_BANKRUPT = 'Faire faillite';
+	exports.CHOICE_PAY_TAX = 'Payer une taxe de {amount}';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';
@@ -1367,12 +1448,14 @@
 	exports.LOG_PROPERTY_BOUGHT = '{player} a acheté {property}';
 	exports.LOG_RENT_PAID = '{fromPlayer} a payé {amount} à {toPlayer}';
 	exports.LOG_SALARY = "{player} a passé GO et reçu $200";
+	exports.LOG_TAX_PAID = "{player} a payé une taxe de {amount}";
 	
 	// Squares
 	exports.CHANCE = 'Chance';
 	exports.COMMUNITY_CHEST = 'Caisse commune';
 	exports.INCOME_TAX = 'Impôt sur le revenu';
 	exports.LUXURY_TAX = 'Taxe de luxe';
+	exports.LUXURY_TAX_DESCRIPTION = "Payez 75$";
 	
 	exports.COMPANY_WATER = 'Aqueduc';
 	exports.COMPANY_ELECTRIC = "Compagnie d'électricité";
@@ -1413,7 +1496,7 @@
 	exports.PLAYER_TYPE_COMPUTER = 'Ordinateur';
 	
 	// Price formatting
-	exports.PRICE_STRING = 'PRIX {price}';
+	exports.PRICE_STRING = 'Prix {price}';
 	exports.formatPrice = function (price) {
 		return price + ' $';
 	};
@@ -1501,6 +1584,12 @@
 			.subscribe(function (player) {
 				messages.onNext(Messages.logSalaryReceived(player));
 			});
+			
+		onTaxPaid(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (info) {
+				messages.onNext(Messages.logTaxPaid(info.amount, info.player));
+			});
 	}
 	
 	function diceMessage(dice) {
@@ -1583,6 +1672,46 @@
 		.map(function (states) {
 			return states.current.players()[states.current.currentPlayerIndex()];
 		});
+	}
+	
+	function onTaxPaid(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+			.filter(function (states) {
+				var playerWhoPaid = _.find(states.current.players(), function (player, index) {
+					return player.money() < states.previous.players()[index].money();
+				});
+				
+				if (playerWhoPaid) {
+					var onlyOnePlayerMoneyChanged = _.every(states.current.players(), function (player, index) {
+						if (player.id() === playerWhoPaid.id()) {
+							return true;
+						}
+						
+						return player.money() === states.previous.players()[index].money();
+					});
+					
+					var noPropertyChanged = _.every(states.current.players(), function (player, index) {
+						return player.properties().length === states.previous.players()[index].properties().length;
+					});
+					
+					return onlyOnePlayerMoneyChanged && noPropertyChanged;
+				}
+				
+				return false;
+			})
+			.map(function (states) {
+				var playerWhoPaid = _.find(states.current.players(), function (player, index) {
+					return player.money() < states.previous.players()[index].money();
+				});
+				
+				var amount = states.previous.players()[states.current.currentPlayerIndex()].money() -
+					playerWhoPaid.money();
+				
+				return {
+					player: playerWhoPaid,
+					amount: amount
+				};
+			});
 	}
 	
 	function findNewProperty(states) {
@@ -1724,6 +1853,19 @@
 		return new Log('salary-earned', message);
 	};
 	
+	exports.logTaxPaid = function (amount, player) {
+		precondition(_.isNumber(amount) && amount > 0,
+			'A log about tax paid requires an amount greater than 0');
+		precondition(player && Player.isPlayer(player),
+			'A log about tax paid requires of the player who paid');
+			
+		var message = i18n.LOG_TAX_PAID
+						.replace('{amount}', i18n.formatPrice(amount))
+						.replace('{player}', player.name());
+						
+		return new Log('tax-paid', message);
+	};
+	
 	exports.simpleLog = function () {
 		return new Log('simple', 'A message');
 	};
@@ -1745,7 +1887,7 @@
 		return other instanceof Log && this._id === other._id && this._message === other._message;
 	};
 }());
-},{"./contract":7,"./i18n":20,"./player":28,"./property":32}],24:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./player":29,"./property":33}],24:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1787,7 +1929,7 @@
 	};
 }());
 
-},{"./board-widget":1,"./contract":7,"./dice-widget":8,"./game-choices-widget":11,"./i18n":20,"./log-game-widget":22,"./players-widget":29}],25:[function(require,module,exports){
+},{"./board-widget":1,"./contract":7,"./dice-widget":8,"./game-choices-widget":11,"./i18n":20,"./log-game-widget":22,"./players-widget":30}],25:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1795,6 +1937,7 @@
 	var precondition = require('./contract').precondition;
 	
 	var Player = require('./player');
+	var GameState = require('./game-state');
 	
 	exports.newChoice = function (rent, toPlayer) {
 		precondition(_.isNumber(rent) && rent > 0, 'Pay rent choice requires a rent greater than 0');
@@ -1828,8 +1971,95 @@
 	PayRentChoice.prototype.match = function (visitor) {
 		return visitor[this.id](this._rent, this._toPlayerId, this._toPlayerName);
 	};
+	
+	PayRentChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	PayRentChoice.prototype.computeNextState = function (state) {
+		var rent = this._rent;
+		var toPlayerId = this._toPlayerId;
+		
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.pay(rent);
+			}
+			
+			if (player.id() === toPlayerId) {
+				return player.earn(rent);
+			}
+			
+			return player;
+		});
+		
+		return GameState.turnEndState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex()
+		}, true);
+	};
 }());
-},{"./contract":7,"./i18n":20,"./player":28}],26:[function(require,module,exports){
+},{"./contract":7,"./game-state":13,"./i18n":20,"./player":29}],26:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
+	
+	var GameState = require('./game-state');
+	
+	exports.newChoice = function (amount) {
+		precondition(_.isNumber(amount) && amount > 0, 'A PayTaxChoice requires a tax greater than 0');
+		
+		return new PayTaxChoice(amount);
+	};
+	
+	function PayTaxChoice(amount) {
+		this.id = 'pay-tax';
+		this.name = i18n.CHOICE_PAY_TAX.replace('{amount}', i18n.formatPrice(amount));
+		this._amount = amount;
+	}
+	
+	PayTaxChoice.prototype.equals = function (other) {
+		if (!(other instanceof PayTaxChoice)) {
+			return false;
+		}
+		
+		var self = this;
+		return other.match({
+			'pay-tax': function (amount) {
+				return self._amount === amount;
+			}
+		});
+	};
+	
+	PayTaxChoice.prototype.match = function (visitor) {
+		return visitor[this.id](this._amount);
+	};
+	
+	PayTaxChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	PayTaxChoice.prototype.computeNextState = function (state) {
+		var amount = this._amount;
+		
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.pay(amount);
+			}
+			
+			return player;
+		});
+		
+		return GameState.turnEndState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex()
+		}, true);
+	};
+}());
+},{"./contract":7,"./game-state":13,"./i18n":20}],27:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1920,17 +2150,30 @@
 	
 	function computeNextState(self, choice) {
 		return function (state) {
-			return choice.match({
-				'roll-dice': rollDice(self, state),
-				'finish-turn': finishTurn(state),
-				'buy-property': buyProperty(state),
-				'pay-rent': payRent(state),
-				'go-bankrupt': goBankrupt(state)
-			});
+			if (choice.requiresDice()) {
+				var task = RollDiceTask.start({
+					fast: self._options.fastDice,
+					dieFunction: self._options.dieFunction
+				});
+				
+				self._rollDiceTaskCreated.onNext(task);
+				return task.diceRolled().last()
+					.map(function (dice) {
+						return choice.computeNextState(state, dice);
+					});
+			}
+			
+			var nextState = choice.computeNextState(state);
+			return Rx.Observable.return(nextState);
+			
+			
+			/*return choice.match({
+				'roll-dice': rollDice(self, state)
+			});*/
 		};
 	}
 	
-	function rollDice(self, state) {
+	/*function rollDice(self, state) {
 		return function () {
 			var task = RollDiceTask.start({
 				fast: self._options.fastDice,
@@ -1943,84 +2186,6 @@
 					return movePlayer(state, dice);
 				});
 		};
-	}
-	
-	function finishTurn(state) {
-		return function () {
-			return Rx.Observable.return(nextPlayer(state));
-		};
-	}
-	
-	function buyProperty(state) {
-		return function (property) {
-			return Rx.Observable.return(transferOwnership(state, property));
-		};
-	}
-	
-	function payRent(state) {
-		return function (rent, toPlayerId) {
-			var newPlayers = _.map(state.players(), function (player, index) {
-				if (index === state.currentPlayerIndex()) {
-					return player.pay(rent);
-				}
-				
-				if (player.id() === toPlayerId) {
-					return player.earn(rent);
-				}
-				
-				return player;
-			});
-			
-			var newState = GameState.turnEndState({
-				squares: state.squares(),
-				players: newPlayers,
-				currentPlayerIndex: state.currentPlayerIndex()
-			}, true);
-			
-			return Rx.Observable.return(newState);
-		};
-	}
-	
-	function goBankrupt(state) {
-		return function () {
-			var newState = goBankruptNextState(state);
-			
-			return Rx.Observable.return(newState);
-		};
-	}
-	
-	function goBankruptNextState(state) {
-		var newPlayers = _.filter(state.players(), function (player, index) {
-			return index !== state.currentPlayerIndex();
-		});
-		
-		if (newPlayers.length === 1) {
-			return GameState.gameFinishedState(state.squares(), newPlayers[0]);
-		}
-		
-		var newPlayerIndex = state.currentPlayerIndex() % newPlayers.length;
-		
-		return GameState.turnStartState({
-			squares: state.squares(),
-			players: newPlayers,
-			currentPlayerIndex: newPlayerIndex
-		});
-	}
-	
-	function transferOwnership(state, property) {
-		var newPlayers = _.map(state.players(), function (player, index) {
-			if (index === state.currentPlayerIndex()) {
-				return player.buyProperty(property);
-			}
-			
-			return player;
-		});
-		
-		return GameState.turnEndState({
-			squares: state.squares(),
-			players: newPlayers,
-			currentPlayerIndex: state.currentPlayerIndex()
-		});
 	}
 	
 	function movePlayer(state, dice) {
@@ -2037,17 +2202,9 @@
 			players: newPlayers,
 			currentPlayerIndex: state.currentPlayerIndex()
 		});
-	}
-	
-	function nextPlayer(state) {
-		return GameState.turnStartState({
-			squares: state.squares(),
-			players: state.players(),
-			currentPlayerIndex: (state.currentPlayerIndex() + 1) % state.players().length
-		});
-	}
+	}*/
 }());
-},{"./contract":7,"./game-state":13,"./handle-choices-task":17,"./log-game-task":21,"./player":28,"./roll-dice-task":34}],27:[function(require,module,exports){
+},{"./contract":7,"./game-state":13,"./handle-choices-task":17,"./log-game-task":21,"./player":29,"./roll-dice-task":35}],28:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2057,7 +2214,7 @@
 		];
 	};
 }());
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2152,7 +2309,7 @@
 		return newPlayer({
 			id: this.id(),
 			name: this.name(),
-			money: this.money() + (newPosition > squareCount ? 200 : 0),
+			money: this.money() + (newPosition >= squareCount ? 200 : 0),
 			position: newPosition % squareCount,
 			color: this.color(),
 			type: this.type(),
@@ -2224,7 +2381,7 @@
 		});
 	}
 }());
-},{"./contract":7,"./i18n":20,"./player-colors":27,"./property":32}],29:[function(require,module,exports){
+},{"./contract":7,"./i18n":20,"./player-colors":28,"./property":33}],30:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2351,7 +2508,7 @@
 		selection.order();
 	}
 }());
-},{"./contract":7,"./i18n":20}],30:[function(require,module,exports){
+},{"./contract":7,"./i18n":20}],31:[function(require,module,exports){
 (function () {
     'use strict';
 
@@ -2439,7 +2596,7 @@
         closedSubject.onCompleted();
     }
 }());
-},{"./contract":7}],31:[function(require,module,exports){
+},{"./contract":7}],32:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2486,7 +2643,7 @@
 		return (this._index < other._index ? 1 : -1);
 	};
 }());
-},{"./contract":7}],32:[function(require,module,exports){
+},{"./contract":7}],33:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2660,11 +2817,14 @@
 		return other instanceof Property && this._id === other._id;
 	};
 }());
-},{"./contract":7,"./property-group":31}],33:[function(require,module,exports){
+},{"./contract":7,"./property-group":32}],34:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
+	
+	var GameState = require('./game-state');
 	
 	exports.newChoice = function() {
 		return new RollDiceChoice();
@@ -2682,8 +2842,31 @@
 	RollDiceChoice.prototype.match = function (visitor) {
 		return visitor[this.id]();
 	};
+	
+	RollDiceChoice.prototype.requiresDice = function () {
+		return true;
+	};
+	
+	RollDiceChoice.prototype.computeNextState = function (state, dice) {
+		precondition(state, 'To compute next state, a roll-dice choice requires the actual state');
+		precondition(dice, 'To compute next state, a roll-dice choice requires the result of a dice roll');
+		
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.move(dice);
+			}
+			
+			return player;
+		});
+		
+		return GameState.turnEndState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex()
+		});
+	};
 }());
-},{"./i18n":20}],34:[function(require,module,exports){
+},{"./contract":7,"./game-state":13,"./i18n":20}],35:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2718,7 +2901,7 @@
 		return this._diceRolled.asObservable();
 	};
 }());
-},{}],35:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2749,16 +2932,24 @@
 			'L 136 10 L 140 18 L 124 18 L 120 13 L 20 13 L 20 20 Z">';
 	};
 }());
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 (function () {
     'use strict';
+	
+	var precondition = require('./contract').precondition;
 
-    exports.wrap = function (container, text, y, width) {
+    exports.wrap = function (container, text, fontSize, y, width) {
+		precondition(container);
+		precondition(_.isString(text));
+		precondition(_.isNumber(fontSize));
+		precondition(_.isNumber(y));
+		precondition(_.isNumber(width));
+		
 		var textElement = container.append('text')
 			.attr({
 				x: 0,
 				y: y,
-				'font-size': 8
+				'font-size': fontSize
 			});
 			
 		var words = text.split(' ');
@@ -2798,4 +2989,4 @@
 		}
     };
 }());
-},{}]},{},[3]);
+},{"./contract":7}]},{},[3]);
