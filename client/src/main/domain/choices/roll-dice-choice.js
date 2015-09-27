@@ -2,6 +2,9 @@
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
+	
+	var GameState = require('./game-state');
 	
 	exports.newChoice = function() {
 		return new RollDiceChoice();
@@ -18,5 +21,28 @@
 	
 	RollDiceChoice.prototype.match = function (visitor) {
 		return visitor[this.id]();
+	};
+	
+	RollDiceChoice.prototype.requiresDice = function () {
+		return true;
+	};
+	
+	RollDiceChoice.prototype.computeNextState = function (state, dice) {
+		precondition(state, 'To compute next state, a roll-dice choice requires the actual state');
+		precondition(dice, 'To compute next state, a roll-dice choice requires the result of a dice roll');
+		
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.move(dice);
+			}
+			
+			return player;
+		});
+		
+		return GameState.turnEndState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex()
+		});
 	};
 }());

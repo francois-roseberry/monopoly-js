@@ -88,151 +88,21 @@
 	
 	function computeNextState(self, choice) {
 		return function (state) {
-			return choice.match({
-				'roll-dice': rollDice(self, state),
-				'finish-turn': finishTurn(state),
-				'buy-property': buyProperty(state),
-				'pay-rent': payRent(state),
-				'go-bankrupt': goBankrupt(state),
-				'pay-tax': payTax(state),
-			});
-		};
-	}
-	
-	function rollDice(self, state) {
-		return function () {
-			var task = RollDiceTask.start({
-				fast: self._options.fastDice,
-				dieFunction: self._options.dieFunction
-			});
-			
-			self._rollDiceTaskCreated.onNext(task);
-			return task.diceRolled().last()
-				.map(function (dice) {
-					return movePlayer(state, dice);
+			if (choice.requiresDice()) {
+				var task = RollDiceTask.start({
+					fast: self._options.fastDice,
+					dieFunction: self._options.dieFunction
 				});
-		};
-	}
-	
-	function finishTurn(state) {
-		return function () {
-			return Rx.Observable.return(nextPlayer(state));
-		};
-	}
-	
-	function buyProperty(state) {
-		return function (property) {
-			return Rx.Observable.return(transferOwnership(state, property));
-		};
-	}
-	
-	function payRent(state) {
-		return function (rent, toPlayerId) {
-			var newPlayers = _.map(state.players(), function (player, index) {
-				if (index === state.currentPlayerIndex()) {
-					return player.pay(rent);
-				}
 				
-				if (player.id() === toPlayerId) {
-					return player.earn(rent);
-				}
-				
-				return player;
-			});
-			
-			var newState = GameState.turnEndState({
-				squares: state.squares(),
-				players: newPlayers,
-				currentPlayerIndex: state.currentPlayerIndex()
-			}, true);
-			
-			return Rx.Observable.return(newState);
-		};
-	}
-	
-	function payTax(state) {
-		return function (amount) {
-			var newPlayers = _.map(state.players(), function (player, index) {
-				if (index === state.currentPlayerIndex()) {
-					return player.pay(amount);
-				}
-				
-				return player;
-			});
-			
-			var newState = GameState.turnEndState({
-				squares: state.squares(),
-				players: newPlayers,
-				currentPlayerIndex: state.currentPlayerIndex()
-			}, true);
-			
-			return Rx.Observable.return(newState);
-		};
-	}
-	
-	function goBankrupt(state) {
-		return function () {
-			var newState = goBankruptNextState(state);
-			
-			return Rx.Observable.return(newState);
-		};
-	}
-	
-	function goBankruptNextState(state) {
-		var newPlayers = _.filter(state.players(), function (player, index) {
-			return index !== state.currentPlayerIndex();
-		});
-		
-		if (newPlayers.length === 1) {
-			return GameState.gameFinishedState(state.squares(), newPlayers[0]);
-		}
-		
-		var newPlayerIndex = state.currentPlayerIndex() % newPlayers.length;
-		
-		return GameState.turnStartState({
-			squares: state.squares(),
-			players: newPlayers,
-			currentPlayerIndex: newPlayerIndex
-		});
-	}
-	
-	function transferOwnership(state, property) {
-		var newPlayers = _.map(state.players(), function (player, index) {
-			if (index === state.currentPlayerIndex()) {
-				return player.buyProperty(property);
+				self._rollDiceTaskCreated.onNext(task);
+				return task.diceRolled().last()
+					.map(function (dice) {
+						return choice.computeNextState(state, dice);
+					});
 			}
 			
-			return player;
-		});
-		
-		return GameState.turnEndState({
-			squares: state.squares(),
-			players: newPlayers,
-			currentPlayerIndex: state.currentPlayerIndex()
-		});
-	}
-	
-	function movePlayer(state, dice) {
-		var newPlayers = _.map(state.players(), function (player, index) {
-			if (index === state.currentPlayerIndex()) {
-				return player.move(dice);
-			}
-			
-			return player;
-		});
-		
-		return GameState.turnEndState({
-			squares: state.squares(),
-			players: newPlayers,
-			currentPlayerIndex: state.currentPlayerIndex()
-		});
-	}
-	
-	function nextPlayer(state) {
-		return GameState.turnStartState({
-			squares: state.squares(),
-			players: state.players(),
-			currentPlayerIndex: (state.currentPlayerIndex() + 1) % state.players().length
-		});
+			var nextState = choice.computeNextState(state);
+			return Rx.Observable.return(nextState);
+		};
 	}
 }());

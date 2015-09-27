@@ -5,6 +5,7 @@
 	var precondition = require('./contract').precondition;
 	
 	var Player = require('./player');
+	var GameState = require('./game-state');
 	
 	exports.newChoice = function (rent, toPlayer) {
 		precondition(_.isNumber(rent) && rent > 0, 'Pay rent choice requires a rent greater than 0');
@@ -37,5 +38,32 @@
 	
 	PayRentChoice.prototype.match = function (visitor) {
 		return visitor[this.id](this._rent, this._toPlayerId, this._toPlayerName);
+	};
+	
+	PayRentChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	PayRentChoice.prototype.computeNextState = function (state) {
+		var rent = this._rent;
+		var toPlayerId = this._toPlayerId;
+		
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.pay(rent);
+			}
+			
+			if (player.id() === toPlayerId) {
+				return player.earn(rent);
+			}
+			
+			return player;
+		});
+		
+		return GameState.turnEndState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex()
+		}, true);
 	};
 }());
