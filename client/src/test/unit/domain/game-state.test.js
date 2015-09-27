@@ -88,6 +88,18 @@
 			'offers bankruptcy', function () {
 				assertBankruptcyChoiceWhenPropertyRentIsTooHigh();
 		});
+		
+		it('when current player is on luxury-task, offers a 75$ tax', function () {
+			var state = turnEndStateWithPlayers(playerOnLuxuryTax());
+			
+			assertChoices(state, [Choices.payTax(75)]);
+		});
+		
+		it('when current player is broke on luxury-tax, offers bankruptcy', function () {
+			var state = turnEndStateWithPlayers(playerBrokeOnLuxuryTax());
+			
+			assertChoices(state, [Choices.goBankrupt()]);
+		});
 	});
 	
 	function assertNoBuyPropertyChoiceWhenOnPropertyTooExpensive() {
@@ -312,7 +324,7 @@
 	function playerWithAlmostNoMoneyOnEstateOwnedByOther() {
 		var players = testData.players();
 		return [
-			players[0].move([0, 1]).pay(1499),
+			players[0].move([0, 1]).pay(players[0].money() - 1),
 			players[1].buyProperty(Board.properties().mediterranean),
 			players[2]
 		];
@@ -321,7 +333,7 @@
 	function playerWithAlmostNoMoneyOnRailroadOwnedByOther() {
 		var players = testData.players();
 		return [
-			players[0].move([0, 5]).pay(1499),
+			players[0].move([0, 5]).pay(players[0].money() - 1),
 			players[1].buyProperty(Board.properties().readingRailroad),
 			players[2]
 		];
@@ -330,8 +342,26 @@
 	function playerWithAlmostNoMoneyOnCompanyOwnedByOther() {
 		var players = testData.players();
 		return [
-			players[0].move([0, 12]).pay(1499),
+			players[0].move([0, 12]).pay(players[0].money() - 1),
 			players[1].buyProperty(Board.properties().electricCompany),
+			players[2]
+		];
+	}
+	
+	function playerOnLuxuryTax() {
+		var players = testData.players();
+		return [
+			players[0].move([0, 38]),
+			players[1],
+			players[2]
+		];
+	}
+	
+	function playerBrokeOnLuxuryTax() {
+		var players = testData.players();
+		return [
+			players[0].move([0, 38]).pay(players[0].money() - 1),
+			players[1],
 			players[2]
 		];
 	}

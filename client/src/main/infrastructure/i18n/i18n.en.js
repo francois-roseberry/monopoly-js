@@ -14,6 +14,7 @@
 	exports.CHOICE_BUY_PROPERTY = 'Buy {property} for {price}';
 	exports.CHOICE_PAY_RENT = 'Pay {rent} to {toPlayer}';
 	exports.CHOICE_GO_BANKRUPT = 'Go bankrupt';
+	exports.CHOICE_PAY_TAX = 'Pay a {amount} tax';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';

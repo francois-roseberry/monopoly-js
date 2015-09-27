@@ -6,6 +6,7 @@
 	var BuyPropertyChoice = require('./buy-property-choice');
 	var PayRentChoice = require('./pay-rent-choice');
 	var GoBankruptChoice = require('./go-bankrupt-choice');
+	var PayTaxChoice = require('./pay-tax-choice');
 
 	exports.rollDice = function () {
 		return RollDiceChoice.newChoice();
@@ -25,5 +26,9 @@
 	
 	exports.goBankrupt = function () {
 		return GoBankruptChoice.newChoice();
+	};
+	
+	exports.payTax = function (amount) {
+		return PayTaxChoice.newChoice(amount);
 	};
 }());

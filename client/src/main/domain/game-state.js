@@ -50,8 +50,19 @@
 			'estate': choicesForProperty(square, players, currentPlayer, paid),
 			'railroad': choicesForProperty(square, players, currentPlayer, paid),
 			'company': choicesForProperty(square, players, currentPlayer, paid),
+			'luxury-tax': payLuxuryTax(currentPlayer),
 			_: onlyFinishTurn
 		});
+	}
+	
+	function payLuxuryTax(currentPlayer) {
+		return function () {
+			if (currentPlayer.money() < 75) {
+				return [Choices.goBankrupt()];
+			}
+
+			return [Choices.payTax(75)];
+		};
 	}
 	
 	function onlyFinishTurn() {
