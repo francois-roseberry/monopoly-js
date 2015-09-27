@@ -64,6 +64,17 @@
 			expect(logs[0].equals(message)).to.be(true);
 		});
 		
+		it('when player pays tax, sends a message', function () {
+			var tax = 75;
+			
+			var choice = Choices.payTax(tax);
+			gameTask.handleChoicesTask().makeChoice(choice);
+			
+			var message = Messages.logTaxPaid(tax, firstPlayer);
+			expect(logs.length).to.eql(1);
+			expect(logs[0].equals(message)).to.be(true);
+		});
+		
 		it('when player wraps around the board, sends a message', function (done) {
 			gameTask = gameTaskWithCheatedDice(21);
 			logTask = LogGameTask.start(gameTask);

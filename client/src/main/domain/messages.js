@@ -75,6 +75,19 @@
 		return new Log('salary-earned', message);
 	};
 	
+	exports.logTaxPaid = function (amount, player) {
+		precondition(_.isNumber(amount) && amount > 0,
+			'A log about tax paid requires an amount greater than 0');
+		precondition(player && Player.isPlayer(player),
+			'A log about tax paid requires of the player who paid');
+			
+		var message = i18n.LOG_TAX_PAID
+						.replace('{amount}', i18n.formatPrice(amount))
+						.replace('{player}', player.name());
+						
+		return new Log('tax-paid', message);
+	};
+	
 	exports.simpleLog = function () {
 		return new Log('simple', 'A message');
 	};

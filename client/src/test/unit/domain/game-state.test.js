@@ -100,6 +100,11 @@
 			
 			assertChoices(state, [Choices.goBankrupt()]);
 		});
+		
+		it('when current player is on luxury-tax, but already paid, does not ' +
+			'offer to pay the tax again', function () {
+				assertNoPayTaxChoiceWhenAlreadyPaidTax();
+		});
 	});
 	
 	function assertNoBuyPropertyChoiceWhenOnPropertyTooExpensive() {
@@ -151,6 +156,11 @@
 	
 	function assertNoPayRentChoiceWhenAlreadyPaidCompanyRent() {
 		var state = turnEndStateWithPlayers(playerOnCompanyOwnedByOther(), true);
+		assertChoices(state, [Choices.finishTurn()]);
+	}
+	
+	function assertNoPayTaxChoiceWhenAlreadyPaidTax() {
+		var state = turnEndStateWithPlayers(playerOnLuxuryTax(), true);
 		assertChoices(state, [Choices.finishTurn()]);
 	}
 	
@@ -214,6 +224,7 @@
 	}
 	
 	function assertChoices(state, choices) {
+		expect(state.choices().length).to.eql(choices.length);
 		_.each(state.choices(), function (choice, index) {
 			expect(choice.equals(choices[index])).to.be(true);
 		});

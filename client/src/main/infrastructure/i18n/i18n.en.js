@@ -22,6 +22,7 @@
 	exports.LOG_PROPERTY_BOUGHT = '{player} bought {property}';
 	exports.LOG_RENT_PAID = '{fromPlayer} paid {amount} to {toPlayer}';
 	exports.LOG_SALARY = "{player} passed GO and received $200";
+	exports.LOG_TAX_PAID = "{player} paid a {amount} tax";
 	
 	// Squares
 	exports.CHANCE = 'Chance';

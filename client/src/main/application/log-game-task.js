@@ -41,6 +41,12 @@
 			.subscribe(function (player) {
 				messages.onNext(Messages.logSalaryReceived(player));
 			});
+			
+		onTaxPaid(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (info) {
+				messages.onNext(Messages.logTaxPaid(info.amount, info.player));
+			});
 	}
 	
 	function diceMessage(dice) {
@@ -123,6 +129,46 @@
 		.map(function (states) {
 			return states.current.players()[states.current.currentPlayerIndex()];
 		});
+	}
+	
+	function onTaxPaid(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+			.filter(function (states) {
+				var playerWhoPaid = _.find(states.current.players(), function (player, index) {
+					return player.money() < states.previous.players()[index].money();
+				});
+				
+				if (playerWhoPaid) {
+					var onlyOnePlayerMoneyChanged = _.every(states.current.players(), function (player, index) {
+						if (player.id() === playerWhoPaid.id()) {
+							return true;
+						}
+						
+						return player.money() === states.previous.players()[index].money();
+					});
+					
+					var noPropertyChanged = _.every(states.current.players(), function (player, index) {
+						return player.properties().length === states.previous.players()[index].properties().length;
+					});
+					
+					return onlyOnePlayerMoneyChanged && noPropertyChanged;
+				}
+				
+				return false;
+			})
+			.map(function (states) {
+				var playerWhoPaid = _.find(states.current.players(), function (player, index) {
+					return player.money() < states.previous.players()[index].money();
+				});
+				
+				var amount = states.previous.players()[states.current.currentPlayerIndex()].money() -
+					playerWhoPaid.money();
+				
+				return {
+					player: playerWhoPaid,
+					amount: amount
+				};
+			});
 	}
 	
 	function findNewProperty(states) {
