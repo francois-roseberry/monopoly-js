@@ -93,7 +93,8 @@
 				'finish-turn': finishTurn(state),
 				'buy-property': buyProperty(state),
 				'pay-rent': payRent(state),
-				'go-bankrupt': goBankrupt(state)
+				'go-bankrupt': goBankrupt(state),
+				'pay-tax': payTax(state),
 			});
 		};
 	}
@@ -134,6 +135,26 @@
 				
 				if (player.id() === toPlayerId) {
 					return player.earn(rent);
+				}
+				
+				return player;
+			});
+			
+			var newState = GameState.turnEndState({
+				squares: state.squares(),
+				players: newPlayers,
+				currentPlayerIndex: state.currentPlayerIndex()
+			}, true);
+			
+			return Rx.Observable.return(newState);
+		};
+	}
+	
+	function payTax(state) {
+		return function (amount) {
+			var newPlayers = _.map(state.players(), function (player, index) {
+				if (index === state.currentPlayerIndex()) {
+					return player.pay(amount);
 				}
 				
 				return player;

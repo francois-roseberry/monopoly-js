@@ -95,6 +95,14 @@
 			assertCurrentPlayerHasPaidToOwner(task.gameState(), rent, 1, done);
 		});
 		
+		it('when pay-tax is chosen, make current player pay the tax', function (done) {
+			var tax = 75;
+			
+			task.handleChoicesTask().makeChoice(Choices.payTax(tax));
+			
+			assertCurrentPlayerHasPaidTaxOf(task.gameState(), tax, done);
+		});
+		
 		it('when going bankrupt is chosen, current player is removed from game', function (done) {
 			task.handleChoicesTask().makeChoice(Choices.goBankrupt());
 			
@@ -210,6 +218,12 @@
 			gameState.take(1).subscribe(function (state) {
 				expect(state.players()[state.currentPlayerIndex()].money()).to.eql(1500 - amount);
 				expect(state.players()[1].money()).to.eql(1500 + amount);
+			}, done, done);
+		}
+		
+		function assertCurrentPlayerHasPaidTaxOf(gameState, amount, done) {
+			gameState.take(1).subscribe(function (state) {
+				expect(state.players()[state.currentPlayerIndex()].money()).to.eql(1500 - amount);
 			}, done, done);
 		}
 		
