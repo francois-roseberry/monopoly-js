@@ -1,12 +1,20 @@
 (function () {
     'use strict';
+	
+	var precondition = require('./contract').precondition;
 
-    exports.wrap = function (container, text, y, width) {
+    exports.wrap = function (container, text, fontSize, y, width) {
+		precondition(container);
+		precondition(_.isString(text));
+		precondition(_.isNumber(fontSize));
+		precondition(_.isNumber(y));
+		precondition(_.isNumber(width));
+		
 		var textElement = container.append('text')
 			.attr({
 				x: 0,
 				y: y,
-				'font-size': 8
+				'font-size': fontSize
 			});
 			
 		var words = text.split(' ');

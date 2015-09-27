@@ -98,7 +98,7 @@
 			},
 			'luxury-tax': function (name) {
 				writeText(container, name, 14);
-				writeTextLine(container, i18n.LUXURY_TAX_DESCRIPTION, SQUARE_HEIGHT - 12);
+				writeText(container, i18n.LUXURY_TAX_DESCRIPTION, SQUARE_HEIGHT - 8, 10);
 			},
 			'company': renderCompany(container),
 			'go': renderStart(container),
@@ -206,25 +206,14 @@
 		};
 	}
 	
-	function writeText(container, text, y) {
-		TextWrapper.wrap(container, text.toUpperCase(), y, SQUARE_WIDTH);
+	function writeText(container, text, y, fontSize) {
+		TextWrapper.wrap(container, text.toUpperCase(), fontSize || 8, y, SQUARE_WIDTH);
 	}
 	
 	function writePrice(container, price) {
 		var priceString = i18n.PRICE_STRING
 			.replace('{price}', i18n.formatPrice(price));
-		writeTextLine(container, priceString, SQUARE_HEIGHT - 8);
-	}
-	
-	function writeTextLine(container, text, y) {
-		var textElement = container.append('text')
-			.text(text)
-			.attr({
-				y: y,
-				'font-size': 10
-			});
-		var textWidth = textElement.node().getComputedTextLength();
-		textElement.attr('x', (SQUARE_WIDTH - textWidth) / 2);
+		writeText(container, priceString, SQUARE_HEIGHT - 8, 10);
 	}
 	
 	function transformForRow(rowIndex) {

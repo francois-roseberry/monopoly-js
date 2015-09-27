@@ -70,7 +70,7 @@
 	exports.PLAYER_TYPE_COMPUTER = 'Computer';
 	
 	// Price formatting
-	exports.PRICE_STRING = 'PRICE {price}';
+	exports.PRICE_STRING = 'Price {price}';
 	exports.formatPrice = function (price) {
 		return '$' + price;
 	};
