@@ -18,10 +18,6 @@
 		return (other instanceof GoBankruptChoice);
 	};
 	
-	GoBankruptChoice.prototype.match = function (visitor) {
-		return visitor[this.id]();
-	};
-	
 	GoBankruptChoice.prototype.requiresDice = function () {
 		return false;
 	};

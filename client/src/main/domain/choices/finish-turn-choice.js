@@ -17,10 +17,6 @@
 		return (other instanceof FinishTurnChoice);
 	};
 	
-	FinishTurnChoice.prototype.match = function (visitor) {
-		return visitor[this.id]();
-	};
-	
 	FinishTurnChoice.prototype.requiresDice = function () {
 		return false;
 	};

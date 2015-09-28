@@ -23,16 +23,7 @@
 			return false;
 		}
 		
-		var self = this;
-		return other.match({
-			'pay-tax': function (amount) {
-				return self._amount === amount;
-			}
-		});
-	};
-	
-	PayTaxChoice.prototype.match = function (visitor) {
-		return visitor[this.id](this._amount);
+		return this._amount === other._amount;
 	};
 	
 	PayTaxChoice.prototype.requiresDice = function () {

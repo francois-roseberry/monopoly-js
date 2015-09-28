@@ -25,16 +25,7 @@
 			return false;
 		}
 		
-		var self = this;
-		return other.match({
-			'buy-property': function (property) {
-				return self._property.equals(property);
-			}
-		});
-	};
-	
-	BuyPropertyChoice.prototype.match = function (visitor) {
-		return visitor[this.id](this._property);
+		return this._property.equals(other._property);
 	};
 	
 	BuyPropertyChoice.prototype.requiresDice = function () {

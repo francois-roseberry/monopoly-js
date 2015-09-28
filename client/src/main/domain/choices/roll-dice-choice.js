@@ -19,10 +19,6 @@
 		return (other instanceof RollDiceChoice);
 	};
 	
-	RollDiceChoice.prototype.match = function (visitor) {
-		return visitor[this.id]();
-	};
-	
 	RollDiceChoice.prototype.requiresDice = function () {
 		return true;
 	};

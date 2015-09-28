@@ -28,16 +28,7 @@
 			return false;
 		}
 		
-		var self = this;
-		return other.match({
-			'pay-rent': function (rent, toPlayerId, _) {
-				return self._rent === rent && self._toPlayerId === toPlayerId;
-			}
-		});
-	};
-	
-	PayRentChoice.prototype.match = function (visitor) {
-		return visitor[this.id](this._rent, this._toPlayerId, this._toPlayerName);
+		return this._rent === other._rent && this._toPlayerId === other._toPlayerId;
 	};
 	
 	PayRentChoice.prototype.requiresDice = function () {
