@@ -51,6 +51,7 @@
 			'railroad': choicesForProperty(square, players, currentPlayer, paid),
 			'company': choicesForProperty(square, players, currentPlayer, paid),
 			'luxury-tax': payLuxuryTax(currentPlayer, paid),
+			'income-tax': payIncomeTax(currentPlayer, paid),
 			_: onlyFinishTurn
 		});
 	}
@@ -63,6 +64,20 @@
 				}
 
 				return [Choices.payTax(75)];
+			}
+			
+			return [Choices.finishTurn()];
+		};
+	}
+	
+	function payIncomeTax(currentPlayer, paid) {
+		return function () {
+			if (!paid) {
+				if (currentPlayer.money() < 200) {
+					return [Choices.goBankrupt()];
+				}
+				
+				return [Choices.payTax(200)];
 			}
 			
 			return [Choices.finishTurn()];
