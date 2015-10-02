@@ -32,6 +32,7 @@
 	exports.INCOME_TAX = 'Income Tax';
 	exports.LUXURY_TAX = 'Luxury Tax';
 	exports.LUXURY_TAX_DESCRIPTION = "Pay $75";
+	exports.INCOME_TAX_DESCRIPTION = "Pay 10% or $200";
 	
 	exports.COMPANY_WATER = 'Water Works';
 	exports.COMPANY_ELECTRIC = "Electric Company";

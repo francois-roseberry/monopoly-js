@@ -95,6 +95,7 @@
 			},
 			'income-tax': function (name) {
 				writeText(container, name, 14);
+				writeText(container, i18n.INCOME_TAX_DESCRIPTION, SQUARE_HEIGHT - 30, 10);
 			},
 			'luxury-tax': function (name) {
 				writeText(container, name, 14);
