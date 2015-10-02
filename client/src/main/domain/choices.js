@@ -7,6 +7,7 @@
 	var PayRentChoice = require('./pay-rent-choice');
 	var GoBankruptChoice = require('./go-bankrupt-choice');
 	var PayTaxChoice = require('./pay-tax-choice');
+	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
 
 	exports.rollDice = function () {
 		return RollDiceChoice.newChoice();
@@ -30,5 +31,13 @@
 	
 	exports.payTax = function (amount) {
 		return PayTaxChoice.newChoice(amount);
+	};
+	
+	exports.chooseFlatTax = function (amount) {
+		return ChooseTaxTypeChoice.newFlatTax(amount);
+	};
+	
+	exports.choosePercentageTax = function (percentage, amount) {
+		return ChooseTaxTypeChoice.newPercentageTax(percentage, amount);
 	};
 }());

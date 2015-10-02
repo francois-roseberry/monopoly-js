@@ -13,16 +13,22 @@
 			players = Player.newPlayers(testData.playersConfiguration());
 		});
 		
-		it('starts at position 0', function () {
-			expect(players[0].position()).to.eql(0);
-		});
-		
-		it('starts with 1500$', function () {
-			expect(players[0].money()).to.eql(1500);
-		});
-		
-		it('starts with an empty list of properties', function () {
-			expect(players[0].properties()).to.eql([]);
+		describe('at start', function () {
+			it('is at position 0', function () {
+				expect(players[0].position()).to.eql(0);
+			});
+			
+			it('has 1500$', function () {
+				expect(players[0].money()).to.eql(1500);
+			});
+			
+			it('starts with an empty list of properties', function () {
+				expect(players[0].properties()).to.eql([]);
+			});
+			
+			it('has a net worth of 1500$ (since no properties)', function () {
+				expect(players[0].netWorth()).to.eql(1500);
+			});
 		});
 		
 		it('wraps around the board when moving past the end', function () {
@@ -47,6 +53,10 @@
 			
 			it('substract the price', function () {
 				expect(newPlayer.money()).to.eql(players[0].money() - PROPERTY.price());
+			});
+			
+			it('net worth is still the same (since property value is added to money)', function () {
+				expect(newPlayer.netWorth()).to.eql(players[0].netWorth());
 			});
 			
 			it('insert them in order', function () {

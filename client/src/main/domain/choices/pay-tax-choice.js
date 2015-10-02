@@ -9,12 +9,13 @@
 	exports.newChoice = function (amount) {
 		precondition(_.isNumber(amount) && amount > 0, 'A PayTaxChoice requires a tax greater than 0');
 		
-		return new PayTaxChoice(amount);
+		var name = i18n.CHOICE_PAY_TAX.replace('{amount}', i18n.formatPrice(amount));
+		return new PayTaxChoice(amount, name);
 	};
 	
-	function PayTaxChoice(amount) {
+	function PayTaxChoice(amount, name) {
 		this.id = 'pay-tax';
-		this.name = i18n.CHOICE_PAY_TAX.replace('{amount}', i18n.formatPrice(amount));
+		this.name = name;
 		this._amount = amount;
 	}
 	

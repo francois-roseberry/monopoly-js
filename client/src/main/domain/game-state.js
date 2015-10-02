@@ -73,11 +73,7 @@
 	function payIncomeTax(currentPlayer, paid) {
 		return function () {
 			if (!paid) {
-				if (currentPlayer.money() < 200) {
-					return [Choices.goBankrupt()];
-				}
-				
-				return [Choices.payTax(200)];
+				return [Choices.chooseFlatTax(200), Choices.choosePercentageTax(10, currentPlayer.netWorth())];
 			}
 			
 			return [Choices.finishTurn()];

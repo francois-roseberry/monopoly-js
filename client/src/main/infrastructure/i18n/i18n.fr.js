@@ -15,6 +15,8 @@
 	exports.CHOICE_PAY_RENT = 'Payer {rent} à {toPlayer}';
 	exports.CHOICE_GO_BANKRUPT = 'Faire faillite';
 	exports.CHOICE_PAY_TAX = 'Payer une taxe de {amount}';
+	exports.CHOOSE_FLAT_TAX = 'Choisir une taxe fixe de {amount}';
+	exports.CHOOSE_PERCENTAGE_TAX = 'Choisir une taxe de {percentage}%';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';

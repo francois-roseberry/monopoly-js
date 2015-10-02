@@ -82,6 +82,17 @@
 		return this._properties.slice();
 	};
 	
+	/**
+	 * Calculates the net worth of the player (i.e. money + owned properties values).
+	 */
+	Player.prototype.netWorth = function () {
+		var valueOfProperties = _.reduce(this._properties, function (total, property) {
+			return total + property.price();
+		}, 0);
+		
+		return this.money() + valueOfProperties;
+	};
+	
 	Player.prototype.move = function (dice) {
 		precondition(_.isArray(dice) && dice.length === 2 && _.isNumber(dice[0]) && _.isNumber(dice[1]),
 			'Moving a player requires a dice with two numbers');

@@ -111,16 +111,12 @@
 		});
 		
 		describe('when current player is on income-tax', function () {
-			it('offers a $200 tax', function () {
+			it('offers a $200 flat tax or a 10% tax', function () {
 				var state = games.playerOnIncomeTax();
+				var currentPlayer = state.players()[state.currentPlayerIndex()];
 				
-				assertChoices(state, [Choices.payTax(200)]);
-			});
-			
-			it('if he is broke, offers bankruptcy', function () {
-				var state = games.playerBrokeOnIncomeTax();
-				
-				assertChoices(state, [Choices.goBankrupt()]);
+				assertChoices(state,
+					[Choices.chooseFlatTax(200), Choices.choosePercentageTax(10, currentPlayer.netWorth())]);
 			});
 			
 			it('if he already paid, does not offer to pay the tax again', function () {
