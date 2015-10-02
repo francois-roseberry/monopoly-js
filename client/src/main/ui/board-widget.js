@@ -173,6 +173,7 @@
 	
 	function renderStart(container) {
 		return function () {
+			writeAngledText(container, i18n.START_DESCRIPTION);
 			container.append('g')
 				.attr('transform', 'scale(0.6) translate(6, 134)')
 				.html(Symbols.arrow());
@@ -209,6 +210,13 @@
 	
 	function writeText(container, text, y, fontSize) {
 		TextWrapper.wrap(container, text.toUpperCase(), fontSize || 8, y, SQUARE_WIDTH);
+	}
+	
+	function writeAngledText(container, text) {
+		var newContainer = container.append('g')
+			.attr('transform', 'translate(4, 58) rotate(-45)');
+			
+		TextWrapper.wrap(newContainer, text.toUpperCase(), 8, 0, SQUARE_WIDTH);
 	}
 	
 	function writePrice(container, price) {
