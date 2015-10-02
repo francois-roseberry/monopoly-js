@@ -27,4 +27,11 @@
 		return '<path stroke="black" stroke-width="1" fill="red" d="M 0 10 L 20 0 L 20 7 L 120 7 L 124 2 L 140 2 ' +
 			'L 136 10 L 140 18 L 124 18 L 120 13 L 20 13 L 20 20 Z">';
 	};
+	
+	exports.go = function () {
+		return '<path fill-rule="evenodd" stroke="black" stroke-width="1" fill="red" d="M 0 0 L 0 20 L 16 20 ' +
+			'L 16 8 L 6 8 L 6 12 L 12 12 ' +
+			'L 12 16 L 4 16 L 4 4 L 16 4 L 16 0 Z M 20 0 L 20 20 L 36 20 L 36 0 L 20 0 M 24 4 L 24 16 L 32 16 ' +
+			'L 32 4 Z">';
+	};
 }());

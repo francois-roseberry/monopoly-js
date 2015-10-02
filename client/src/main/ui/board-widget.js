@@ -173,7 +173,11 @@
 	
 	function renderStart(container) {
 		return function () {
-			writeAngledText(container, i18n.START_DESCRIPTION);
+			var angledContainer = writeAngledText(container, i18n.START_DESCRIPTION, 4, 58);
+			angledContainer.append('g')
+				.attr('transform', 'translate(20, 30)')
+				.html(Symbols.go());
+			
 			container.append('g')
 				.attr('transform', 'scale(0.6) translate(6, 134)')
 				.html(Symbols.arrow());
@@ -212,11 +216,13 @@
 		TextWrapper.wrap(container, text.toUpperCase(), fontSize || 8, y, SQUARE_WIDTH);
 	}
 	
-	function writeAngledText(container, text) {
-		var newContainer = container.append('g')
-			.attr('transform', 'translate(4, 58) rotate(-45)');
+	function writeAngledText(container, text, x, y) {
+		var angledContainer = container.append('g')
+			.attr('transform', 'translate(' + x + ', ' + y + ') rotate(-45)');
 			
-		TextWrapper.wrap(newContainer, text.toUpperCase(), 8, 0, SQUARE_WIDTH);
+		TextWrapper.wrap(angledContainer, text.toUpperCase(), 8, 0, SQUARE_WIDTH);
+		
+		return angledContainer;
 	}
 	
 	function writePrice(container, price) {
