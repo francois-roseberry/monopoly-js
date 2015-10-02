@@ -96,6 +96,7 @@
 			},
 			'income-tax': function (name) {
 				writeText(container, name, 14);
+				writeText(container, i18n.INCOME_TAX_DESCRIPTION, SQUARE_HEIGHT - 30, 10);
 			},
 			'luxury-tax': function (name) {
 				writeText(container, name, 14);
@@ -173,6 +174,11 @@
 	
 	function renderStart(container) {
 		return function () {
+			var angledContainer = writeAngledText(container, i18n.START_DESCRIPTION, 4, 58);
+			angledContainer.append('g')
+				.attr('transform', 'translate(20, 30)')
+				.html(Symbols.go());
+			
 			container.append('g')
 				.attr('transform', 'scale(0.6) translate(6, 134)')
 				.html(Symbols.arrow());
@@ -211,6 +217,15 @@
 		TextWrapper.wrap(container, text.toUpperCase(), fontSize || 8, y, SQUARE_WIDTH);
 	}
 	
+	function writeAngledText(container, text, x, y) {
+		var angledContainer = container.append('g')
+			.attr('transform', 'translate(' + x + ', ' + y + ') rotate(-45)');
+			
+		TextWrapper.wrap(angledContainer, text.toUpperCase(), 8, 0, SQUARE_WIDTH);
+		
+		return angledContainer;
+	}
+	
 	function writePrice(container, price) {
 		var priceString = i18n.PRICE_STRING
 			.replace('{price}', i18n.formatPrice(price));
@@ -231,7 +246,7 @@
 		return transforms[rowIndex];
 	}
 }());
-},{"./contract":7,"./i18n":20,"./symbols":36,"./text-wrapper":37}],2:[function(require,module,exports){
+},{"./contract":8,"./i18n":21,"./symbols":37,"./text-wrapper":38}],2:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -407,7 +422,7 @@
 		};
 	}
 }());
-},{"./contract":7,"./i18n":20,"./property":33,"./property-group":32}],3:[function(require,module,exports){
+},{"./contract":8,"./i18n":21,"./property":34,"./property-group":33}],3:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -430,7 +445,7 @@
 }());
 
 
-},{"./fail-fast":9,"./game-task":14,"./game-widget":15}],4:[function(require,module,exports){
+},{"./fail-fast":10,"./game-task":15,"./game-widget":16}],4:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -458,16 +473,7 @@
 			return false;
 		}
 		
-		var self = this;
-		return other.match({
-			'buy-property': function (property) {
-				return self._property.equals(property);
-			}
-		});
-	};
-	
-	BuyPropertyChoice.prototype.match = function (visitor) {
-		return visitor[this.id](this._property);
+		return this._property.equals(other._property);
 	};
 	
 	BuyPropertyChoice.prototype.requiresDice = function () {
@@ -494,7 +500,7 @@
 		});
 	}
 }());
-},{"./contract":7,"./game-state":13,"./i18n":20,"./property":33}],5:[function(require,module,exports){
+},{"./contract":8,"./game-state":14,"./i18n":21,"./property":34}],5:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -504,6 +510,7 @@
 	var PayRentChoice = require('./pay-rent-choice');
 	var GoBankruptChoice = require('./go-bankrupt-choice');
 	var PayTaxChoice = require('./pay-tax-choice');
+	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
 
 	exports.rollDice = function () {
 		return RollDiceChoice.newChoice();
@@ -528,8 +535,74 @@
 	exports.payTax = function (amount) {
 		return PayTaxChoice.newChoice(amount);
 	};
+	
+	exports.chooseFlatTax = function (amount) {
+		return ChooseTaxTypeChoice.newFlatTax(amount);
+	};
+	
+	exports.choosePercentageTax = function (percentage, amount) {
+		return ChooseTaxTypeChoice.newPercentageTax(percentage, amount);
+	};
 }());
-},{"./buy-property-choice":4,"./finish-turn-choice":10,"./go-bankrupt-choice":16,"./pay-rent-choice":25,"./pay-tax-choice":26,"./roll-dice-choice":34}],6:[function(require,module,exports){
+},{"./buy-property-choice":4,"./choose-tax-type-choice":6,"./finish-turn-choice":11,"./go-bankrupt-choice":17,"./pay-rent-choice":26,"./pay-tax-choice":27,"./roll-dice-choice":35}],6:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
+	
+	var Choices = require('./choices');
+	
+	exports.newFlatTax = function (amount) {
+		precondition(_.isNumber(amount) && amount > 0, 'A PayFlatTaxChoice requires a tax greater than 0');
+		
+		var name = i18n.CHOOSE_FLAT_TAX.replace('{amount}', i18n.formatPrice(amount));
+		return new ChooseTaxTypeChoice(amount, name);
+	};
+	
+	exports.newPercentageTax = function (percentage, amount) {
+		precondition(_.isNumber(percentage) && percentage >= 1 && percentage < 100,
+			'A PayPercentageTaxChoice requires a percentage between 1 and 100');
+		precondition(_.isNumber(amount) && amount > 0,
+			'A PayPercentageTaxChoice requires an amount greater than 0 from which to calculate the percentage');
+			
+		var name = i18n.CHOOSE_PERCENTAGE_TAX.replace('{percentage}', percentage);
+		return new ChooseTaxTypeChoice(Math.round(amount * (percentage/100)), name);
+	};
+	
+	function ChooseTaxTypeChoice(amount, name) {
+		this.id = 'choose-tax-type';
+		this.name = name;
+		this._amount = amount;
+	}
+	
+	ChooseTaxTypeChoice.prototype.equals = function (other) {
+		if (!(other instanceof ChooseTaxTypeChoice)) {
+			return false;
+		}
+		
+		return this._amount === other._amount;
+	};
+	
+	ChooseTaxTypeChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	ChooseTaxTypeChoice.prototype.computeNextState = function (state) {
+		var currentPlayer = state.players()[state.currentPlayerIndex()];
+		
+		var choice = (currentPlayer.money() > this._amount) ?
+			[Choices.payTax(this._amount)] : [Choices.goBankrupt()];
+		
+		return {
+			squares: function () { return state.squares(); },
+			players: function () { return state.players(); },
+			currentPlayerIndex: function() { return state.currentPlayerIndex(); },
+			choices: function () { return choice; }
+		};
+	};
+}());
+},{"./choices":5,"./contract":8,"./i18n":21}],7:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -615,7 +688,7 @@
 		return this._completed.asObservable();
 	};
 }());
-},{"./contract":7}],7:[function(require,module,exports){
+},{"./contract":8}],8:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -626,7 +699,7 @@
         throw new Error("Precondition: " + message);
     };
 }());
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -696,7 +769,7 @@
 		return "<circle fill='black' r=5 cx=" + x + " cy=" + y + " />";
 	}
 }());
-},{"./contract":7}],9:[function(require,module,exports){
+},{"./contract":8}],10:[function(require,module,exports){
 (function () {
     'use strict';
 
@@ -745,7 +818,7 @@
         window.isDisplayingError = true;
     }
 }());
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -765,10 +838,6 @@
 		return (other instanceof FinishTurnChoice);
 	};
 	
-	FinishTurnChoice.prototype.match = function (visitor) {
-		return visitor[this.id]();
-	};
-	
 	FinishTurnChoice.prototype.requiresDice = function () {
 		return false;
 	};
@@ -781,7 +850,7 @@
 		});
 	};
 }());
-},{"./game-state":13,"./i18n":20}],11:[function(require,module,exports){
+},{"./game-state":14,"./i18n":21}],12:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -824,7 +893,7 @@
 			.remove();
 	}
 }());
-},{"./contract":7}],12:[function(require,module,exports){
+},{"./contract":8}],13:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -994,7 +1063,7 @@
 		selection.exit().remove();
 	}
 }());
-},{"./contract":7,"./i18n":20,"./popup":31}],13:[function(require,module,exports){
+},{"./contract":8,"./i18n":21,"./popup":32}],14:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1048,6 +1117,7 @@
 			'railroad': choicesForProperty(square, players, currentPlayer, paid),
 			'company': choicesForProperty(square, players, currentPlayer, paid),
 			'luxury-tax': payLuxuryTax(currentPlayer, paid),
+			'income-tax': payIncomeTax(currentPlayer, paid),
 			_: onlyFinishTurn
 		});
 	}
@@ -1060,6 +1130,16 @@
 				}
 
 				return [Choices.payTax(75)];
+			}
+			
+			return [Choices.finishTurn()];
+		};
+	}
+	
+	function payIncomeTax(currentPlayer, paid) {
+		return function () {
+			if (!paid) {
+				return [Choices.choosePercentageTax(10, currentPlayer.netWorth()), Choices.chooseFlatTax(200)];
 			}
 			
 			return [Choices.finishTurn()];
@@ -1135,7 +1215,7 @@
 		return this._choices;
 	};
 }());
-},{"./choices":5,"./contract":7}],14:[function(require,module,exports){
+},{"./choices":5,"./contract":8}],15:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1194,7 +1274,7 @@
 		return this._statusChanged.asObservable();
 	};
 }());
-},{"./board":2,"./configure-game-task":6,"./play-game-task":27}],15:[function(require,module,exports){
+},{"./board":2,"./configure-game-task":7,"./play-game-task":28}],16:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1228,7 +1308,7 @@
 		};
 	}
 }());
-},{"./contract":7,"./game-configuration-widget":12,"./monopoly-game-widget":24}],16:[function(require,module,exports){
+},{"./contract":8,"./game-configuration-widget":13,"./monopoly-game-widget":25}],17:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1247,10 +1327,6 @@
 	
 	GoBankruptChoice.prototype.equals = function (other) {
 		return (other instanceof GoBankruptChoice);
-	};
-	
-	GoBankruptChoice.prototype.match = function (visitor) {
-		return visitor[this.id]();
 	};
 	
 	GoBankruptChoice.prototype.requiresDice = function () {
@@ -1279,7 +1355,7 @@
 		});
 	}
 }());
-},{"./game-state":13,"./i18n":20}],17:[function(require,module,exports){
+},{"./game-state":14,"./i18n":21}],18:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1345,7 +1421,7 @@
 		};
 	}
 }());
-},{"./contract":7}],18:[function(require,module,exports){
+},{"./contract":8}],19:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1363,6 +1439,8 @@
 	exports.CHOICE_PAY_RENT = 'Pay {rent} to {toPlayer}';
 	exports.CHOICE_GO_BANKRUPT = 'Go bankrupt';
 	exports.CHOICE_PAY_TAX = 'Pay a {amount} tax';
+	exports.CHOOSE_FLAT_TAX = 'Choose a flat {amount} tax';
+	exports.CHOOSE_PERCENTAGE_TAX = 'Choose a {percentage}% tax';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
@@ -1378,6 +1456,8 @@
 	exports.INCOME_TAX = 'Income Tax';
 	exports.LUXURY_TAX = 'Luxury Tax';
 	exports.LUXURY_TAX_DESCRIPTION = "Pay $75";
+	exports.INCOME_TAX_DESCRIPTION = "Pay 10% or $200";
+	exports.START_DESCRIPTION = "Collect $200 salary as you pass";
 	
 	exports.COMPANY_WATER = 'Water Works';
 	exports.COMPANY_ELECTRIC = "Electric Company";
@@ -1423,7 +1503,7 @@
 		return '$' + price;
 	};
 }());
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1441,6 +1521,8 @@
 	exports.CHOICE_PAY_RENT = 'Payer {rent} à {toPlayer}';
 	exports.CHOICE_GO_BANKRUPT = 'Faire faillite';
 	exports.CHOICE_PAY_TAX = 'Payer une taxe de {amount}';
+	exports.CHOOSE_FLAT_TAX = 'Choisir une taxe fixe de {amount}';
+	exports.CHOOSE_PERCENTAGE_TAX = 'Choisir une taxe de {percentage}%';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';
@@ -1455,7 +1537,9 @@
 	exports.COMMUNITY_CHEST = 'Caisse commune';
 	exports.INCOME_TAX = 'Impôt sur le revenu';
 	exports.LUXURY_TAX = 'Taxe de luxe';
-	exports.LUXURY_TAX_DESCRIPTION = "Payez 75$";
+	exports.LUXURY_TAX_DESCRIPTION = "Payez 75 $";
+	exports.INCOME_TAX_DESCRIPTION = "Payez 10% ou 200 $";
+	exports.START_DESCRIPTION = "Réclamez 200 $ de salaire en passant à";
 	
 	exports.COMPANY_WATER = 'Aqueduc';
 	exports.COMPANY_ELECTRIC = "Compagnie d'électricité";
@@ -1501,7 +1585,7 @@
 		return price + ' $';
 	};
 }());
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 (function () {
     'use strict';
     var frenchString = require('./i18n.fr');
@@ -1540,7 +1624,7 @@
         window.applicationLanguage = applicationLanguage;
     }
 }());
-},{"./i18n.en":18,"./i18n.fr":19}],21:[function(require,module,exports){
+},{"./i18n.en":19,"./i18n.fr":20}],22:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1752,7 +1836,7 @@
 		return this._messages.asObservable();
 	};
 }());
-},{"./contract":7,"./messages":23}],22:[function(require,module,exports){
+},{"./contract":8,"./messages":24}],23:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1775,7 +1859,7 @@
 		});
 	};
 }());
-},{"./contract":7}],23:[function(require,module,exports){
+},{"./contract":8}],24:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1887,7 +1971,7 @@
 		return other instanceof Log && this._id === other._id && this._message === other._message;
 	};
 }());
-},{"./contract":7,"./i18n":20,"./player":29,"./property":33}],24:[function(require,module,exports){
+},{"./contract":8,"./i18n":21,"./player":30,"./property":34}],25:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1929,7 +2013,7 @@
 	};
 }());
 
-},{"./board-widget":1,"./contract":7,"./dice-widget":8,"./game-choices-widget":11,"./i18n":20,"./log-game-widget":22,"./players-widget":30}],25:[function(require,module,exports){
+},{"./board-widget":1,"./contract":8,"./dice-widget":9,"./game-choices-widget":12,"./i18n":21,"./log-game-widget":23,"./players-widget":31}],26:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1960,16 +2044,7 @@
 			return false;
 		}
 		
-		var self = this;
-		return other.match({
-			'pay-rent': function (rent, toPlayerId, _) {
-				return self._rent === rent && self._toPlayerId === toPlayerId;
-			}
-		});
-	};
-	
-	PayRentChoice.prototype.match = function (visitor) {
-		return visitor[this.id](this._rent, this._toPlayerId, this._toPlayerName);
+		return this._rent === other._rent && this._toPlayerId === other._toPlayerId;
 	};
 	
 	PayRentChoice.prototype.requiresDice = function () {
@@ -1999,7 +2074,7 @@
 		}, true);
 	};
 }());
-},{"./contract":7,"./game-state":13,"./i18n":20,"./player":29}],26:[function(require,module,exports){
+},{"./contract":8,"./game-state":14,"./i18n":21,"./player":30}],27:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2011,12 +2086,13 @@
 	exports.newChoice = function (amount) {
 		precondition(_.isNumber(amount) && amount > 0, 'A PayTaxChoice requires a tax greater than 0');
 		
-		return new PayTaxChoice(amount);
+		var name = i18n.CHOICE_PAY_TAX.replace('{amount}', i18n.formatPrice(amount));
+		return new PayTaxChoice(amount, name);
 	};
 	
-	function PayTaxChoice(amount) {
+	function PayTaxChoice(amount, name) {
 		this.id = 'pay-tax';
-		this.name = i18n.CHOICE_PAY_TAX.replace('{amount}', i18n.formatPrice(amount));
+		this.name = name;
 		this._amount = amount;
 	}
 	
@@ -2025,16 +2101,7 @@
 			return false;
 		}
 		
-		var self = this;
-		return other.match({
-			'pay-tax': function (amount) {
-				return self._amount === amount;
-			}
-		});
-	};
-	
-	PayTaxChoice.prototype.match = function (visitor) {
-		return visitor[this.id](this._amount);
+		return this._amount === other._amount;
 	};
 	
 	PayTaxChoice.prototype.requiresDice = function () {
@@ -2059,7 +2126,7 @@
 		}, true);
 	};
 }());
-},{"./contract":7,"./game-state":13,"./i18n":20}],27:[function(require,module,exports){
+},{"./contract":8,"./game-state":14,"./i18n":21}],28:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2165,46 +2232,10 @@
 			
 			var nextState = choice.computeNextState(state);
 			return Rx.Observable.return(nextState);
-			
-			
-			/*return choice.match({
-				'roll-dice': rollDice(self, state)
-			});*/
 		};
 	}
-	
-	/*function rollDice(self, state) {
-		return function () {
-			var task = RollDiceTask.start({
-				fast: self._options.fastDice,
-				dieFunction: self._options.dieFunction
-			});
-			
-			self._rollDiceTaskCreated.onNext(task);
-			return task.diceRolled().last()
-				.map(function (dice) {
-					return movePlayer(state, dice);
-				});
-		};
-	}
-	
-	function movePlayer(state, dice) {
-		var newPlayers = _.map(state.players(), function (player, index) {
-			if (index === state.currentPlayerIndex()) {
-				return player.move(dice);
-			}
-			
-			return player;
-		});
-		
-		return GameState.turnEndState({
-			squares: state.squares(),
-			players: newPlayers,
-			currentPlayerIndex: state.currentPlayerIndex()
-		});
-	}*/
 }());
-},{"./contract":7,"./game-state":13,"./handle-choices-task":17,"./log-game-task":21,"./player":29,"./roll-dice-task":35}],28:[function(require,module,exports){
+},{"./contract":8,"./game-state":14,"./handle-choices-task":18,"./log-game-task":22,"./player":30,"./roll-dice-task":36}],29:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2214,7 +2245,7 @@
 		];
 	};
 }());
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2299,6 +2330,17 @@
 		return this._properties.slice();
 	};
 	
+	/**
+	 * Calculates the net worth of the player (i.e. money + owned properties values).
+	 */
+	Player.prototype.netWorth = function () {
+		var valueOfProperties = _.reduce(this._properties, function (total, property) {
+			return total + property.price();
+		}, 0);
+		
+		return this.money() + valueOfProperties;
+	};
+	
 	Player.prototype.move = function (dice) {
 		precondition(_.isArray(dice) && dice.length === 2 && _.isNumber(dice[0]) && _.isNumber(dice[1]),
 			'Moving a player requires a dice with two numbers');
@@ -2381,7 +2423,7 @@
 		});
 	}
 }());
-},{"./contract":7,"./i18n":20,"./player-colors":28,"./property":33}],30:[function(require,module,exports){
+},{"./contract":8,"./i18n":21,"./player-colors":29,"./property":34}],31:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2508,7 +2550,7 @@
 		selection.order();
 	}
 }());
-},{"./contract":7,"./i18n":20}],31:[function(require,module,exports){
+},{"./contract":8,"./i18n":21}],32:[function(require,module,exports){
 (function () {
     'use strict';
 
@@ -2596,7 +2638,7 @@
         closedSubject.onCompleted();
     }
 }());
-},{"./contract":7}],32:[function(require,module,exports){
+},{"./contract":8}],33:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2643,7 +2685,7 @@
 		return (this._index < other._index ? 1 : -1);
 	};
 }());
-},{"./contract":7}],33:[function(require,module,exports){
+},{"./contract":8}],34:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2817,7 +2859,7 @@
 		return other instanceof Property && this._id === other._id;
 	};
 }());
-},{"./contract":7,"./property-group":32}],34:[function(require,module,exports){
+},{"./contract":8,"./property-group":33}],35:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2837,10 +2879,6 @@
 	
 	RollDiceChoice.prototype.equals = function (other) {
 		return (other instanceof RollDiceChoice);
-	};
-	
-	RollDiceChoice.prototype.match = function (visitor) {
-		return visitor[this.id]();
 	};
 	
 	RollDiceChoice.prototype.requiresDice = function () {
@@ -2866,7 +2904,7 @@
 		});
 	};
 }());
-},{"./contract":7,"./game-state":13,"./i18n":20}],35:[function(require,module,exports){
+},{"./contract":8,"./game-state":14,"./i18n":21}],36:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2901,7 +2939,7 @@
 		return this._diceRolled.asObservable();
 	};
 }());
-},{}],36:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2931,8 +2969,15 @@
 		return '<path stroke="black" stroke-width="1" fill="red" d="M 0 10 L 20 0 L 20 7 L 120 7 L 124 2 L 140 2 ' +
 			'L 136 10 L 140 18 L 124 18 L 120 13 L 20 13 L 20 20 Z">';
 	};
+	
+	exports.go = function () {
+		return '<path fill-rule="evenodd" stroke="black" stroke-width="1" fill="red" d="M 0 0 L 0 20 L 16 20 ' +
+			'L 16 8 L 6 8 L 6 12 L 12 12 ' +
+			'L 12 16 L 4 16 L 4 4 L 16 4 L 16 0 Z M 20 0 L 20 20 L 36 20 L 36 0 L 20 0 M 24 4 L 24 16 L 32 16 ' +
+			'L 32 4 Z">';
+	};
 }());
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 (function () {
     'use strict';
 	
@@ -2989,4 +3034,4 @@
 		}
     };
 }());
-},{"./contract":7}]},{},[3]);
+},{"./contract":8}]},{},[3]);
