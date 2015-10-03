@@ -116,7 +116,7 @@
 				var currentPlayer = state.players()[state.currentPlayerIndex()];
 				
 				assertChoices(state,
-					[Choices.chooseFlatTax(200), Choices.choosePercentageTax(10, currentPlayer.netWorth())]);
+					[Choices.choosePercentageTax(10, currentPlayer.netWorth()), Choices.chooseFlatTax(200)]);
 			});
 			
 			it('if he already paid, does not offer to pay the tax again', function () {

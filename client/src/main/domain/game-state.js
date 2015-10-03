@@ -73,7 +73,7 @@
 	function payIncomeTax(currentPlayer, paid) {
 		return function () {
 			if (!paid) {
-				return [Choices.chooseFlatTax(200), Choices.choosePercentageTax(10, currentPlayer.netWorth())];
+				return [Choices.choosePercentageTax(10, currentPlayer.netWorth()), Choices.chooseFlatTax(200)];
 			}
 			
 			return [Choices.finishTurn()];
