@@ -37,7 +37,7 @@
 			});
 		});
 		
-		describe('when current player is on property owned by other player, offers to pay the rent of ', function () {
+		describe('when current player is on property owned by other player, offers to pay the rent of', function () {
 			it('the estate rent if that property is an estate and owner does not own group', function () {
 				assertRentToPayIsEstateRentWhenOwnerDoesNotOwnGroup();
 			});
@@ -74,11 +74,11 @@
 				assertChoices(state, [Choices.payRent(200, secondPlayer)]);
 			});
 			
-			it('25$ if that property is a company', function () {
+			it('2 times the result of dice if that property is a company', function () {
 				var state = games.playerOnCompanyOwnedByOther();
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(25, secondPlayer)]);
+				assertChoices(state, [Choices.calculateDiceRent(2, secondPlayer)]);
 			});
 		});
 		
@@ -190,7 +190,6 @@
 	function assertBankruptcyChoiceWhenPropertyRentIsTooHigh() {
 		assertBankruptcyChoiceWhenEstateRentIsTooHigh();
 		assertBankruptcyChoiceWhenRailroadRentIsTooHigh();
-		assertBankruptcyChoiceWhenCompanyRentIsTooHigh();
 	}
 	
 	function assertBankruptcyChoiceWhenEstateRentIsTooHigh() {
@@ -200,11 +199,6 @@
 	
 	function assertBankruptcyChoiceWhenRailroadRentIsTooHigh() {
 		var state = games.playerBrokeOnRailroadOwnedByOther();
-		assertChoices(state, [Choices.goBankrupt()]);
-	}
-	
-	function assertBankruptcyChoiceWhenCompanyRentIsTooHigh() {
-		var state = games.playerBrokeOnCompanyOwnedByOther();
 		assertChoices(state, [Choices.goBankrupt()]);
 	}
 	

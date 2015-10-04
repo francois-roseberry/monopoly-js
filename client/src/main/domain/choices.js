@@ -8,6 +8,7 @@
 	var GoBankruptChoice = require('./go-bankrupt-choice');
 	var PayTaxChoice = require('./pay-tax-choice');
 	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
+	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
 
 	exports.rollDice = function () {
 		return RollDiceChoice.newChoice();
@@ -21,8 +22,8 @@
 		return BuyPropertyChoice.newChoice(property);
 	};
 	
-	exports.payRent = function (rent, toPlayerId, toPlayerName) {
-		return PayRentChoice.newChoice(rent, toPlayerId, toPlayerName);
+	exports.payRent = function (rent, toPlayer) {
+		return PayRentChoice.newChoice(rent, toPlayer);
 	};
 	
 	exports.goBankrupt = function () {
@@ -39,5 +40,9 @@
 	
 	exports.choosePercentageTax = function (percentage, amount) {
 		return ChooseTaxTypeChoice.newPercentageTax(percentage, amount);
+	};
+	
+	exports.calculateDiceRent = function (multiplier, toPlayer) {
+		return CalculateDiceRentChoice.newChoice(multiplier, toPlayer);
 	};
 }());

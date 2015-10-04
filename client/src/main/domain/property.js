@@ -29,7 +29,7 @@
 	function estateRent(baseRent, group) {
 		return function (ownerProperties) {
 			var multiplier = (ownsAllEstatesInGroup(group, ownerProperties) ? 2 : 1);
-			return baseRent * multiplier;
+			return { amount: baseRent * multiplier };
 		};
 	}
 	
@@ -53,7 +53,7 @@
 			group: group,
 			type: 'company',
 			price: 150,
-			rent: function () { return 25; }
+			rent: function () { return { multiplier: 2 }; }
 		});
 	};
 	
@@ -75,7 +75,7 @@
 	function railroadRent(baseRent, group) {
 		return function (ownerProperties) {
 			var count = railroadCountIn(group, ownerProperties);
-			return baseRent * Math.pow(2, count - 1);
+			return { amount: baseRent * Math.pow(2, count - 1) };
 		};
 	}
 	

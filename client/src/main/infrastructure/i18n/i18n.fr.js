@@ -17,6 +17,7 @@
 	exports.CHOICE_PAY_TAX = 'Payer une taxe de {amount}';
 	exports.CHOOSE_FLAT_TAX = 'Choisir une taxe fixe de {amount}';
 	exports.CHOOSE_PERCENTAGE_TAX = 'Choisir une taxe de {percentage}%';
+	exports.CHOICE_CALCULATE_DICE_RENT = 'Lancer les dés et payer un loyer de {multiplier} fois le résultat';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';

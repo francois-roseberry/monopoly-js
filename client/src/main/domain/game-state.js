@@ -90,11 +90,15 @@
 			
 			if (!paid && owner && owner.id() !== currentPlayer.id()) {
 				var rent = square.rent(owner.properties());
-				if (currentPlayer.money() <= rent) {
-					return [Choices.goBankrupt()];
-				}
-				
-				return [Choices.payRent(rent, owner)];
+				if (rent.amount) {
+					if (currentPlayer.money() <= rent.amount) {
+						return [Choices.goBankrupt()];
+					}
+						
+					return [Choices.payRent(rent.amount, owner)];
+				} else {
+					return [Choices.calculateDiceRent(rent.multiplier, owner)];
+				}			
 			}
 			
 			if (!owner && currentPlayer.money() > price) {
@@ -147,5 +151,15 @@
 	
 	GameState.prototype.choices = function () {
 		return this._choices;
+	};
+	
+	GameState.prototype.changeChoices = function (choices) {
+		precondition(_.isArray(choices), 'Changing a game state choices list requires a list of choices');
+		
+		return new GameState({
+			squares: this._squares,
+			players: this._players,
+			currentPlayerIndex: this._currentPlayerIndex
+		}, choices);
 	};
 }());
