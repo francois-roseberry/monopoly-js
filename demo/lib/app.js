@@ -246,7 +246,7 @@
 		return transforms[rowIndex];
 	}
 }());
-},{"./contract":8,"./i18n":21,"./symbols":37,"./text-wrapper":38}],2:[function(require,module,exports){
+},{"./contract":9,"./i18n":22,"./symbols":38,"./text-wrapper":39}],2:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -422,7 +422,7 @@
 		};
 	}
 }());
-},{"./contract":8,"./i18n":21,"./property":34,"./property-group":33}],3:[function(require,module,exports){
+},{"./contract":9,"./i18n":22,"./property":35,"./property-group":34}],3:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -445,7 +445,7 @@
 }());
 
 
-},{"./fail-fast":10,"./game-task":15,"./game-widget":16}],4:[function(require,module,exports){
+},{"./fail-fast":11,"./game-task":16,"./game-widget":17}],4:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -500,7 +500,63 @@
 		});
 	}
 }());
-},{"./contract":8,"./game-state":14,"./i18n":21,"./property":34}],5:[function(require,module,exports){
+},{"./contract":9,"./game-state":15,"./i18n":22,"./property":35}],5:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
+	
+	var PayRentChoice = require('./pay-rent-choice');
+	var GoBankruptChoice = require('./go-bankrupt-choice');
+	var Player = require('./player');
+	
+	exports.newChoice = function (multiplier, toPlayer) {
+		precondition(_.isNumber(multiplier) && multiplier > 0,
+			'Calculate dice rent choice requires a multiplier greater than 0');
+		precondition(toPlayer && Player.isPlayer(toPlayer),
+			'Calculate dice rent choice requires the player to pay to');
+		
+		return new CalculateDiceRentChoice(multiplier, toPlayer);
+	};
+	
+	function CalculateDiceRentChoice(multiplier, toPlayer) {
+		this.id = 'calculate-dice-rent';
+		this.name = i18n.CHOICE_CALCULATE_DICE_RENT.replace('{multiplier}', multiplier);
+		this._multiplier = multiplier;
+		this._toPlayer = toPlayer;
+	}
+	
+	CalculateDiceRentChoice.prototype.equals = function (other) {
+		if (!(other instanceof CalculateDiceRentChoice)) {
+			return false;
+		}
+		
+		return this._multiplier === other._multiplier && this._toPlayer.id() === other._toPlayer.id();
+	};
+	
+	CalculateDiceRentChoice.prototype.requiresDice = function () {
+		return true;
+	};
+	
+	CalculateDiceRentChoice.prototype.computeNextState = function (state, dice) {
+		precondition(state, 'To compute next state, a roll-dice choice requires the actual state');
+		precondition(dice, 'To compute next state, a roll-dice choice requires the result of a dice roll');
+		
+		var rent = this._multiplier * (dice[0] + dice[1]);
+		var money = state.players()[state.currentPlayerIndex()].money();
+		
+		var choice;
+		if (rent > money) {
+			choice = GoBankruptChoice.newChoice();
+		} else {
+			choice = PayRentChoice.newChoice(rent, this._toPlayer);
+		}
+		
+		return state.changeChoices([choice]);
+	};
+}());
+},{"./contract":9,"./go-bankrupt-choice":18,"./i18n":22,"./pay-rent-choice":27,"./player":31}],6:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -511,6 +567,7 @@
 	var GoBankruptChoice = require('./go-bankrupt-choice');
 	var PayTaxChoice = require('./pay-tax-choice');
 	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
+	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
 
 	exports.rollDice = function () {
 		return RollDiceChoice.newChoice();
@@ -524,8 +581,8 @@
 		return BuyPropertyChoice.newChoice(property);
 	};
 	
-	exports.payRent = function (rent, toPlayerId, toPlayerName) {
-		return PayRentChoice.newChoice(rent, toPlayerId, toPlayerName);
+	exports.payRent = function (rent, toPlayer) {
+		return PayRentChoice.newChoice(rent, toPlayer);
 	};
 	
 	exports.goBankrupt = function () {
@@ -543,8 +600,12 @@
 	exports.choosePercentageTax = function (percentage, amount) {
 		return ChooseTaxTypeChoice.newPercentageTax(percentage, amount);
 	};
+	
+	exports.calculateDiceRent = function (multiplier, toPlayer) {
+		return CalculateDiceRentChoice.newChoice(multiplier, toPlayer);
+	};
 }());
-},{"./buy-property-choice":4,"./choose-tax-type-choice":6,"./finish-turn-choice":11,"./go-bankrupt-choice":17,"./pay-rent-choice":26,"./pay-tax-choice":27,"./roll-dice-choice":35}],6:[function(require,module,exports){
+},{"./buy-property-choice":4,"./calculate-dice-rent-choice":5,"./choose-tax-type-choice":7,"./finish-turn-choice":12,"./go-bankrupt-choice":18,"./pay-rent-choice":27,"./pay-tax-choice":28,"./roll-dice-choice":36}],7:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -552,6 +613,7 @@
 	var precondition = require('./contract').precondition;
 	
 	var Choices = require('./choices');
+	var GameState = require('./game-state');
 	
 	exports.newFlatTax = function (amount) {
 		precondition(_.isNumber(amount) && amount > 0, 'A PayFlatTaxChoice requires a tax greater than 0');
@@ -589,20 +651,18 @@
 	};
 	
 	ChooseTaxTypeChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'ChooseTaxTypeChoice requires a game state to compute the next one');
+		
 		var currentPlayer = state.players()[state.currentPlayerIndex()];
 		
 		var choice = (currentPlayer.money() > this._amount) ?
 			[Choices.payTax(this._amount)] : [Choices.goBankrupt()];
 		
-		return {
-			squares: function () { return state.squares(); },
-			players: function () { return state.players(); },
-			currentPlayerIndex: function() { return state.currentPlayerIndex(); },
-			choices: function () { return choice; }
-		};
+		return state.changeChoices(choice);
 	};
 }());
-},{"./choices":5,"./contract":8,"./i18n":21}],7:[function(require,module,exports){
+},{"./choices":6,"./contract":9,"./game-state":15,"./i18n":22}],8:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -688,7 +748,7 @@
 		return this._completed.asObservable();
 	};
 }());
-},{"./contract":8}],8:[function(require,module,exports){
+},{"./contract":9}],9:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -699,7 +759,7 @@
         throw new Error("Precondition: " + message);
     };
 }());
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -769,7 +829,7 @@
 		return "<circle fill='black' r=5 cx=" + x + " cy=" + y + " />";
 	}
 }());
-},{"./contract":8}],10:[function(require,module,exports){
+},{"./contract":9}],11:[function(require,module,exports){
 (function () {
     'use strict';
 
@@ -818,7 +878,7 @@
         window.isDisplayingError = true;
     }
 }());
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -850,7 +910,7 @@
 		});
 	};
 }());
-},{"./game-state":14,"./i18n":21}],12:[function(require,module,exports){
+},{"./game-state":15,"./i18n":22}],13:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -893,7 +953,7 @@
 			.remove();
 	}
 }());
-},{"./contract":8}],13:[function(require,module,exports){
+},{"./contract":9}],14:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1063,13 +1123,17 @@
 		selection.exit().remove();
 	}
 }());
-},{"./contract":8,"./i18n":21,"./popup":32}],14:[function(require,module,exports){
+},{"./contract":9,"./i18n":22,"./popup":33}],15:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var Choices = require('./choices');
 	
 	var precondition = require('./contract').precondition;
+	
+	exports.isGameState = function (candidate) {
+		return candidate instanceof GameState;
+	};
 	
 	exports.gameFinishedState = function (squares, winner) {
 		precondition(_.isArray(squares) && squares.length === 40,
@@ -1156,11 +1220,15 @@
 			
 			if (!paid && owner && owner.id() !== currentPlayer.id()) {
 				var rent = square.rent(owner.properties());
-				if (currentPlayer.money() <= rent) {
-					return [Choices.goBankrupt()];
-				}
-				
-				return [Choices.payRent(rent, owner)];
+				if (rent.amount) {
+					if (currentPlayer.money() <= rent.amount) {
+						return [Choices.goBankrupt()];
+					}
+						
+					return [Choices.payRent(rent.amount, owner)];
+				} else {
+					return [Choices.calculateDiceRent(rent.multiplier, owner)];
+				}			
 			}
 			
 			if (!owner && currentPlayer.money() > price) {
@@ -1214,8 +1282,18 @@
 	GameState.prototype.choices = function () {
 		return this._choices;
 	};
+	
+	GameState.prototype.changeChoices = function (choices) {
+		precondition(_.isArray(choices), 'Changing a game state choices list requires a list of choices');
+		
+		return new GameState({
+			squares: this._squares,
+			players: this._players,
+			currentPlayerIndex: this._currentPlayerIndex
+		}, choices);
+	};
 }());
-},{"./choices":5,"./contract":8}],15:[function(require,module,exports){
+},{"./choices":6,"./contract":9}],16:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1274,7 +1352,7 @@
 		return this._statusChanged.asObservable();
 	};
 }());
-},{"./board":2,"./configure-game-task":7,"./play-game-task":28}],16:[function(require,module,exports){
+},{"./board":2,"./configure-game-task":8,"./play-game-task":29}],17:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1308,7 +1386,7 @@
 		};
 	}
 }());
-},{"./contract":8,"./game-configuration-widget":13,"./monopoly-game-widget":25}],17:[function(require,module,exports){
+},{"./contract":9,"./game-configuration-widget":14,"./monopoly-game-widget":26}],18:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1355,7 +1433,7 @@
 		});
 	}
 }());
-},{"./game-state":14,"./i18n":21}],18:[function(require,module,exports){
+},{"./game-state":15,"./i18n":22}],19:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1421,7 +1499,7 @@
 		};
 	}
 }());
-},{"./contract":8}],19:[function(require,module,exports){
+},{"./contract":9}],20:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1441,6 +1519,7 @@
 	exports.CHOICE_PAY_TAX = 'Pay a {amount} tax';
 	exports.CHOOSE_FLAT_TAX = 'Choose a flat {amount} tax';
 	exports.CHOOSE_PERCENTAGE_TAX = 'Choose a {percentage}% tax';
+	exports.CHOICE_CALCULATE_DICE_RENT = 'Roll the dice and pay a rent of {multiplier} times the result';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
@@ -1503,7 +1582,7 @@
 		return '$' + price;
 	};
 }());
-},{}],20:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1523,6 +1602,7 @@
 	exports.CHOICE_PAY_TAX = 'Payer une taxe de {amount}';
 	exports.CHOOSE_FLAT_TAX = 'Choisir une taxe fixe de {amount}';
 	exports.CHOOSE_PERCENTAGE_TAX = 'Choisir une taxe de {percentage}%';
+	exports.CHOICE_CALCULATE_DICE_RENT = 'Lancer les dés et payer un loyer de {multiplier} fois le résultat';
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';
@@ -1585,7 +1665,7 @@
 		return price + ' $';
 	};
 }());
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 (function () {
     'use strict';
     var frenchString = require('./i18n.fr');
@@ -1624,7 +1704,7 @@
         window.applicationLanguage = applicationLanguage;
     }
 }());
-},{"./i18n.en":19,"./i18n.fr":20}],22:[function(require,module,exports){
+},{"./i18n.en":20,"./i18n.fr":21}],23:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1836,7 +1916,7 @@
 		return this._messages.asObservable();
 	};
 }());
-},{"./contract":8,"./messages":24}],23:[function(require,module,exports){
+},{"./contract":9,"./messages":25}],24:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1859,7 +1939,7 @@
 		});
 	};
 }());
-},{"./contract":8}],24:[function(require,module,exports){
+},{"./contract":9}],25:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1971,7 +2051,7 @@
 		return other instanceof Log && this._id === other._id && this._message === other._message;
 	};
 }());
-},{"./contract":8,"./i18n":21,"./player":30,"./property":34}],25:[function(require,module,exports){
+},{"./contract":9,"./i18n":22,"./player":31,"./property":35}],26:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2013,7 +2093,7 @@
 	};
 }());
 
-},{"./board-widget":1,"./contract":8,"./dice-widget":9,"./game-choices-widget":12,"./i18n":21,"./log-game-widget":23,"./players-widget":31}],26:[function(require,module,exports){
+},{"./board-widget":1,"./contract":9,"./dice-widget":10,"./game-choices-widget":13,"./i18n":22,"./log-game-widget":24,"./players-widget":32}],27:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2074,7 +2154,7 @@
 		}, true);
 	};
 }());
-},{"./contract":8,"./game-state":14,"./i18n":21,"./player":30}],27:[function(require,module,exports){
+},{"./contract":9,"./game-state":15,"./i18n":22,"./player":31}],28:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2126,7 +2206,7 @@
 		}, true);
 	};
 }());
-},{"./contract":8,"./game-state":14,"./i18n":21}],28:[function(require,module,exports){
+},{"./contract":9,"./game-state":15,"./i18n":22}],29:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2235,7 +2315,7 @@
 		};
 	}
 }());
-},{"./contract":8,"./game-state":14,"./handle-choices-task":18,"./log-game-task":22,"./player":30,"./roll-dice-task":36}],29:[function(require,module,exports){
+},{"./contract":9,"./game-state":15,"./handle-choices-task":19,"./log-game-task":23,"./player":31,"./roll-dice-task":37}],30:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2245,7 +2325,7 @@
 		];
 	};
 }());
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2423,7 +2503,7 @@
 		});
 	}
 }());
-},{"./contract":8,"./i18n":21,"./player-colors":29,"./property":34}],31:[function(require,module,exports){
+},{"./contract":9,"./i18n":22,"./player-colors":30,"./property":35}],32:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2550,7 +2630,7 @@
 		selection.order();
 	}
 }());
-},{"./contract":8,"./i18n":21}],32:[function(require,module,exports){
+},{"./contract":9,"./i18n":22}],33:[function(require,module,exports){
 (function () {
     'use strict';
 
@@ -2638,7 +2718,7 @@
         closedSubject.onCompleted();
     }
 }());
-},{"./contract":8}],33:[function(require,module,exports){
+},{"./contract":9}],34:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2685,7 +2765,7 @@
 		return (this._index < other._index ? 1 : -1);
 	};
 }());
-},{"./contract":8}],34:[function(require,module,exports){
+},{"./contract":9}],35:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2717,7 +2797,7 @@
 	function estateRent(baseRent, group) {
 		return function (ownerProperties) {
 			var multiplier = (ownsAllEstatesInGroup(group, ownerProperties) ? 2 : 1);
-			return baseRent * multiplier;
+			return { amount: baseRent * multiplier };
 		};
 	}
 	
@@ -2741,9 +2821,25 @@
 			group: group,
 			type: 'company',
 			price: 150,
-			rent: function () { return 25; }
+			rent: companyRent(group)
 		});
 	};
+	
+	function companyRent(group) {
+		return function (ownerProperties) {
+			return { multiplier: (allCompanies(group, ownerProperties) ? 4 : 2) };
+		};
+	}
+	
+	function allCompanies(group, properties) {
+		return _.reduce(properties, function (count, property) {
+			if (_.contains(_.map(group.properties(), propertyId), property.id())) {
+				return count + 1;
+			}
+			
+			return count;
+		}, 0) === 2;
+	}
 	
 	exports.newRailroad = function (id, name, group) {
 		precondition(_.isString(id) && id.length > 0, 'Railroad requires an id');
@@ -2763,7 +2859,7 @@
 	function railroadRent(baseRent, group) {
 		return function (ownerProperties) {
 			var count = railroadCountIn(group, ownerProperties);
-			return baseRent * Math.pow(2, count - 1);
+			return { amount: baseRent * Math.pow(2, count - 1) };
 		};
 	}
 	
@@ -2859,7 +2955,7 @@
 		return other instanceof Property && this._id === other._id;
 	};
 }());
-},{"./contract":8,"./property-group":33}],35:[function(require,module,exports){
+},{"./contract":9,"./property-group":34}],36:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2904,7 +3000,7 @@
 		});
 	};
 }());
-},{"./contract":8,"./game-state":14,"./i18n":21}],36:[function(require,module,exports){
+},{"./contract":9,"./game-state":15,"./i18n":22}],37:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2939,7 +3035,7 @@
 		return this._diceRolled.asObservable();
 	};
 }());
-},{}],37:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2977,7 +3073,7 @@
 			'L 32 4 Z">';
 	};
 }());
-},{}],38:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 (function () {
     'use strict';
 	
@@ -3034,4 +3130,4 @@
 		}
     };
 }());
-},{"./contract":8}]},{},[3]);
+},{"./contract":9}]},{},[3]);
