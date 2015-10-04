@@ -4,6 +4,7 @@
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
+	var GameState = require('./game-state');
 	var PayRentChoice = require('./pay-rent-choice');
 	var GoBankruptChoice = require('./go-bankrupt-choice');
 	var Player = require('./player');
@@ -37,7 +38,7 @@
 	};
 	
 	CalculateDiceRentChoice.prototype.computeNextState = function (state, dice) {
-		precondition(state, 'To compute next state, a roll-dice choice requires the actual state');
+		precondition(GameState.isGameState(state), 'To compute next state, a roll-dice choice requires the actual state');
 		precondition(dice, 'To compute next state, a roll-dice choice requires the result of a dice roll');
 		
 		var rent = this._multiplier * (dice[0] + dice[1]);

@@ -23,6 +23,9 @@
 	};
 	
 	GoBankruptChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'GoBankruptChoice requires a game state to compute the next one');
+			
 		return goBankruptNextState(state);
 	};
 	

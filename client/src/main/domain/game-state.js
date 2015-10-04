@@ -5,6 +5,10 @@
 	
 	var precondition = require('./contract').precondition;
 	
+	exports.isGameState = function (candidate) {
+		return candidate instanceof GameState;
+	};
+	
 	exports.gameFinishedState = function (squares, winner) {
 		precondition(_.isArray(squares) && squares.length === 40,
 			'GameFinishedState requires an array of 40 squares');

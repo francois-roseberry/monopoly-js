@@ -22,6 +22,9 @@
 	};
 	
 	FinishTurnChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'FinishTurnChoice requires a game state to compute the next one');
+			
 		return GameState.turnStartState({
 			squares: state.squares(),
 			players: state.players(),

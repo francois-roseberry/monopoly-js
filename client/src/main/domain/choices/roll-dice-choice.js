@@ -24,7 +24,7 @@
 	};
 	
 	RollDiceChoice.prototype.computeNextState = function (state, dice) {
-		precondition(state, 'To compute next state, a roll-dice choice requires the actual state');
+		precondition(GameState.isGameState(state), 'To compute next state, a roll-dice choice requires the actual state');
 		precondition(dice, 'To compute next state, a roll-dice choice requires the result of a dice roll');
 		
 		var newPlayers = _.map(state.players(), function (player, index) {

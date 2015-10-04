@@ -32,6 +32,9 @@
 	};
 	
 	PayTaxChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'PayTaxChoice requires a game state to compute the next one');
+			
 		var amount = this._amount;
 		
 		var newPlayers = _.map(state.players(), function (player, index) {

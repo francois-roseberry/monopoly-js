@@ -5,6 +5,7 @@
 	var precondition = require('./contract').precondition;
 	
 	var Choices = require('./choices');
+	var GameState = require('./game-state');
 	
 	exports.newFlatTax = function (amount) {
 		precondition(_.isNumber(amount) && amount > 0, 'A PayFlatTaxChoice requires a tax greater than 0');
@@ -42,16 +43,14 @@
 	};
 	
 	ChooseTaxTypeChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'ChooseTaxTypeChoice requires a game state to compute the next one');
+		
 		var currentPlayer = state.players()[state.currentPlayerIndex()];
 		
 		var choice = (currentPlayer.money() > this._amount) ?
 			[Choices.payTax(this._amount)] : [Choices.goBankrupt()];
 		
-		return {
-			squares: function () { return state.squares(); },
-			players: function () { return state.players(); },
-			currentPlayerIndex: function() { return state.currentPlayerIndex(); },
-			choices: function () { return choice; }
-		};
+		return state.changeChoices(choice);
 	};
 }());

@@ -36,6 +36,9 @@
 	};
 	
 	PayRentChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'PayRentChoice requires a game state to compute the next one');
+			
 		var rent = this._rent;
 		var toPlayerId = this._toPlayerId;
 		

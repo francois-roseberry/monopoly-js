@@ -33,6 +33,9 @@
 	};
 	
 	BuyPropertyChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'BuyPropertyChoice requires a game state to compute the next one');
+			
 		return transferOwnership(state, this._property);
 	};
 	
