@@ -53,9 +53,25 @@
 			group: group,
 			type: 'company',
 			price: 150,
-			rent: function () { return { multiplier: 2 }; }
+			rent: companyRent(group)
 		});
 	};
+	
+	function companyRent(group) {
+		return function (ownerProperties) {
+			return { multiplier: (allCompanies(group, ownerProperties) ? 4 : 2) };
+		};
+	}
+	
+	function allCompanies(group, properties) {
+		return _.reduce(properties, function (count, property) {
+			if (_.contains(_.map(group.properties(), propertyId), property.id())) {
+				return count + 1;
+			}
+			
+			return count;
+		}, 0) === 2;
+	}
 	
 	exports.newRailroad = function (id, name, group) {
 		precondition(_.isString(id) && id.length > 0, 'Railroad requires an id');

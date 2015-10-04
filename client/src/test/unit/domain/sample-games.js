@@ -193,6 +193,21 @@
 		}, paid || false);
 	};
 	
+	exports.playerOnCompanyOwnedByOtherWithAllCompanies = function (paid) {
+		var players = testData.players();
+		
+		return GameState.turnEndState({
+			squares: Board.squares(),
+			players: [
+				players[0].move([0, 12]),
+				players[1].buyProperty(Board.properties().electricCompany)
+					.buyProperty(Board.properties().waterWorks),
+				players[2]
+			],
+			currentPlayerIndex: 0
+		}, paid || false);
+	};
+	
 	exports.playerOnRailroadOwnedByOtherWithOneRailroad = function (paid) {
 		var players = testData.players();
 		var owner = players[1].buyProperty(Board.properties().readingRailroad);
