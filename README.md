@@ -4,7 +4,6 @@ Implementation of the Monopoly game in javascript, rendering done with D3
 Far from complete, right now players alternate, roll the dice, buy properties and pay rents (and eventually go bankrupt). That's it. Not very exciting but at least the main game flow is operational, from the beginning to the end.
 
 Features missing to be a complete game of Monopoly :
-* Calculating rents based on dice for public utities (companies) instead of a flat 25$
 * Building houses and hotels
 * When rent is too high, offer to mortgage and/or unbuild instead of going straight to bankruptcy
 * Double rolls roll again, and 3 in a row bring you to jail
