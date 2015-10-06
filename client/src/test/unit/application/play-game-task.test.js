@@ -4,7 +4,12 @@
 	var PlayGameTask = require('./play-game-task');
 	var Board = require('./board');
 	var PlayerColors = require('./player-colors').colors();
-	var Choices = require('./choices');
+	var PayTaxChoice = require('./pay-tax-choice');
+	var PayRentChoice = require('./pay-rent-choice');
+	var GoBankruptChoice = require('./go-bankrupt-choice');
+	var RollDiceChoice = require('./roll-dice-choice');
+	var BuyPropertyChoice = require('./buy-property-choice');
+	var FinishTurnChoice = require('./finish-turn-choice');
 	
 	var testData = require('./test-data');
 	
@@ -42,7 +47,7 @@
 				expect(task).to.not.eql(undefined);
 			}, done, done);
 			
-			task.handleChoicesTask().makeChoice(Choices.rollDice());
+			task.handleChoicesTask().makeChoice(RollDiceChoice.newChoice());
 		});
 		
 		describe('after dice have finished rolling', function () {
@@ -56,7 +61,7 @@
 						newState = state;
 					}, done, done);
 				
-				task.handleChoicesTask().makeChoice(Choices.rollDice());
+				task.handleChoicesTask().makeChoice(RollDiceChoice.newChoice());
 			});
 			
 			it('position changes', function () {
@@ -64,12 +69,12 @@
 			});
 			
 			it('offer the finish-turn choice', function () {
-				expect(toChoiceIds(newState.choices())).to.eql([Choices.finishTurn().id]);
+				expect(toChoiceIds(newState.choices())).to.eql([FinishTurnChoice.newChoice().id]);
 			});
 		});
 		
 		it('when finish-turn is chosen, sends the new game state with the next player', function (done) {
-			task.handleChoicesTask().makeChoice(Choices.finishTurn());
+			task.handleChoicesTask().makeChoice(FinishTurnChoice.newChoice());
 			
 			assertCurrentPlayerIsTheSecondOne(task.gameState(), done);
 		});
@@ -82,7 +87,7 @@
 		
 		it('when buy-property is chosen, current player loses money', function (done) {
 			var property = Board.properties().readingRailroad;
-			task.handleChoicesTask().makeChoice(Choices.buyProperty(property));
+			task.handleChoicesTask().makeChoice(BuyPropertyChoice.newChoice(property));
 			
 			assertCurrentPlayerHasLostMoney(task.gameState(), property.price(), done);
 		});
@@ -90,7 +95,7 @@
 		it('when pay-rent is chosen, transfer the rent from current player to owner', function (done) {
 			var rent = 100;
 			var owner = getSecondPlayer(task.gameState());
-			task.handleChoicesTask().makeChoice(Choices.payRent(rent, owner));
+			task.handleChoicesTask().makeChoice(PayRentChoice.newChoice(rent, owner));
 			
 			assertCurrentPlayerHasPaidToOwner(task.gameState(), rent, 1, done);
 		});
@@ -98,13 +103,13 @@
 		it('when pay-tax is chosen, make current player pay the tax', function (done) {
 			var tax = 75;
 			
-			task.handleChoicesTask().makeChoice(Choices.payTax(tax));
+			task.handleChoicesTask().makeChoice(PayTaxChoice.newChoice(tax));
 			
 			assertCurrentPlayerHasPaidTaxOf(task.gameState(), tax, done);
 		});
 		
 		it('when going bankrupt is chosen, current player is removed from game', function (done) {
-			task.handleChoicesTask().makeChoice(Choices.goBankrupt());
+			task.handleChoicesTask().makeChoice(GoBankruptChoice.newChoice());
 			
 			assertPlayerHasBeenRemovedFromTheGame(task.gameState(), testData.players()[0].id(), done);
 		});
@@ -112,7 +117,7 @@
 		it('when the last player in the list goes bankrupt, current player becomes the first one', function (done) {
 			switchToLastPlayerTurn(task);
 			
-			task.handleChoicesTask().makeChoice(Choices.goBankrupt());
+			task.handleChoicesTask().makeChoice(GoBankruptChoice.newChoice());
 			
 			assertCurrentPlayerIsTheFirstOne(task.gameState(), done);
 		});
@@ -137,7 +142,7 @@
 				.map(onlyChoices)
 				.map(toChoiceIds)
 				.subscribe(function (choices) {
-					expect(choices).to.eql([Choices.rollDice().id]);
+					expect(choices).to.eql([RollDiceChoice.newChoice().id]);
 				}, done, done);
 		}
 		
@@ -172,25 +177,25 @@
 					expect(['human', 'computer']).to.contain(player.type());
 				});
 				expect(state.currentPlayerIndex()).to.eql(0);
-				expect(toChoiceIds(state.choices())).to.eql([Choices.rollDice().id]);
+				expect(toChoiceIds(state.choices())).to.eql([RollDiceChoice.newChoice().id]);
 			}, done, done);
 		}
 		
 		function finishAllPlayerTurns(task) {
 			for (var i = 0; i < testData.playersConfiguration().length; i++) {
-				task.handleChoicesTask().makeChoice(Choices.finishTurn());
+				task.handleChoicesTask().makeChoice(FinishTurnChoice.newChoice());
 			}
 		}
 		
 		function killAllPlayersButOne(task) {
 			for (var i = 0; i < testData.playersConfiguration().length - 1; i++) {
-				task.handleChoicesTask().makeChoice(Choices.goBankrupt());
+				task.handleChoicesTask().makeChoice(GoBankruptChoice.newChoice());
 			}
 		}
 		
 		function switchToLastPlayerTurn(task) {
 			for (var i = 0; i < testData.playersConfiguration().length - 1; i++) {
-				task.handleChoicesTask().makeChoice(Choices.finishTurn());
+				task.handleChoicesTask().makeChoice(FinishTurnChoice.newChoice());
 			}
 		}
 		

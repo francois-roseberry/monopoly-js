@@ -2,6 +2,11 @@
 	"use strict";
 	
 	var Choices = require('./choices');
+	var RollDiceChoice = require('./roll-dice-choice');
+	var FinishTurnChoice = require('./finish-turn-choice');
+	var BuyPropertyChoice = require('./buy-property-choice');
+	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
+	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -30,7 +35,7 @@
 	};
 	
 	function newTurnChoices() {
-		return [Choices.rollDice()];
+		return [RollDiceChoice.newChoice()];
 	}
 	
 	exports.turnEndState = function (info, paid) {
@@ -63,29 +68,28 @@
 	function payLuxuryTax(currentPlayer, paid) {
 		return function () {
 			if (!paid) {
-				if (currentPlayer.money() < 75) {
-					return [Choices.goBankrupt()];
-				}
-
-				return [Choices.payTax(75)];
+				return Choices.taxChoices(75, currentPlayer);
 			}
 			
-			return [Choices.finishTurn()];
+			return [FinishTurnChoice.newChoice()];
 		};
 	}
 	
 	function payIncomeTax(currentPlayer, paid) {
 		return function () {
 			if (!paid) {
-				return [Choices.choosePercentageTax(10, currentPlayer.netWorth()), Choices.chooseFlatTax(200)];
+				return [
+					ChooseTaxTypeChoice.newPercentageTax(10, currentPlayer.netWorth()),
+					ChooseTaxTypeChoice.newFlatTax(200)
+				];
 			}
 			
-			return [Choices.finishTurn()];
+			return [FinishTurnChoice.newChoice()];
 		};
 	}
 	
 	function onlyFinishTurn() {
-		return [Choices.finishTurn()];
+		return [FinishTurnChoice.newChoice()];
 	}
 	
 	function choicesForProperty(square, players, currentPlayer, paid) {
@@ -95,21 +99,17 @@
 			if (!paid && owner && owner.id() !== currentPlayer.id()) {
 				var rent = square.rent(owner.properties());
 				if (rent.amount) {
-					if (currentPlayer.money() <= rent.amount) {
-						return [Choices.goBankrupt()];
-					}
-						
-					return [Choices.payRent(rent.amount, owner)];
-				} else {
-					return [Choices.calculateDiceRent(rent.multiplier, owner)];
-				}			
+					return Choices.rentChoices(rent.amount, currentPlayer, owner);
+				}
+				
+				return [CalculateDiceRentChoice.newChoice(rent.multiplier, owner)];			
 			}
 			
 			if (!owner && currentPlayer.money() > price) {
-				return [Choices.buyProperty(square), Choices.finishTurn()];
+				return [BuyPropertyChoice.newChoice(square), FinishTurnChoice.newChoice()];
 			}
 			
-			return [Choices.finishTurn()];
+			return [FinishTurnChoice.newChoice()];
 		};
 	}
 	

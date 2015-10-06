@@ -3,7 +3,14 @@
 	
 	var GameState = require('./game-state');
 	var Board = require('./board');
-	var Choices = require('./choices');
+	var PayTaxChoice = require('./pay-tax-choice');
+	var PayRentChoice = require('./pay-rent-choice');
+	var GoBankruptChoice = require('./go-bankrupt-choice');
+	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
+	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
+	var RollDiceChoice = require('./roll-dice-choice');
+	var FinishTurnChoice = require('./finish-turn-choice');
+	var BuyPropertyChoice = require('./buy-property-choice');
 	
 	var games = require('./sample-games');
 	var testData = require('./test-data');
@@ -12,7 +19,7 @@
 		it('offers the roll-dice choice', function () {
 			var state = games.turnStart();
 			
-			assertChoices(state, [Choices.rollDice()]);
+			assertChoices(state, [RollDiceChoice.newChoice()]);
 		});
 	});
 	
@@ -20,7 +27,7 @@
 		it('offers the finish-turn choice', function () {
 			var state = turnEndStateWithPlayers(testData.players());
 			
-			assertChoices(state, [Choices.finishTurn()]);
+			assertChoices(state, [FinishTurnChoice.newChoice()]);
 		});
 		
 		describe('when current player is on a property', function () {
@@ -50,42 +57,42 @@
 				var state = games.playerOnRailroadOwnedByOtherWithOneRailroad();
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(25, secondPlayer)]);
+				assertChoices(state, [PayRentChoice.newChoice(25, secondPlayer)]);
 			});
 			
 			it('50$ if that property is a railroad and owner possess 2 railroads', function () {
 				var state = games.playerOnRailroadOwnedByOtherWithTwoRailroads();
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(50, secondPlayer)]);
+				assertChoices(state, [PayRentChoice.newChoice(50, secondPlayer)]);
 			});
 			
 			it('100$ if that property is a railroad and owner possess 3 railroads', function () {
 				var state = games.playerOnRailroadOwnedByOtherWithThreeRailroads();
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(100, secondPlayer)]);
+				assertChoices(state, [PayRentChoice.newChoice(100, secondPlayer)]);
 			});
 			
 			it('200$ if that property is a railroad and owner possess 4 railroads', function () {
 				var state = games.playerOnRailroadOwnedByOtherWithFourRailroads();
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.payRent(200, secondPlayer)]);
+				assertChoices(state, [PayRentChoice.newChoice(200, secondPlayer)]);
 			});
 			
 			it('2 times the dice if that property is a company and owner possess only one company', function () {
 				var state = games.playerOnCompanyOwnedByOther();
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.calculateDiceRent(2, secondPlayer)]);
+				assertChoices(state, [CalculateDiceRentChoice.newChoice(2, secondPlayer)]);
 			});
 			
 			it('4 times the dice if that property is a company and owner, possess all companies', function () {
 				var state = games.playerOnCompanyOwnedByOtherWithAllCompanies();
 				var secondPlayer = testData.players()[1];
 				
-				assertChoices(state, [Choices.calculateDiceRent(4, secondPlayer)]);
+				assertChoices(state, [CalculateDiceRentChoice.newChoice(4, secondPlayer)]);
 			});
 		});
 		
@@ -103,13 +110,13 @@
 			it('offers a 75$ tax', function () {
 				var state = games.playerOnLuxuryTax();
 				
-				assertChoices(state, [Choices.payTax(75)]);
+				assertChoices(state, [PayTaxChoice.newChoice(75)]);
 			});
 			
 			it('if he is broke on luxury-tax, offers bankruptcy', function () {
 				var state = games.playerBrokeOnLuxuryTax();
 				
-				assertChoices(state, [Choices.goBankrupt()]);
+				assertChoices(state, [GoBankruptChoice.newChoice()]);
 			});
 			
 			it('if he already paid, does not offer to pay the tax again', function () {
@@ -122,8 +129,10 @@
 				var state = games.playerOnIncomeTax();
 				var currentPlayer = state.players()[state.currentPlayerIndex()];
 				
-				assertChoices(state,
-					[Choices.choosePercentageTax(10, currentPlayer.netWorth()), Choices.chooseFlatTax(200)]);
+				assertChoices(state, [
+					ChooseTaxTypeChoice.newPercentageTax(10, currentPlayer.netWorth()),
+					ChooseTaxTypeChoice.newFlatTax(200)
+				]);
 			});
 			
 			it('if he already paid, does not offer to pay the tax again', function () {
@@ -134,12 +143,12 @@
 	
 	function assertNoBuyPropertyChoiceWhenOnPropertyTooExpensive() {
 		var state = games.playerBrokeOnEstate();
-		assertChoices(state, [Choices.finishTurn()]);
+		assertChoices(state, [FinishTurnChoice.newChoice()]);
 	}
 	
 	function assertNoBuyPropertyChoiceWhenOnPropertyWithOwner() {
 		var state = games.playerOnOwnedEstate();
-		assertChoices(state, [Choices.finishTurn()]);
+		assertChoices(state, [FinishTurnChoice.newChoice()]);
 	}
 	
 	function assertBuyPropertyChoiceWhenOnPropertyWithoutOwner() {
@@ -150,17 +159,26 @@
 	
 	function assertBuyPropertyChoiceWhenOnEstateWithoutOwner() {
 		var state = games.playerOnEstate();
-		assertChoices(state, [Choices.buyProperty(Board.properties().mediterranean), Choices.finishTurn()]);
+		assertChoices(state, [
+			BuyPropertyChoice.newChoice(Board.properties().mediterranean),
+			FinishTurnChoice.newChoice()
+		]);
 	}
 	
 	function assertBuyPropertyChoiceWhenOnRailroadWithoutOwner() {
 		var state = games.playerOnRailroad();
-		assertChoices(state, [Choices.buyProperty(Board.properties().readingRailroad), Choices.finishTurn()]);
+		assertChoices(state, [
+			BuyPropertyChoice.newChoice(Board.properties().readingRailroad),
+			FinishTurnChoice.newChoice()
+		]);
 	}
 	
 	function assertBuyPropertyChoiceWhenOnCompanyWithoutOwner() {
 		var state = games.playerOnCompany();
-		assertChoices(state, [Choices.buyProperty(Board.properties().electricCompany), Choices.finishTurn()]);
+		assertChoices(state, [
+			BuyPropertyChoice.newChoice(Board.properties().electricCompany),
+			FinishTurnChoice.newChoice()
+		]);
 	}
 	
 	function assertNoPayRentChoiceWhenAlreadyPaidPropertyRent() {
@@ -171,27 +189,27 @@
 	
 	function assertNoPayRentChoiceWhenAlreadyPaidEstateRent() {
 		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther(), true);
-		assertChoices(state, [Choices.finishTurn()]);
+		assertChoices(state, [FinishTurnChoice.newChoice()]);
 	}
 	
 	function assertNoPayRentChoiceWhenAlreadyPaidRailroadRent() {
 		var state = games.playerOnRailroadOwnedByOtherWithOneRailroad(true);
-		assertChoices(state, [Choices.finishTurn()]);
+		assertChoices(state, [FinishTurnChoice.newChoice()]);
 	}
 	
 	function assertNoPayRentChoiceWhenAlreadyPaidCompanyRent() {
 		var state = games.playerOnCompanyOwnedByOther(true);
-		assertChoices(state, [Choices.finishTurn()]);
+		assertChoices(state, [FinishTurnChoice.newChoice()]);
 	}
 	
 	function assertNoPayTaxChoiceWhenAlreadyPaidLuxuryTax() {
 		var state = games.playerOnLuxuryTax(true);
-		assertChoices(state, [Choices.finishTurn()]);
+		assertChoices(state, [FinishTurnChoice.newChoice()]);
 	}
 	
 	function assertNoPayTaxChoiceWhenAlreadyPaidIncomeTax() {
 		var state = games.playerOnIncomeTax(true);
-		assertChoices(state, [Choices.finishTurn()]);
+		assertChoices(state, [FinishTurnChoice.newChoice()]);
 	}
 	
 	function assertBankruptcyChoiceWhenPropertyRentIsTooHigh() {
@@ -201,12 +219,12 @@
 	
 	function assertBankruptcyChoiceWhenEstateRentIsTooHigh() {
 		var state = games.playerBrokeOnEstateOwnedByOther();
-		assertChoices(state, [Choices.goBankrupt()]);
+		assertChoices(state, [GoBankruptChoice.newChoice()]);
 	}
 	
 	function assertBankruptcyChoiceWhenRailroadRentIsTooHigh() {
 		var state = games.playerBrokeOnRailroadOwnedByOther();
-		assertChoices(state, [Choices.goBankrupt()]);
+		assertChoices(state, [GoBankruptChoice.newChoice()]);
 	}
 	
 	function assertRentToPayIsEstateRentWhenOwnerDoesNotOwnGroup() {
@@ -218,14 +236,14 @@
 		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther(Board.properties().mediterranean));
 		var secondPlayer = testData.players()[1];
 				
-		assertChoices(state, [Choices.payRent(2, secondPlayer)]);
+		assertChoices(state, [PayRentChoice.newChoice(2, secondPlayer)]);
 	}
 	
 	function assertRentIsBroadwalkRent() {
 		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther(Board.properties().broadwalk, 39));
 		var secondPlayer = testData.players()[1];
 				
-		assertChoices(state, [Choices.payRent(50, secondPlayer)]);
+		assertChoices(state, [PayRentChoice.newChoice(50, secondPlayer)]);
 	}
 	
 	function assertRentToPayIsDoubleTheEstateRentWhenOwnerOwnsGroup() {
@@ -237,14 +255,14 @@
 		var state = games.playerOnMediterraneanAvenueAndGroupOwned();
 		var secondPlayer = testData.players()[1];
 				
-		assertChoices(state, [Choices.payRent(4, secondPlayer)]);
+		assertChoices(state, [PayRentChoice.newChoice(4, secondPlayer)]);
 	}
 	
 	function assertRentIsDoubleBroadwalkRent() {
 		var state = games.turnEndStateWithPlayerOnBroadwalkAndGroupOwned();
 		var secondPlayer = testData.players()[1];
 				
-		assertChoices(state, [Choices.payRent(100, secondPlayer)]);
+		assertChoices(state, [PayRentChoice.newChoice(100, secondPlayer)]);
 	}
 	
 	function assertChoices(state, choices) {

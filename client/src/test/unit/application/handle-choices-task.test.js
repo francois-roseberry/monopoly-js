@@ -3,7 +3,8 @@
 	
 	var PlayGameTask = require('./play-game-task');
 	var HandleChoicesTask = require('./handle-choices-task');
-	var Choices = require('./choices');
+	var RollDiceChoice = require('./roll-dice-choice');
+	var FinishTurnChoice = require('./finish-turn-choice');
 	
 	var testData = require('./test-data');
 	
@@ -44,14 +45,14 @@
 			
 		it('sends a choiceMade event when a choice is made', function (done) {
 			task.choiceMade().take(1).subscribe(function (choice) {
-				expect(choice.id).to.eql(Choices.rollDice().id);
+				expect(choice.id).to.eql(RollDiceChoice.newChoice().id);
 			}, done, done);
 			
-			task.makeChoice(Choices.rollDice());
+			task.makeChoice(RollDiceChoice.newChoice());
 		});
 		
 		it('sends an empty choices event to the human player when it makes a choice', function (done) {
-			task.makeChoice(Choices.rollDice());
+			task.makeChoice(RollDiceChoice.newChoice());
 			
 			task.choices().take(1).subscribe(function (choices) {
 				expect(choices).to.eql([]);
@@ -59,7 +60,7 @@
 		});
 		
 		function switchTurnToComputerPlayer() {
-			task.makeChoice(Choices.finishTurn());
+			task.makeChoice(FinishTurnChoice.newChoice());
 		}
 		
 		function toChoiceIds(choices) {

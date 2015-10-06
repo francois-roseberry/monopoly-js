@@ -1,48 +1,36 @@
 (function() {
 	"use strict";
 	
-	var RollDiceChoice = require('./roll-dice-choice');
-	var FinishTurnChoice = require('./finish-turn-choice');
-	var BuyPropertyChoice = require('./buy-property-choice');
-	var PayRentChoice = require('./pay-rent-choice');
 	var GoBankruptChoice = require('./go-bankrupt-choice');
+	var PayRentChoice = require('./pay-rent-choice');
 	var PayTaxChoice = require('./pay-tax-choice');
-	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
-	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
-
-	exports.rollDice = function () {
-		return RollDiceChoice.newChoice();
+	var Player = require('./player');
+	
+	var precondition = require('./contract').precondition;
+	
+	exports.rentChoices = function (rent, fromPlayer, toPlayer) {
+		precondition(_.isNumber(rent) && rent > 0, 'Rent choices requires a rent greater than 0');
+		precondition(fromPlayer && Player.isPlayer(fromPlayer),
+			'Rent choices requires the player who pays');
+		precondition(toPlayer && Player.isPlayer(toPlayer),
+			'Rent choices requires the player to pay to');
+		
+		if (rent > fromPlayer.money()) {
+			return [GoBankruptChoice.newChoice()];
+		}
+		
+		return [PayRentChoice.newChoice(rent, toPlayer)];
 	};
 	
-	exports.finishTurn = function () {
-		return FinishTurnChoice.newChoice();
-	};
-	
-	exports.buyProperty = function (property) {
-		return BuyPropertyChoice.newChoice(property);
-	};
-	
-	exports.payRent = function (rent, toPlayer) {
-		return PayRentChoice.newChoice(rent, toPlayer);
-	};
-	
-	exports.goBankrupt = function () {
-		return GoBankruptChoice.newChoice();
-	};
-	
-	exports.payTax = function (amount) {
-		return PayTaxChoice.newChoice(amount);
-	};
-	
-	exports.chooseFlatTax = function (amount) {
-		return ChooseTaxTypeChoice.newFlatTax(amount);
-	};
-	
-	exports.choosePercentageTax = function (percentage, amount) {
-		return ChooseTaxTypeChoice.newPercentageTax(percentage, amount);
-	};
-	
-	exports.calculateDiceRent = function (multiplier, toPlayer) {
-		return CalculateDiceRentChoice.newChoice(multiplier, toPlayer);
+	exports.taxChoices = function (tax, fromPlayer) {
+		precondition(_.isNumber(tax) && tax > 0, 'Tax choices requires a rent greater than 0');
+		precondition(fromPlayer && Player.isPlayer(fromPlayer),
+			'Tax choices requires the player who pays');
+		
+		if (tax > fromPlayer.money()) {
+			return [GoBankruptChoice.newChoice()];
+		}
+		
+		return [PayTaxChoice.newChoice(tax)];
 	};
 }());

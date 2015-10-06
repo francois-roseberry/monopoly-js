@@ -4,6 +4,8 @@
 	var i18n = require('./i18n').i18n();
 	var GameState = require('./game-state');
 	
+	var precondition = require('./contract').precondition;
+	
 	exports.newChoice = function() {
 		return new FinishTurnChoice();
 	};

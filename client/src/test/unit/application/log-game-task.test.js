@@ -3,9 +3,12 @@
 	
 	var PlayGameTask = require('./play-game-task');
 	var LogGameTask = require('./log-game-task');
-	var Choices = require('./choices');
 	var Messages = require('./messages');
 	var Board = require('./board');
+	var PayTaxChoice = require('./pay-tax-choice');
+	var PayRentChoice = require('./pay-rent-choice');
+	var RollDiceChoice = require('./roll-dice-choice');
+	var BuyPropertyChoice = require('./buy-property-choice');
 	
 	var testData = require('./test-data');
 	
@@ -41,11 +44,11 @@
 				});
 			});
 			
-			gameTask.handleChoicesTask().makeChoice(Choices.rollDice());
+			gameTask.handleChoicesTask().makeChoice(RollDiceChoice.newChoice());
 		});
 		
 		it('when player buys property, sends a message', function () {
-			var choice = Choices.buyProperty(Board.properties().readingRailroad);
+			var choice = BuyPropertyChoice.newChoice(Board.properties().readingRailroad);
 			gameTask.handleChoicesTask().makeChoice(choice);
 			
 			var message = Messages.logPropertyBought(firstPlayer, Board.properties().readingRailroad);
@@ -56,7 +59,7 @@
 		it('when player pays rent, sends a message', function () {
 			var rent = 20;
 			
-			var choice = Choices.payRent(rent, secondPlayer);
+			var choice = PayRentChoice.newChoice(rent, secondPlayer);
 			gameTask.handleChoicesTask().makeChoice(choice);
 			
 			var message = Messages.logRentPaid(rent, firstPlayer, secondPlayer);
@@ -67,7 +70,7 @@
 		it('when player pays tax, sends a message', function () {
 			var tax = 75;
 			
-			var choice = Choices.payTax(tax);
+			var choice = PayTaxChoice.newChoice(tax);
 			gameTask.handleChoicesTask().makeChoice(choice);
 			
 			var message = Messages.logTaxPaid(tax, firstPlayer);
@@ -82,7 +85,7 @@
 				expect(log.equals(Messages.logSalaryReceived(firstPlayer))).to.be(true);
 			}, done, done);
 			
-			gameTask.handleChoicesTask().makeChoice(Choices.rollDice());
+			gameTask.handleChoicesTask().makeChoice(RollDiceChoice.newChoice());
 		});
 		
 		function assertLogged(logs, done) {

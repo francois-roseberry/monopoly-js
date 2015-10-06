@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
 	
 	var GameState = require('./game-state');
 	

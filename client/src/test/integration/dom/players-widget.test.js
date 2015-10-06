@@ -3,7 +3,8 @@
 	
 	var PlayersWidget = require('./players-widget');
 	var PlayGameTask = require('./play-game-task');
-	var Choices = require('./choices');
+	var GoBankruptChoice = require('./go-bankrupt-choice');
+	var BuyPropertyChoice = require('./buy-property-choice');
 	var Board = require('./board');
 	
 	var testData = require('./test-data');
@@ -110,11 +111,11 @@
 		}
 		
 		function eliminateFirstPlayer() {
-			task.handleChoicesTask().makeChoice(Choices.goBankrupt());
+			task.handleChoicesTask().makeChoice(GoBankruptChoice.newChoice());
 		}
 		
 		function buyPropertyWithFirstPlayer() {
-			task.handleChoicesTask().makeChoice(Choices.buyProperty(Board.properties().readingRailroad));
+			task.handleChoicesTask().makeChoice(BuyPropertyChoice.newChoice(Board.properties().readingRailroad));
 		}
 	});
 }());

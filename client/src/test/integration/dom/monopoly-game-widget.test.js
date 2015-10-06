@@ -3,7 +3,7 @@
 	
 	var MonopolyGameWidget = require('./monopoly-game-widget');
 	var PlayGameTask = require('./play-game-task');
-	var Choices = require('./choices');
+	var RollDiceChoice = require('./roll-dice-choice');
 	
 	var testData = require('./test-data');
 	var describeInDom = require('./dom-fixture').describeInDom;
@@ -47,7 +47,7 @@
 		});
 		
 		it('renders the dice-widget when the task requires it', function () {
-			task.handleChoicesTask().makeChoice(Choices.rollDice());
+			task.handleChoicesTask().makeChoice(RollDiceChoice.newChoice());
 			
 			domContext.assertOneOf('.dice-container');
 		});
