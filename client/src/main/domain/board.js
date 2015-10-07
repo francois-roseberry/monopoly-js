@@ -117,49 +117,57 @@
 	
 	function go() {
 		return {
-			match: match('go')
+			match: match('go'),
+			equals: hasId('go')
 		};
 	}
 	
 	function jail() {
 		return {
-			match: match('jail')
+			match: match('jail'),
+			equals: hasId('jail')
 		};
 	}
 	
 	function parking() {
 		return {
-			match: match('parking')
+			match: match('parking'),
+			equals: hasId('parking')
 		};
 	}
 	
 	function goToJail() {
 		return {
-			match: match('go-to-jail')
+			match: match('go-to-jail'),
+			equals: hasId('go-to-jail')
 		};
 	}
 	
 	function communityChest() {
 		return {
-			match: match('community-chest', [i18n.COMMUNITY_CHEST])
+			match: match('community-chest', [i18n.COMMUNITY_CHEST]),
+			equals: hasId('community-chest')
 		};
 	}
 	
 	function chance() {
 		return {
-			match: match('chance', [i18n.CHANCE])
+			match: match('chance', [i18n.CHANCE]),
+			equals: hasId('chance')
 		};
 	}
 	
 	function incomeTax() {
 		return {
-			match: match('income-tax', [i18n.INCOME_TAX])
+			match: match('income-tax', [i18n.INCOME_TAX]),
+			equals: hasId('income-tax')
 		};
 	}
 	
 	function luxuryTax() {
 		return {
-			match: match('luxury-tax', [i18n.LUXURY_TAX])
+			match: match('luxury-tax', [i18n.LUXURY_TAX]),
+			equals: hasId('luxury-tax')
 		};
 	}
 	
@@ -170,6 +178,20 @@
 			}
 			
 			return visitor['_']();
+		};
+	}
+	
+	function hasId(id) {
+		return function (other) {
+			precondition(other, 'Testing a square for equality with something else requires that something else');
+			
+			if (_.isFunction(other.match)) {
+				var matcher = { _: function () { return false; } };
+				matcher[id] = function () { return true; };
+				return other.match(matcher);
+			}
+			
+			return false;
 		};
 	}
 }());

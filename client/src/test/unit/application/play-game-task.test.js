@@ -6,7 +6,7 @@
 	var PlayerColors = require('./player-colors').colors();
 	var PayTaxChoice = require('./pay-tax-choice');
 	var PayRentChoice = require('./pay-rent-choice');
-	var GoBankruptChoice = require('./go-bankrupt-choice');
+	//var GoBankruptChoice = require('./go-bankrupt-choice');
 	var RollDiceChoice = require('./roll-dice-choice');
 	var BuyPropertyChoice = require('./buy-property-choice');
 	var FinishTurnChoice = require('./finish-turn-choice');
@@ -15,9 +15,13 @@
 	
 	describe('The PlayGame task', function () {
 		var task;
+		var currentState;
 		
 		beforeEach(function () {
-			task = PlayGameTask.start(testData.gameConfiguration());
+			task = gameTaskWithCheatedDice(1);
+			task.gameState().subscribe(function (state) {
+				currentState = state;
+			});
 		});
 		
 		it('at start, sends an event with the initial game state', function (done) {
@@ -73,16 +77,26 @@
 			});
 		});
 		
-		it('when finish-turn is chosen, sends the new game state with the next player', function (done) {
-			task.handleChoicesTask().makeChoice(FinishTurnChoice.newChoice());
+		describe('when a choice is made, sends the next game state', function () {
+			it('if it does not require dice, compute next state from previous one directly', function () {
+				var choice = FinishTurnChoice.newChoice();
+				var nextState = choice.computeNextState(currentState);
+				
+				task.handleChoicesTask().makeChoice(choice);
+				
+				expect(currentState.equals(nextState)).to.eql(true);
+			});
 			
-			assertCurrentPlayerIsTheSecondOne(task.gameState(), done);
-		});
-		
-		it('when all players have finished their turn, the first one plays again', function (done) {
-			finishAllPlayerTurns(task);
-			
-			assertCurrentPlayerIsTheFirstOne(task.gameState(), done);
+			it('if it requires dice, compute next state from previous one and dice', function (done) {
+				var choice = RollDiceChoice.newChoice();
+				var nextState = choice.computeNextState(currentState, [1, 1]);
+				
+				task.handleChoicesTask().makeChoice(choice);
+				
+				task.gameState().skip(1).take(1).subscribe(function (state) {
+					expect(state.equals(nextState)).to.eql(true);
+				}, done, done);
+			});
 		});
 		
 		it('when buy-property is chosen, current player loses money', function (done) {
@@ -106,26 +120,6 @@
 			task.handleChoicesTask().makeChoice(PayTaxChoice.newChoice(tax));
 			
 			assertCurrentPlayerHasPaidTaxOf(task.gameState(), tax, done);
-		});
-		
-		it('when going bankrupt is chosen, current player is removed from game', function (done) {
-			task.handleChoicesTask().makeChoice(GoBankruptChoice.newChoice());
-			
-			assertPlayerHasBeenRemovedFromTheGame(task.gameState(), testData.players()[0].id(), done);
-		});
-		
-		it('when the last player in the list goes bankrupt, current player becomes the first one', function (done) {
-			switchToLastPlayerTurn(task);
-			
-			task.handleChoicesTask().makeChoice(GoBankruptChoice.newChoice());
-			
-			assertCurrentPlayerIsTheFirstOne(task.gameState(), done);
-		});
-		
-		it('when only one player remains, game is over', function (done) {
-			killAllPlayersButOne(task);
-			
-			assertGameIsOver(task.gameState(), done);
 		});
 		
 		function getSecondPlayer(gameState) {
@@ -181,38 +175,6 @@
 			}, done, done);
 		}
 		
-		function finishAllPlayerTurns(task) {
-			for (var i = 0; i < testData.playersConfiguration().length; i++) {
-				task.handleChoicesTask().makeChoice(FinishTurnChoice.newChoice());
-			}
-		}
-		
-		function killAllPlayersButOne(task) {
-			for (var i = 0; i < testData.playersConfiguration().length - 1; i++) {
-				task.handleChoicesTask().makeChoice(GoBankruptChoice.newChoice());
-			}
-		}
-		
-		function switchToLastPlayerTurn(task) {
-			for (var i = 0; i < testData.playersConfiguration().length - 1; i++) {
-				task.handleChoicesTask().makeChoice(FinishTurnChoice.newChoice());
-			}
-		}
-		
-		function assertCurrentPlayerIsTheFirstOne(gameState, done) {
-			assertCurrentPlayerIndex(gameState, 0, done);
-		}
-		
-		function assertCurrentPlayerIsTheSecondOne(gameState, done) {
-			assertCurrentPlayerIndex(gameState, 1, done);
-		}
-		
-		function assertCurrentPlayerIndex(gameState, index, done) {
-			gameState.take(1).subscribe(function (state) {
-				expect(state.currentPlayerIndex()).to.eql(index);
-			}, done, done);
-		}
-		
 		function assertCurrentPlayerHasLostMoney(gameState, amount, done) {
 			gameState.take(1).subscribe(function (state) {
 				expect(state.players()[state.currentPlayerIndex()].money()).to.eql(1500 - amount);
@@ -230,23 +192,6 @@
 			gameState.take(1).subscribe(function (state) {
 				expect(state.players()[state.currentPlayerIndex()].money()).to.eql(1500 - amount);
 			}, done, done);
-		}
-		
-		function assertPlayerHasBeenRemovedFromTheGame(gameState, playerId, done) {
-			gameState.take(1).subscribe(function (state) {
-				var isPresent = _.some(state.players(), function (player) {
-					return player.id() === playerId;
-				});
-				expect(isPresent).to.be(false);
-			}, done, done);
-		}
-		
-		function assertGameIsOver(gameState, done) {
-			gameState.take(1)
-				.map(onlyChoices)
-				.subscribe(function (choices) {
-					expect(choices.length).to.eql(0);
-				}, done, done);
 		}
 	});
 }());

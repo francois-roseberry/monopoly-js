@@ -157,6 +157,46 @@
 		return this._choices;
 	};
 	
+	GameState.prototype.equals = function (other) {
+		precondition(other, 'Testing a game state for equality with something else requires that something else');
+		
+		if (this === other) {
+			return true;
+		}
+		
+		if (!(other instanceof GameState)) {
+			return false;
+		}
+		
+		if (!deepEquals(this._squares, other._squares)) {
+			return false;
+		}
+		
+		if (!deepEquals(this._players, other._players)) {
+			return false;
+		}
+		
+		if (this._currentPlayerIndex !== other._currentPlayerIndex) {
+			return false;
+		}
+		
+		if (!deepEquals(this._choices, other._choices)) {
+			return false;
+		}
+		
+		return true;
+	};
+	
+	function deepEquals(left, right) {
+		if (left.length !== right.length) {
+			return false;
+		}
+		
+		return _.every(left, function (element, index) {
+			return element.equals(right[index]);
+		});
+	}
+	
 	GameState.prototype.changeChoices = function (choices) {
 		precondition(_.isArray(choices), 'Changing a game state choices list requires a list of choices');
 		

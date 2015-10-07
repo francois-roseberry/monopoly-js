@@ -82,6 +82,54 @@
 		return this._properties.slice();
 	};
 	
+	Player.prototype.equals = function (other) {
+		precondition(other, 'Testing a player for equality with something else requires that something else');
+		
+		if (this === other) {
+			return true;
+		}
+		
+		if (!(other instanceof Player)) {
+			return false;
+		}
+		
+		if (this._id !== other._id) {
+			return false;
+		}
+		
+		if (this._name !== other._name) {
+			return false;
+		}
+		
+		if (this._money !== other._money) {
+			return false;
+		}
+		
+		if (this._position !== other._position) {
+			return false;
+		}
+		
+		if (this._color !== other._color) {
+			return false;
+		}
+		
+		if (this._type !== other._type) {
+			return false;
+		}
+		
+		return sameProperties(this._properties, other._properties);
+	};
+	
+	function sameProperties(left, right) {
+		if (left.length !== right.length) {
+			return false;
+		}
+		
+		return _.every(left, function (element, index) {
+			return element === right[index];
+		});
+	}
+	
 	/**
 	 * Calculates the net worth of the player (i.e. money + owned properties values).
 	 */
