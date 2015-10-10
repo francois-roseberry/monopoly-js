@@ -4,11 +4,7 @@
 	var PlayGameTask = require('./play-game-task');
 	var Board = require('./board');
 	var PlayerColors = require('./player-colors').colors();
-	var PayTaxChoice = require('./pay-tax-choice');
-	var PayRentChoice = require('./pay-rent-choice');
-	//var GoBankruptChoice = require('./go-bankrupt-choice');
 	var RollDiceChoice = require('./roll-dice-choice');
-	var BuyPropertyChoice = require('./buy-property-choice');
 	var FinishTurnChoice = require('./finish-turn-choice');
 	
 	var testData = require('./test-data');
@@ -54,29 +50,6 @@
 			task.handleChoicesTask().makeChoice(RollDiceChoice.newChoice());
 		});
 		
-		describe('after dice have finished rolling', function () {
-			var newState;
-			
-			beforeEach(function (done) {
-				task = gameTaskWithCheatedDice(1);
-			
-				task.gameState().skip(1).take(1)
-					.subscribe(function (state) {
-						newState = state;
-					}, done, done);
-				
-				task.handleChoicesTask().makeChoice(RollDiceChoice.newChoice());
-			});
-			
-			it('position changes', function () {
-				expect(newState.players()[0].position()).to.eql(2);
-			});
-			
-			it('offer the finish-turn choice', function () {
-				expect(toChoiceIds(newState.choices())).to.eql([FinishTurnChoice.newChoice().id]);
-			});
-		});
-		
 		describe('when a choice is made, sends the next game state', function () {
 			it('if it does not require dice, compute next state from previous one directly', function () {
 				var choice = FinishTurnChoice.newChoice();
@@ -98,38 +71,6 @@
 				}, done, done);
 			});
 		});
-		
-		it('when buy-property is chosen, current player loses money', function (done) {
-			var property = Board.properties().readingRailroad;
-			task.handleChoicesTask().makeChoice(BuyPropertyChoice.newChoice(property));
-			
-			assertCurrentPlayerHasLostMoney(task.gameState(), property.price(), done);
-		});
-		
-		it('when pay-rent is chosen, transfer the rent from current player to owner', function (done) {
-			var rent = 100;
-			var owner = getSecondPlayer(task.gameState());
-			task.handleChoicesTask().makeChoice(PayRentChoice.newChoice(rent, owner));
-			
-			assertCurrentPlayerHasPaidToOwner(task.gameState(), rent, 1, done);
-		});
-		
-		it('when pay-tax is chosen, make current player pay the tax', function (done) {
-			var tax = 75;
-			
-			task.handleChoicesTask().makeChoice(PayTaxChoice.newChoice(tax));
-			
-			assertCurrentPlayerHasPaidTaxOf(task.gameState(), tax, done);
-		});
-		
-		function getSecondPlayer(gameState) {
-			var player;
-			gameState.take(1)
-				.subscribe(function (state) {
-					player = state.players()[1];
-				});
-			return player;
-		}
 		
 		function assertRollDiceChoice(gameState, done) {
 			gameState.take(1)
@@ -172,25 +113,6 @@
 				});
 				expect(state.currentPlayerIndex()).to.eql(0);
 				expect(toChoiceIds(state.choices())).to.eql([RollDiceChoice.newChoice().id]);
-			}, done, done);
-		}
-		
-		function assertCurrentPlayerHasLostMoney(gameState, amount, done) {
-			gameState.take(1).subscribe(function (state) {
-				expect(state.players()[state.currentPlayerIndex()].money()).to.eql(1500 - amount);
-			}, done, done);
-		}
-		
-		function assertCurrentPlayerHasPaidToOwner(gameState, amount, ownerIndex, done) {
-			gameState.take(1).subscribe(function (state) {
-				expect(state.players()[state.currentPlayerIndex()].money()).to.eql(1500 - amount);
-				expect(state.players()[1].money()).to.eql(1500 + amount);
-			}, done, done);
-		}
-		
-		function assertCurrentPlayerHasPaidTaxOf(gameState, amount, done) {
-			gameState.take(1).subscribe(function (state) {
-				expect(state.players()[state.currentPlayerIndex()].money()).to.eql(1500 - amount);
 			}, done, done);
 		}
 	});
