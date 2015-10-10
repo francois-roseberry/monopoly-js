@@ -149,6 +149,10 @@
 		return this._players;
 	};
 	
+	GameState.prototype.currentPlayer = function () {
+		return this._players[this._currentPlayerIndex];
+	};
+	
 	GameState.prototype.currentPlayerIndex = function () {
 		return this._currentPlayerIndex;
 	};

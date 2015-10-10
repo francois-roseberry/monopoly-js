@@ -20,7 +20,7 @@
 		describe('when computing next state', function () {
 			it('current player is removed from game', function () {
 				var state = games.turnStart();
-				var currentPlayerId = state.players()[state.currentPlayerIndex()].id();
+				var currentPlayerId = state.currentPlayer().id();
 				var nextState = choice.computeNextState(state);
 				var playerIds = nextState.players().map(function (player) { return player.id(); });
 				

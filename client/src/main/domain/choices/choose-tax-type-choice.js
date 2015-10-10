@@ -46,7 +46,7 @@
 		precondition(GameState.isGameState(state),
 			'ChooseTaxTypeChoice requires a game state to compute the next one');
 		
-		var currentPlayer = state.players()[state.currentPlayerIndex()];
+		var currentPlayer = state.currentPlayer();
 		
 		return state.changeChoices(Choices.taxChoices(this._amount, currentPlayer));
 	};

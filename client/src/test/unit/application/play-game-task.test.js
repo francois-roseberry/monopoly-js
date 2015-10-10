@@ -44,7 +44,7 @@
 		
 		it('when roll-dice is chosen, creates a roll-dice-task', function (done) {
 			task.rollDiceTaskCreated().take(1).subscribe(function (task) {
-				expect(task).to.not.eql(undefined);
+				expect(task).to.be.ok();
 			}, done, done);
 			
 			task.handleChoicesTask().makeChoice(RollDiceChoice.newChoice());

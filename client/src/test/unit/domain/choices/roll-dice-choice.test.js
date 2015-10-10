@@ -20,7 +20,7 @@
 			it('current player has moved', function () {
 				var state = choice.computeNextState(games.turnStart(), [0, 2]);
 				
-				var position = state.players()[state.currentPlayerIndex()].position();
+				var position = state.currentPlayer().position();
 				
 				expect(position).to.eql(2);
 			});

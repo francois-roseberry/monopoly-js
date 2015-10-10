@@ -42,7 +42,7 @@
 		precondition(dice, 'To compute next state, a roll-dice choice requires the result of a dice roll');
 		
 		var rent = this._multiplier * (dice[0] + dice[1]);
-		var currentPlayer = state.players()[state.currentPlayerIndex()];
+		var currentPlayer = state.currentPlayer();
 		
 		return state.changeChoices(Choices.rentChoices(rent, currentPlayer, this._toPlayer));
 	};

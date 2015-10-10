@@ -7,40 +7,41 @@
 	var testData = require('./test-data');
 	
 	describe('A player', function () {
-		var players;
+		var player;
 		
 		beforeEach(function () {
-			players = Player.newPlayers(testData.playersConfiguration());
+			var players = Player.newPlayers(testData.playersConfiguration());
+			player = players[0];
 		});
 		
 		describe('at start', function () {
 			it('is at position 0', function () {
-				expect(players[0].position()).to.eql(0);
+				expect(player.position()).to.eql(0);
 			});
 			
 			it('has 1500$', function () {
-				expect(players[0].money()).to.eql(1500);
+				expect(player.money()).to.eql(1500);
 			});
 			
 			it('starts with an empty list of properties', function () {
-				expect(players[0].properties()).to.eql([]);
+				expect(player.properties()).to.eql([]);
 			});
 			
 			it('has a net worth of 1500$ (since no properties)', function () {
-				expect(players[0].netWorth()).to.eql(1500);
+				expect(player.netWorth()).to.eql(1500);
 			});
 		});
 		
 		it('wraps around the board when moving past the end', function () {
-			var movedPlayer = players[0].move([0,40]);
+			var movedPlayer = player.move([0,40]);
 			
 			expect(movedPlayer.position()).to.eql(0);
 		});
 		
 		it('earns 200$ when wrapping around the board', function () {
-			var movedPlayer = players[0].move([0,40]);
+			var movedPlayer = player.move([0,40]);
 			
-			expect(movedPlayer.money()).to.eql(players[0].money() + 200);
+			expect(movedPlayer.money()).to.eql(player.money() + 200);
 		});
 		
 		describe('when buying property', function () {
@@ -48,15 +49,15 @@
 			var newPlayer;
 			
 			beforeEach(function () {
-				newPlayer = players[0].buyProperty(PROPERTY);
+				newPlayer = player.buyProperty(PROPERTY);
 			});
 			
 			it('substract the price', function () {
-				expect(newPlayer.money()).to.eql(players[0].money() - PROPERTY.price());
+				expect(newPlayer.money()).to.eql(player.money() - PROPERTY.price());
 			});
 			
 			it('net worth is still the same (since property value is added to money)', function () {
-				expect(newPlayer.netWorth()).to.eql(players[0].netWorth());
+				expect(newPlayer.netWorth()).to.eql(player.netWorth());
 			});
 			
 			it('insert them in order', function () {
@@ -84,7 +85,7 @@
 		
 		it('substracts the money when paying it', function () {
 			var amount = 100;
-			var newPlayer = players[0].pay(amount);
+			var newPlayer = player.pay(amount);
 			
 			expect(newPlayer.money()).to.eql(1500 - amount);
 		});
@@ -93,7 +94,7 @@
 			var amount = 1500;
 			
 			var pay = function () {
-				players[0].pay(amount);
+				player.pay(amount);
 			};
 			
 			expect(pay).to.throwError();
@@ -101,7 +102,7 @@
 		
 		it('adds the money when earning it', function () {
 			var amount = 100;
-			var newPlayer = players[0].earn(amount);
+			var newPlayer = player.earn(amount);
 			
 			expect(newPlayer.money()).to.eql(1500 + amount);
 		});

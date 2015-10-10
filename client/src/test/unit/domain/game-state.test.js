@@ -55,42 +55,42 @@
 			
 			it('25$ if that property is a railroad and owner possess 1 railroad', function () {
 				var state = games.playerOnRailroadOwnedByOtherWithOneRailroad();
-				var secondPlayer = testData.players()[1];
+				var secondPlayer = state.players()[1];
 				
 				assertChoices(state, [PayRentChoice.newChoice(25, secondPlayer)]);
 			});
 			
 			it('50$ if that property is a railroad and owner possess 2 railroads', function () {
 				var state = games.playerOnRailroadOwnedByOtherWithTwoRailroads();
-				var secondPlayer = testData.players()[1];
+				var secondPlayer = state.players()[1];
 				
 				assertChoices(state, [PayRentChoice.newChoice(50, secondPlayer)]);
 			});
 			
 			it('100$ if that property is a railroad and owner possess 3 railroads', function () {
 				var state = games.playerOnRailroadOwnedByOtherWithThreeRailroads();
-				var secondPlayer = testData.players()[1];
+				var secondPlayer = state.players()[1];
 				
 				assertChoices(state, [PayRentChoice.newChoice(100, secondPlayer)]);
 			});
 			
 			it('200$ if that property is a railroad and owner possess 4 railroads', function () {
 				var state = games.playerOnRailroadOwnedByOtherWithFourRailroads();
-				var secondPlayer = testData.players()[1];
+				var secondPlayer = state.players()[1];
 				
 				assertChoices(state, [PayRentChoice.newChoice(200, secondPlayer)]);
 			});
 			
 			it('2 times the dice if that property is a company and owner possess only one company', function () {
 				var state = games.playerOnCompanyOwnedByOther();
-				var secondPlayer = testData.players()[1];
+				var secondPlayer = state.players()[1];
 				
 				assertChoices(state, [CalculateDiceRentChoice.newChoice(2, secondPlayer)]);
 			});
 			
 			it('4 times the dice if that property is a company and owner, possess all companies', function () {
 				var state = games.playerOnCompanyOwnedByOtherWithAllCompanies();
-				var secondPlayer = testData.players()[1];
+				var secondPlayer = state.players()[1];
 				
 				assertChoices(state, [CalculateDiceRentChoice.newChoice(4, secondPlayer)]);
 			});
@@ -127,7 +127,7 @@
 		describe('when current player is on income-tax', function () {
 			it('offers a $200 flat tax or a 10% tax', function () {
 				var state = games.playerOnIncomeTax();
-				var currentPlayer = state.players()[state.currentPlayerIndex()];
+				var currentPlayer = state.currentPlayer();
 				
 				assertChoices(state, [
 					ChooseTaxTypeChoice.newPercentageTax(10, currentPlayer.netWorth()),

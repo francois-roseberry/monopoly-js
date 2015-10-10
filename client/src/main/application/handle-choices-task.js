@@ -43,7 +43,7 @@
 	function choicesForPlayerType(playGameTask, type) {
 		return playGameTask.gameState()
 			.filter(function (state) {
-				return state.players()[state.currentPlayerIndex()].type() === type;
+				return state.currentPlayer().type() === type;
 			})
 			.map(function (state) {
 				return state.choices();

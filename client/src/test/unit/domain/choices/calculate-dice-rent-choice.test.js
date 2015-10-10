@@ -18,13 +18,12 @@
 		
 		describe('when computing next state', function () {
 			it('if current player has enough money, offers to pay the rent', function () {
-				var players = testData.players();
 				var state = games.playerOnCompanyOwnedByOther();
 				
 				var nextChoices = state.choices()[0].computeNextState(state, [1, 1]).choices();
 				
 				expect(nextChoices.length).to.eql(1);
-				expect(nextChoices[0].equals(PayRentChoice.newChoice(4, players[1]))).to.be(true);
+				expect(nextChoices[0].equals(PayRentChoice.newChoice(4, state.players()[1]))).to.be(true);
 			});
 			
 			it('if current player cannot afford, offers bankruptcy', function () {

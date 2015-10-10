@@ -30,8 +30,8 @@
 			});
 			
 			it('the rent is subtracted from the money of the current player', function () {
-				var previousMoney = state.players()[state.currentPlayerIndex()].money();
-				var currentMoney = nextState.players()[state.currentPlayerIndex()].money();
+				var previousMoney = state.currentPlayer().money();
+				var currentMoney = nextState.currentPlayer().money();
 				
 				expect(currentMoney).to.eql(previousMoney - rent);
 			});
