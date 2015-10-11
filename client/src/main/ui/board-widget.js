@@ -233,6 +233,14 @@
 					stroke: 'black',
 					transform: 'translate(' + (SQUARE_HEIGHT * 3/11) + ') rotate(45)'
 				});
+				
+			var words = i18n.VISITING_JAIL.split(' ');
+			writeText(container, words[0], SQUARE_HEIGHT - 8, 12);
+			
+			var reversedContainer = container.append('g')
+				.attr('transform', 'translate(' + (SQUARE_HEIGHT - 8) + ' ' + (SQUARE_HEIGHT * 3/4) + ') rotate(-90)');
+				
+			writeText(reversedContainer, words[1], 0, 12);
 		};
 	}
 	
