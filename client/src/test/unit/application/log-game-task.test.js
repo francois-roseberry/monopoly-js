@@ -7,7 +7,7 @@
 	var Board = require('./board');
 	var PayTaxChoice = require('./pay-tax-choice');
 	var PayRentChoice = require('./pay-rent-choice');
-	var RollDiceChoice = require('./roll-dice-choice');
+	var MoveChoice = require('./move-choice');
 	var BuyPropertyChoice = require('./buy-property-choice');
 	
 	var testData = require('./test-data');
@@ -44,7 +44,7 @@
 				});
 			});
 			
-			gameTask.handleChoicesTask().makeChoice(RollDiceChoice.newChoice());
+			gameTask.handleChoicesTask().makeChoice(MoveChoice.newChoice());
 		});
 		
 		it('when player buys property, sends a message', function () {
@@ -85,7 +85,7 @@
 				expect(log.equals(Messages.logSalaryReceived(firstPlayer))).to.be(true);
 			}, done, done);
 			
-			gameTask.handleChoicesTask().makeChoice(RollDiceChoice.newChoice());
+			gameTask.handleChoicesTask().makeChoice(MoveChoice.newChoice());
 		});
 		
 		function assertLogged(logs, done) {

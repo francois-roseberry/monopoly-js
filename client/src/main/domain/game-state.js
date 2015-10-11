@@ -2,7 +2,7 @@
 	"use strict";
 	
 	var Choices = require('./choices');
-	var RollDiceChoice = require('./roll-dice-choice');
+	var MoveChoice = require('./move-choice');
 	var FinishTurnChoice = require('./finish-turn-choice');
 	var BuyPropertyChoice = require('./buy-property-choice');
 	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
@@ -35,7 +35,7 @@
 	};
 	
 	function newTurnChoices() {
-		return [RollDiceChoice.newChoice()];
+		return [MoveChoice.newChoice()];
 	}
 	
 	exports.turnEndState = function (info, paid) {

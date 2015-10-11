@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	
-	var RollDiceChoice = require('./roll-dice-choice');
+	var MoveChoice = require('./move-choice');
 	
 	var games = require('./sample-games');
 	
@@ -9,7 +9,7 @@
 		var choice;
 		
 		beforeEach(function () {
-			choice = RollDiceChoice.newChoice();
+			choice = MoveChoice.newChoice();
 		});
 		
 		it('requires dice', function () {

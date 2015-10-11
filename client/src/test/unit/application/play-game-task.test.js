@@ -4,7 +4,7 @@
 	var PlayGameTask = require('./play-game-task');
 	var Board = require('./board');
 	var PlayerColors = require('./player-colors').colors();
-	var RollDiceChoice = require('./roll-dice-choice');
+	var MoveChoice = require('./move-choice');
 	var FinishTurnChoice = require('./finish-turn-choice');
 	
 	var testData = require('./test-data');
@@ -47,7 +47,7 @@
 				expect(task).to.be.ok();
 			}, done, done);
 			
-			task.handleChoicesTask().makeChoice(RollDiceChoice.newChoice());
+			task.handleChoicesTask().makeChoice(MoveChoice.newChoice());
 		});
 		
 		describe('when a choice is made, sends the next game state', function () {
@@ -61,7 +61,7 @@
 			});
 			
 			it('if it requires dice, compute next state from previous one and dice', function (done) {
-				var choice = RollDiceChoice.newChoice();
+				var choice = MoveChoice.newChoice();
 				var nextState = choice.computeNextState(currentState, [1, 1]);
 				
 				task.handleChoicesTask().makeChoice(choice);
@@ -77,7 +77,7 @@
 				.map(onlyChoices)
 				.map(toChoiceIds)
 				.subscribe(function (choices) {
-					expect(choices).to.eql([RollDiceChoice.newChoice().id]);
+					expect(choices).to.eql([MoveChoice.newChoice().id]);
 				}, done, done);
 		}
 		
@@ -112,7 +112,7 @@
 					expect(['human', 'computer']).to.contain(player.type());
 				});
 				expect(state.currentPlayerIndex()).to.eql(0);
-				expect(toChoiceIds(state.choices())).to.eql([RollDiceChoice.newChoice().id]);
+				expect(toChoiceIds(state.choices())).to.eql([MoveChoice.newChoice().id]);
 			}, done, done);
 		}
 	});

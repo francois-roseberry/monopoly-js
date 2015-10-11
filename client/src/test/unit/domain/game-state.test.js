@@ -8,7 +8,7 @@
 	var GoBankruptChoice = require('./go-bankrupt-choice');
 	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
 	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
-	var RollDiceChoice = require('./roll-dice-choice');
+	var MoveChoice = require('./move-choice');
 	var FinishTurnChoice = require('./finish-turn-choice');
 	var BuyPropertyChoice = require('./buy-property-choice');
 	
@@ -19,7 +19,7 @@
 		it('offers the roll-dice choice', function () {
 			var state = games.turnStart();
 			
-			assertChoices(state, [RollDiceChoice.newChoice()]);
+			assertChoices(state, [MoveChoice.newChoice()]);
 		});
 	});
 	

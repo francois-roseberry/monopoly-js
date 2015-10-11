@@ -3,7 +3,7 @@
 	
 	var PlayGameTask = require('./play-game-task');
 	var HandleChoicesTask = require('./handle-choices-task');
-	var RollDiceChoice = require('./roll-dice-choice');
+	var MoveChoice = require('./move-choice');
 	var FinishTurnChoice = require('./finish-turn-choice');
 	
 	var testData = require('./test-data');
@@ -45,14 +45,14 @@
 			
 		it('sends a choiceMade event when a choice is made', function (done) {
 			task.choiceMade().take(1).subscribe(function (choice) {
-				expect(choice.id).to.eql(RollDiceChoice.newChoice().id);
+				expect(choice.id).to.eql(MoveChoice.newChoice().id);
 			}, done, done);
 			
-			task.makeChoice(RollDiceChoice.newChoice());
+			task.makeChoice(MoveChoice.newChoice());
 		});
 		
 		it('sends an empty choices event to the human player when it makes a choice', function (done) {
-			task.makeChoice(RollDiceChoice.newChoice());
+			task.makeChoice(MoveChoice.newChoice());
 			
 			task.choices().take(1).subscribe(function (choices) {
 				expect(choices).to.eql([]);
