@@ -7,15 +7,6 @@
 	var Property = require('./property');
 	var PropertyGroup = require('./property-group');
 	
-	function groupMembers(groupIndex) {
-		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 10,
-			'Listing members of a group in board requires the group index');
-		
-		return _.filter(exports.properties(), function (square) {
-			return square.group().index() === groupIndex;
-		});
-	}
-	
 	exports.properties = function () {
 		var groups = [
 			PropertyGroup.newGroup(0, 'midnightblue', groupMembers),
@@ -114,6 +105,15 @@
 			properties.broadwalk
 		];
 	};
+	
+	function groupMembers(groupIndex) {
+		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 10,
+			'Listing members of a group in board requires the group index');
+		
+		return _.filter(exports.properties(), function (square) {
+			return square.group().index() === groupIndex;
+		});
+	}
 	
 	function go() {
 		return {
