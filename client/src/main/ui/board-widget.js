@@ -69,7 +69,7 @@
 				.each(function (square, index) {
 					var graphicalSquare = d3.select(this);
 					graphicalSquare.attr('data-ui', index);
-					renderPlayerTokens(graphicalSquare, index, state.players());
+					renderPlayerTokens(graphicalSquare, index, square, state.players());
 				});
 			};
 	}
@@ -109,13 +109,15 @@
 		});
 	}
 	
-	function renderPlayerTokens(container, squareIndex, players) {
+	function renderPlayerTokens(container, squareIndex, square, players) {
 		var playersOnSquare = _.filter(players, function (player) {
 			return player.position() === squareIndex;
 		});
 		
 		var tokens = container.selectAll('.player-token')
 			.data(playersOnSquare);
+			
+		var tokenRadius = 8;
 			
 		tokens
 			.enter()
@@ -126,12 +128,34 @@
 			})
 			.attr({
 				cx: function (_, index) {
-					return (SQUARE_WIDTH / 5) * (index % 4 + 1);
+					return square.match({
+						'jail': function () {
+							if (index < 4) {
+								return SQUARE_HEIGHT - ((SQUARE_HEIGHT / 4 - tokenRadius) / 2 + tokenRadius);
+							}
+							
+							return (SQUARE_HEIGHT / 5) * (index % 4 + 1);
+						},
+						_: function () {
+							return (SQUARE_WIDTH / 5) * (index % 4 + 1);
+						}
+					});
 				},
 				cy: function (_, index) {
-					return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
+					return square.match({
+						'jail': function () {
+							if (index < 4) {
+								return (SQUARE_HEIGHT / 5) * (index % 4 + 1);
+							}
+							
+							return SQUARE_HEIGHT - ((SQUARE_HEIGHT / 4 - tokenRadius) / 2 + tokenRadius);
+						},
+						_: function () {
+							return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
+						}
+					});
 				},
-				r: 8,
+				r: tokenRadius,
 				stroke: 'black',
 				'stroke-width': 1
 			});
