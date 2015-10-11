@@ -36,6 +36,7 @@
 	exports.INCOME_TAX_DESCRIPTION = "Pay 10% or $200";
 	exports.START_DESCRIPTION = "Collect $200 salary as you pass";
 	exports.VISITING_JAIL = "Just visiting";
+	exports.FREE_PARKING = "Free parking";
 	
 	exports.COMPANY_WATER = 'Water Works';
 	exports.COMPANY_ELECTRIC = "Electric Company";

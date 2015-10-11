@@ -105,7 +105,9 @@
 			'go': renderStart(container),
 			'jail': renderJail(container),
 			'go-to-jail': _.noop,
-			'parking': _.noop
+			'parking': function () {
+				writeAngledText(container, i18n.FREE_PARKING, -8, 100, 12, SQUARE_WIDTH * 2);
+			}
 		});
 	}
 	
@@ -248,11 +250,11 @@
 		TextWrapper.wrap(container, text.toUpperCase(), fontSize || 8, y, SQUARE_WIDTH);
 	}
 	
-	function writeAngledText(container, text, x, y) {
+	function writeAngledText(container, text, x, y, fontSize, width) {
 		var angledContainer = container.append('g')
 			.attr('transform', 'translate(' + x + ', ' + y + ') rotate(-45)');
 			
-		TextWrapper.wrap(angledContainer, text.toUpperCase(), 8, 0, SQUARE_WIDTH);
+		TextWrapper.wrap(angledContainer, text.toUpperCase(), fontSize || 8, 0, width || SQUARE_WIDTH);
 		
 		return angledContainer;
 	}

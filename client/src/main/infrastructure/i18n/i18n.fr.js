@@ -36,6 +36,7 @@
 	exports.INCOME_TAX_DESCRIPTION = "Payez 10% ou 200 $";
 	exports.START_DESCRIPTION = "Réclamez 200 $ de salaire en passant à";
 	exports.VISITING_JAIL = "En visite";
+	exports.FREE_PARKING = "Stationnement gratuit";
 	
 	exports.COMPANY_WATER = 'Aqueduc';
 	exports.COMPANY_ELECTRIC = "Compagnie d'électricité";
