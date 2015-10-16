@@ -7,6 +7,7 @@
 	var BuyPropertyChoice = require('./buy-property-choice');
 	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
 	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
+	var TradeChoice = require('./trade-choice');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -29,13 +30,20 @@
 	exports.turnStartState = function (info) {
 		validateInfo(info);
 			
-		var choices = newTurnChoices();
+		var choices = newTurnChoices(info);
 		
 		return new GameState(info, choices);
 	};
 	
-	function newTurnChoices() {
-		return [MoveChoice.newChoice()];
+	function newTurnChoices(info) {
+		var tradeChoices = _.filter(info.players, function (player, index) {
+				return index !== info.currentPlayerIndex;
+			})
+			.map(function (player) {
+				return TradeChoice.newChoice(player);
+			});
+			
+		return [MoveChoice.newChoice()].concat(tradeChoices);
 	}
 	
 	exports.turnEndState = function (info, paid) {

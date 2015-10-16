@@ -77,7 +77,7 @@
 				.map(onlyChoices)
 				.map(toChoiceIds)
 				.subscribe(function (choices) {
-					expect(choices).to.eql([MoveChoice.newChoice().id]);
+					expect(choices).to.contain(MoveChoice.newChoice().id);
 				}, done, done);
 		}
 		
@@ -112,7 +112,7 @@
 					expect(['human', 'computer']).to.contain(player.type());
 				});
 				expect(state.currentPlayerIndex()).to.eql(0);
-				expect(toChoiceIds(state.choices())).to.eql([MoveChoice.newChoice().id]);
+				expect(toChoiceIds(state.choices())).to.contain(MoveChoice.newChoice().id);
 			}, done, done);
 		}
 	});

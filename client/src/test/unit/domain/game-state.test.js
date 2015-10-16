@@ -11,15 +11,22 @@
 	var MoveChoice = require('./move-choice');
 	var FinishTurnChoice = require('./finish-turn-choice');
 	var BuyPropertyChoice = require('./buy-property-choice');
+	var TradeChoice = require('./trade-choice');
 	
 	var games = require('./sample-games');
 	var testData = require('./test-data');
 	
 	describe('A turnStart state', function () {
-		it('offers the roll-dice choice', function () {
+		it('offers the roll-dice choice and a choice to trade with each of the other players', function () {
 			var state = games.turnStart();
-			
-			assertChoices(state, [MoveChoice.newChoice()]);
+			var tradeChoices = _.filter(state.players(), function (player, index) {
+				return index !== state.currentPlayerIndex();
+			})
+			.map(function (player) {
+				return TradeChoice.newChoice(player);
+			});
+					
+			assertChoices(state, [MoveChoice.newChoice()].concat(tradeChoices));
 		});
 	});
 	
