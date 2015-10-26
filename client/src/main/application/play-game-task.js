@@ -2,10 +2,12 @@
 	"use strict";
 	
 	var RollDiceTask = require('./roll-dice-task');
+	var TradeTask = require('./trade-task');
 	var LogGameTask = require('./log-game-task');
 	var HandleChoicesTask = require('./handle-choices-task');
 	var Player = require('./player');
 	var GameState = require('./game-state');
+	var CancelTradeChoice = require('./cancel-trade-choice');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -25,6 +27,7 @@
 		this._options = gameConfiguration.options;
 		this._completed = new Rx.AsyncSubject();
 		this._rollDiceTaskCreated = new Rx.Subject();
+		this._tradeTaskCreated = new Rx.Subject();
 		this._logGameTask = LogGameTask.start(this);
 		
 		this._handleChoicesTask = HandleChoicesTask.start(this);
@@ -67,6 +70,10 @@
 		return this._rollDiceTaskCreated.asObservable();
 	};
 	
+	PlayGameTask.prototype.tradeTaskCreated = function () {
+		return this._tradeTaskCreated.asObservable();
+	};
+	
 	PlayGameTask.prototype.completed = function () {
 		return this._completed.asObservable();
 	};
@@ -82,6 +89,11 @@
 				.flatMap(computeNextState(self, choice))
 				.subscribe(function (state) {
 					self._gameState.onNext(state);
+					
+					var choiceIds = state.choices().map(function (choice) { return choice.id; });
+					if (_.contains(choiceIds, CancelTradeChoice.newChoice().id)) {
+						self._tradeTaskCreated.onNext(TradeTask.start());
+					}
 				});			
 		};
 	}

@@ -6,6 +6,7 @@
 	var PlayerColors = require('./player-colors').colors();
 	var MoveChoice = require('./move-choice');
 	var FinishTurnChoice = require('./finish-turn-choice');
+	var TradeChoice = require('./trade-choice');
 	
 	var testData = require('./test-data');
 	
@@ -42,14 +43,6 @@
 			task.completed().subscribe(_.noop, done, done);
 		});
 		
-		it('when roll-dice is chosen, creates a roll-dice-task', function (done) {
-			task.rollDiceTaskCreated().take(1).subscribe(function (task) {
-				expect(task).to.be.ok();
-			}, done, done);
-			
-			task.handleChoicesTask().makeChoice(MoveChoice.newChoice());
-		});
-		
 		describe('when a choice is made, sends the next game state', function () {
 			it('if it does not require dice, compute next state from previous one directly', function () {
 				var choice = FinishTurnChoice.newChoice();
@@ -70,6 +63,12 @@
 					expect(state.equals(nextState)).to.eql(true);
 				}, done, done);
 			});
+		});
+		
+		it('when game in trade, starts a trade task', function (done) {
+			task.tradeTaskCreated().take(1).subscribe(_.noop, done, done);
+			
+			task.handleChoicesTask().makeChoice(TradeChoice.newChoice(currentState.players()[1]));
 		});
 		
 		function assertRollDiceChoice(gameState, done) {
