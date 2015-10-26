@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var TradeChoice = require('./trade-choice');
+	var CancelTradeChoice = require('./cancel-trade-choice');
 	
 	var games = require('./sample-games');
 	
@@ -26,11 +27,9 @@
 				nextState = choice.computeNextState(state);
 			});
 			
-			it('stays the same', function () {
-				var previousMoney = state.currentPlayer().money();
-				var currentMoney = nextState.currentPlayer().money();
-				
-				expect(currentMoney).to.eql(previousMoney);
+			it('changes the choices to CancelTrade', function () {
+				expect(nextState.choices().length).to.eql(1);
+				expect(nextState.choices()[0].equals(CancelTradeChoice.newChoice()));
 			});
 		});
 	});

@@ -212,10 +212,24 @@
 	GameState.prototype.changeChoices = function (choices) {
 		precondition(_.isArray(choices), 'Changing a game state choices list requires a list of choices');
 		
-		return new GameState({
+		var state = new GameState({
 			squares: this._squares,
 			players: this._players,
 			currentPlayerIndex: this._currentPlayerIndex
 		}, choices);
+		state._oldChoices = this._choices;
+		
+		return state;
+	};
+	
+	GameState.prototype.restoreChoices = function () {
+		precondition(_.isArray(this._oldChoices),
+			'Restoring the choices of a game state require a list of choices to restore');
+			
+		return new GameState({
+			squares: this._squares,
+			players: this._players,
+			currentPlayerIndex: this._currentPlayerIndex
+		}, this._oldChoices);
 	};
 }());

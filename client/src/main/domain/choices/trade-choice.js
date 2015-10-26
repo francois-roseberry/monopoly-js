@@ -6,6 +6,7 @@
 	
 	var GameState = require('./game-state');
 	var Player = require('./player');
+	var CancelTradeChoice = require('./cancel-trade-choice');
 	
 	exports.newChoice = function (player) {
 		precondition(Player.isPlayer(player), 'A TradeChoice requires a player to trade with');
@@ -36,11 +37,6 @@
 		precondition(GameState.isGameState(state),
 			'TradeChoice requires a game state to compute the next one');
 		
-		return state;
-		/*return GameState.turnEndState({
-			squares: state.squares(),
-			players: newPlayers,
-			currentPlayerIndex: state.currentPlayerIndex()
-		}, true);*/
+		return state.changeChoices([CancelTradeChoice.newChoice()]);
 	};
 }());

@@ -19,6 +19,7 @@
 	exports.CHOOSE_PERCENTAGE_TAX = 'Choisir une taxe de {percentage}%';
 	exports.CHOICE_CALCULATE_DICE_RENT = 'Lancer les dés et payer un loyer de {multiplier} fois le résultat';
 	exports.CHOICE_TRADE = "Échanger avec {player}";
+	exports.CANCEL_TRADE = "Annuler l'échange";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';
