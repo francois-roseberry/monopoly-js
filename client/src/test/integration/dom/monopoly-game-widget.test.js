@@ -4,16 +4,22 @@
 	var MonopolyGameWidget = require('./monopoly-game-widget');
 	var PlayGameTask = require('./play-game-task');
 	var MoveChoice = require('./move-choice');
+	var TradeChoice = require('./trade-choice');
 	
 	var testData = require('./test-data');
 	var describeInDom = require('./dom-fixture').describeInDom;
 	
 	describeInDom('A Monopoly game widget', function (domContext) {
 		var task;
+		var currentState;
 		
 		beforeEach(function () {
 			task = PlayGameTask.start(testData.gameConfiguration());
 			MonopolyGameWidget.render(domContext.rootElement, task);
+			
+			task.gameState().subscribe(function (state) {
+				currentState = state;
+			});
 		});
 		
 		it('is rendered in the given container', function () {
@@ -50,6 +56,12 @@
 			task.handleChoicesTask().makeChoice(MoveChoice.newChoice());
 			
 			domContext.assertOneOf('.dice-container');
+		});
+		
+		it('renders the trade widget in a popup when the task requires it', function () {
+			task.handleChoicesTask().makeChoice(TradeChoice.newChoice(currentState.players()[1]));
+			
+			domContext.body.assertOneOf('.popup .monopoly-trade-panel');
 		});
 	});
 }());

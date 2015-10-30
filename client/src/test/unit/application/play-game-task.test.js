@@ -65,7 +65,7 @@
 			});
 		});
 		
-		it('when game in trade, starts a trade task', function (done) {
+		it('if choice requires trade, starts a trade task', function (done) {
 			task.tradeTaskCreated().take(1).subscribe(_.noop, done, done);
 			
 			task.handleChoicesTask().makeChoice(TradeChoice.newChoice(currentState.players()[1]));

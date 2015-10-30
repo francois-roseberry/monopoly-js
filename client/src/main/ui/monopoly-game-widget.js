@@ -6,6 +6,8 @@
 	var GameChoicesWidget = require('./game-choices-widget');
 	var PlayersWidget = require('./players-widget');
 	var LogGameWidget = require('./log-game-widget');
+	var TradeWidget = require('./trade-widget');
+	var Popup = require('./popup');
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
@@ -35,6 +37,18 @@
 		
 		playGameTask.rollDiceTaskCreated().subscribe(function (task) {
 			DiceWidget.render($(centralComponentsContainer[0]), task);
+		});
+		
+		playGameTask.tradeTaskCreated().subscribe(function (task) {
+			var positionning = {
+				top: "400px",
+				left: "200px",
+				width: "900px",
+				height: "400px"
+			};
+			
+			var popup = Popup.render($(document.body), positionning);
+			TradeWidget.render($(popup.contentContainer()[0]), task);
 		});
 	};
 }());

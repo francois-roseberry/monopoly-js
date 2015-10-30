@@ -1,0 +1,32 @@
+.monopoly-trade-panel {
+	text-align: center;
+}
+
+.monopoly-trade-title {
+	font-size: 22px;
+	margin-top: 0;
+}
+
+.monopoly-trade-player-panel {
+	width: 50%;
+	float: left;
+}
+
+.monopoly-trade-player-properties {
+	padding-top: 6px;
+}
+
+.monopoly-trade-player-property {
+	box-sizing: content-box;
+	border-radius: 4px;
+	padding: 1px;
+	color: #fff;
+	text-shadow: 1px 1px #000;
+	margin-bottom: 2px;
+	width: 50%;
+}
+
+.monopoly-trade-player-property-selected {
+	text-shadow: 1px 1px #fff;
+	color: #000;
+}

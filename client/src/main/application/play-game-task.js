@@ -7,7 +7,6 @@
 	var HandleChoicesTask = require('./handle-choices-task');
 	var Player = require('./player');
 	var GameState = require('./game-state');
-	var CancelTradeChoice = require('./cancel-trade-choice');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -89,11 +88,6 @@
 				.flatMap(computeNextState(self, choice))
 				.subscribe(function (state) {
 					self._gameState.onNext(state);
-					
-					var choiceIds = state.choices().map(function (choice) { return choice.id; });
-					if (_.contains(choiceIds, CancelTradeChoice.newChoice().id)) {
-						self._tradeTaskCreated.onNext(TradeTask.start());
-					}
 				});			
 		};
 	}
@@ -111,6 +105,12 @@
 					.map(function (dice) {
 						return choice.computeNextState(state, dice);
 					});
+			}
+			
+			if (_.isFunction(choice.requiresTrade)) {
+				var currentPlayer = state.players()[state.currentPlayerIndex()];
+				var otherPlayer = choice.otherPlayer();
+				self._tradeTaskCreated.onNext(TradeTask.start(currentPlayer, otherPlayer));
 			}
 			
 			var nextState = choice.computeNextState(state);
