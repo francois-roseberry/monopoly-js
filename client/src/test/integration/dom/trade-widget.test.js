@@ -63,5 +63,13 @@
 			
 			domContext.assertAbsentCssClass(selector, 'monopoly-trade-player-property-selected');
 		});
+		
+		it('renders a money spinner for both players', function () {
+			domContext.assertElementCount('.monopoly-trade-player-money-spinner', 2);
+		});
+		
+		it('renders the money total for both players', function () {
+			domContext.assertElementCount('.monopoly-trade-player-money-total', 2);
+		});
 	});
 }());

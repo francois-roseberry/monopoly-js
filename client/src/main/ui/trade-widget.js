@@ -56,5 +56,19 @@
 				return _.contains(selectedProperties, property.id());
 			});
 		});
+		
+		panel.append('input')
+			.attr('type', 'text')
+			.classed('monopoly-trade-player-money-spinner', true)
+			.each(function () {
+				$(this).spinner({
+					min: 0, max: player.money(), step: 1
+				})
+				.val(0);
+			});
+			
+		panel.append('span')
+			.classed('monopoly-trade-player-money-total', true)
+			.text('/ ' + i18n.formatPrice(player.money()));
 	}
 }());

@@ -14,6 +14,7 @@
 
 .monopoly-trade-player-properties {
 	padding-top: 6px;
+	padding-bottom: 6px;
 }
 
 .monopoly-trade-player-property {
@@ -29,4 +30,12 @@
 .monopoly-trade-player-property-selected {
 	text-shadow: 1px 1px #fff;
 	color: #000;
+}
+
+.monopoly-trade-player-money-spinner {
+	width: 100px;
+}
+
+.monopoly-trade-player-money-total {
+	padding-left: 6px;
 }
