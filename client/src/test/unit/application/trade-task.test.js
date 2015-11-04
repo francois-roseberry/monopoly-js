@@ -8,28 +8,44 @@
 	
 	describe('A TradeTask', function () {
 		var task;
-		var selectedProperties;
+		var currentOffer;
 		
 		beforeEach(function () {
 			task = TradeTask.start(testData.players()[0], testData.players()[1]);
 			
-			task.selectedProperties().subscribe(function (properties) {
-				selectedProperties = properties;
+			task.offer().subscribe(function (offer) {
+				currentOffer = offer;
 			});
 		});
 		
-		it('has no selected properties at start', function () {
-			expect(selectedProperties).to.eql([]);
+		it('has an empty initial offer', function () {
+			expect(currentOffer.currentPlayer.money).to.eql(0);
+			expect(currentOffer.otherPlayer.money).to.eql(0);
+			expect(currentOffer.properties).to.eql([]);
 		});
 		
 		it('can toggle selection state of a property', function () {
 			task.togglePropertySelection(Board.properties().readingRailroad.id());
 			
-			expect(selectedProperties).to.eql([Board.properties().readingRailroad.id()]);
+			expect(currentOffer.properties).to.eql([Board.properties().readingRailroad.id()]);
 			
 			task.togglePropertySelection(Board.properties().readingRailroad.id());
 			
-			expect(selectedProperties).to.eql([]);
+			expect(currentOffer.properties).to.eql([]);
+		});
+		
+		it('can set the money offered by current player', function () {
+			task.setMoneyOfferedByCurrentPlayer(1);
+			
+			expect(currentOffer.currentPlayer.money).to.eql(1);
+			expect(currentOffer.otherPlayer.money).to.eql(0);
+		});
+		
+		it('can set the money offered by other player', function () {
+			task.setMoneyOfferedByOtherPlayer(1);
+			
+			expect(currentOffer.currentPlayer.money).to.eql(0);
+			expect(currentOffer.otherPlayer.money).to.eql(1);
 		});
 	});
 }());

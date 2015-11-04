@@ -39,27 +39,32 @@
 		var list = panel.append('div')
 			.classed('monopoly-trade-player-properties', true);
 			
-		tradeTask.selectedProperties().subscribe(function (selectedProperties) {
-			var items = list.selectAll('.monopoly-trade-player-property')
-				.data(player.properties());
-				
-			items.enter()
-				.append('button')
-				.classed('monopoly-trade-player-property', true)
-				.text(function (property) {
-					return property.name();
-				})
-				.style('background-color', function (property) {
-					return property.group().color();
-				})
-				.on('click', function (property) {
-					tradeTask.togglePropertySelection(property.id());
+		tradeTask.offer()
+			.map(function (offer) {
+				return offer.properties;
+			})
+			.distinctUntilChanged()
+			.subscribe(function (selectedProperties) {
+				var items = list.selectAll('.monopoly-trade-player-property')
+					.data(player.properties());
+					
+				items.enter()
+					.append('button')
+					.classed('monopoly-trade-player-property', true)
+					.text(function (property) {
+						return property.name();
+					})
+					.style('background-color', function (property) {
+						return property.group().color();
+					})
+					.on('click', function (property) {
+						tradeTask.togglePropertySelection(property.id());
+					});
+					
+				items.classed('monopoly-trade-player-property-selected', function (property) {
+					return _.contains(selectedProperties, property.id());
 				});
-				
-			items.classed('monopoly-trade-player-property-selected', function (property) {
-				return _.contains(selectedProperties, property.id());
 			});
-		});
 		
 		panel.append('input')
 			.attr('type', 'text')

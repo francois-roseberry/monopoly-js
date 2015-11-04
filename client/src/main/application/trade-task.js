@@ -15,7 +15,11 @@
 	function TradeTask(currentPlayer, otherPlayer) {
 		this._currentPlayer = currentPlayer;
 		this._otherPlayer = otherPlayer;
-		this._selectedProperties = new Rx.BehaviorSubject([]);
+		this._selectedProperties = [];
+		this._currentPlayerMoneyOffer = 0;
+		this._otherPlayerMoneyOffer = 0;
+		
+		this._offer = new Rx.BehaviorSubject(currentOffer(this));
 	}
 	
 	TradeTask.prototype.currentPlayer = function () {
@@ -27,20 +31,44 @@
 	};
 	
 	TradeTask.prototype.togglePropertySelection = function (propertyId) {
-		var selectedProperties = this._selectedProperties;
-		selectedProperties.take(1).subscribe(function (properties) {
-			var newProperties;
-			if (_.contains(properties, propertyId)) {
-				newProperties = _.without(properties, propertyId);
-			} else {
-				newProperties = properties.concat([propertyId]);
-			}
+		if (_.contains(this._selectedProperties, propertyId)) {
+			this._selectedProperties = _.without(this._selectedProperties, propertyId);
+		} else {
+			this._selectedProperties = this._selectedProperties.concat([propertyId]);
+		}
 			
-			selectedProperties.onNext(newProperties);
-		});
+		this._offer.onNext(currentOffer(this));
 	};
 	
-	TradeTask.prototype.selectedProperties = function () {
-		return this._selectedProperties.asObservable();
+	TradeTask.prototype.setMoneyOfferedByCurrentPlayer = function (money) {
+		precondition(_.isNumber(money) && money >= 0 && money <= this._currentPlayer.money(),
+			'A player can only offer an amount of money between 0 and the total he has (inclusively)');
+			
+		this._currentPlayerMoneyOffer = money;
+		this._offer.onNext(currentOffer(this));
 	};
+	
+	TradeTask.prototype.setMoneyOfferedByOtherPlayer = function (money) {
+		precondition(_.isNumber(money) && money >= 0 && money <= this._otherPlayer.money(),
+			'A player can only offer an amount of money between 0 and the total he has (inclusively)');
+			
+		this._otherPlayerMoneyOffer = money;
+		this._offer.onNext(currentOffer(this));
+	};
+	
+	TradeTask.prototype.offer = function () {
+		return this._offer.asObservable();
+	};
+	
+	function currentOffer(self) {
+		return {
+			properties: self._selectedProperties,
+			currentPlayer: {
+				money: self._currentPlayerMoneyOffer
+			},
+			otherPlayer: {
+				money: self._otherPlayerMoneyOffer
+			}
+		};
+	}
 }());
