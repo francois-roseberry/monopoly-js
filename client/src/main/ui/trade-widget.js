@@ -21,6 +21,10 @@
 		
 		renderPlayerPanel(panelContainer, tradeTask.currentPlayer(), tradeTask);
 		renderPlayerPanel(panelContainer, tradeTask.otherPlayer(), tradeTask);
+		
+		panel.append('button')
+			.classed('monopoly-trade-make-offer-btn', true)
+			.text(i18n.TRADE_MAKE_OFFER);
 	};
 	
 	function renderPlayerPanel(container, player, tradeTask) {

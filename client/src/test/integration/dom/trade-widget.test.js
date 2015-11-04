@@ -71,5 +71,9 @@
 		it('renders the money total for both players', function () {
 			domContext.assertElementCount('.monopoly-trade-player-money-total', 2);
 		});
+		
+		it('renders a button to make the offer', function () {
+			domContext.assertOneOf('.monopoly-trade-make-offer-btn');
+		});
 	});
 }());

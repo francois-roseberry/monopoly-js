@@ -19,6 +19,7 @@
 	exports.CHOOSE_PERCENTAGE_TAX = 'Choose a {percentage}% tax';
 	exports.CHOICE_CALCULATE_DICE_RENT = 'Roll the dice and pay a rent of {multiplier} times the result';
 	exports.CHOICE_TRADE = "Trade with {player}";
+	exports.TRADE_MAKE_OFFER = "Make this offer";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
