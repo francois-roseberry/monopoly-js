@@ -15,7 +15,8 @@
 	function TradeTask(currentPlayer, otherPlayer) {
 		this._currentPlayer = currentPlayer;
 		this._otherPlayer = otherPlayer;
-		this._selectedProperties = [];
+		this._currentPlayerPropertiesOffer = [];
+		this._otherPlayerPropertiesOffer = [];
 		this._currentPlayerMoneyOffer = 0;
 		this._otherPlayerMoneyOffer = 0;
 		
@@ -30,15 +31,33 @@
 		return this._otherPlayer;
 	};
 	
-	TradeTask.prototype.togglePropertySelection = function (propertyId) {
-		if (_.contains(this._selectedProperties, propertyId)) {
-			this._selectedProperties = _.without(this._selectedProperties, propertyId);
-		} else {
-			this._selectedProperties = this._selectedProperties.concat([propertyId]);
-		}
+	TradeTask.prototype.togglePropertyOfferForPlayer = function (propertyId, playerIndex) {
+		precondition(_.isString(propertyId), 'Requires a property id');
+		precondition(_.isNumber(playerIndex) && (playerIndex === 0 || playerIndex === 1),
+			'Requires a player index of 0 or 1');
 			
+		var properties = (playerIndex === 0) ?
+			this._currentPlayerPropertiesOffer :
+			this._otherPlayerPropertiesOffer;
+		
+		if (_.contains(properties, propertyId)) {
+			properties = _.without(properties, propertyId);
+		} else {
+			properties = properties.concat([propertyId]);
+		}
+		
+		setPropertiesOfferFor(playerIndex, properties, this);
+		
 		this._offer.onNext(currentOffer(this));
 	};
+	
+	function setPropertiesOfferFor(playerIndex, properties, self) {
+		if (playerIndex === 0) {
+			self._currentPlayerPropertiesOffer = properties;
+		} else {
+			self._otherPlayerPropertiesOffer = properties;
+		}
+	}
 	
 	TradeTask.prototype.setMoneyOfferedByCurrentPlayer = function (money) {
 		precondition(_.isNumber(money) && money >= 0 && money <= this._currentPlayer.money(),
@@ -61,14 +80,15 @@
 	};
 	
 	function currentOffer(self) {
-		return {
-			properties: self._selectedProperties,
-			currentPlayer: {
+		return [
+			{
+				properties: self._currentPlayerPropertiesOffer,
 				money: self._currentPlayerMoneyOffer
 			},
-			otherPlayer: {
+			{
+				properties: self._otherPlayerPropertiesOffer,
 				money: self._otherPlayerMoneyOffer
 			}
-		};
+		];
 	}
 }());

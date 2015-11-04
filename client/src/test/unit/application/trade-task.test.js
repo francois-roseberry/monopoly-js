@@ -19,33 +19,44 @@
 		});
 		
 		it('has an empty initial offer', function () {
-			expect(currentOffer.currentPlayer.money).to.eql(0);
-			expect(currentOffer.otherPlayer.money).to.eql(0);
-			expect(currentOffer.properties).to.eql([]);
+			expect(currentOffer[0].money).to.eql(0);
+			expect(currentOffer[1].money).to.eql(0);
+			expect(currentOffer[0].properties).to.eql([]);
+			expect(currentOffer[1].properties).to.eql([]);
 		});
 		
-		it('can toggle selection state of a property', function () {
-			task.togglePropertySelection(Board.properties().readingRailroad.id());
+		it('can toggle a property in the offer by current player', function () {
+			task.togglePropertyOfferForPlayer(Board.properties().readingRailroad.id(), 0);
 			
-			expect(currentOffer.properties).to.eql([Board.properties().readingRailroad.id()]);
+			expect(currentOffer[0].properties).to.eql([Board.properties().readingRailroad.id()]);
 			
-			task.togglePropertySelection(Board.properties().readingRailroad.id());
+			task.togglePropertyOfferForPlayer(Board.properties().readingRailroad.id(), 0);
 			
-			expect(currentOffer.properties).to.eql([]);
+			expect(currentOffer[0].properties).to.eql([]);
+		});
+		
+		it('can toggle a property in the offer by other player', function () {
+			task.togglePropertyOfferForPlayer(Board.properties().readingRailroad.id(), 1);
+			
+			expect(currentOffer[1].properties).to.eql([Board.properties().readingRailroad.id()]);
+			
+			task.togglePropertyOfferForPlayer(Board.properties().readingRailroad.id(), 1);
+			
+			expect(currentOffer[1].properties).to.eql([]);
 		});
 		
 		it('can set the money offered by current player', function () {
 			task.setMoneyOfferedByCurrentPlayer(1);
 			
-			expect(currentOffer.currentPlayer.money).to.eql(1);
-			expect(currentOffer.otherPlayer.money).to.eql(0);
+			expect(currentOffer[0].money).to.eql(1);
+			expect(currentOffer[1].money).to.eql(0);
 		});
 		
 		it('can set the money offered by other player', function () {
 			task.setMoneyOfferedByOtherPlayer(1);
 			
-			expect(currentOffer.currentPlayer.money).to.eql(0);
-			expect(currentOffer.otherPlayer.money).to.eql(1);
+			expect(currentOffer[0].money).to.eql(0);
+			expect(currentOffer[1].money).to.eql(1);
 		});
 	});
 }());

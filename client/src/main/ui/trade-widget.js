@@ -19,15 +19,15 @@
 		var panelContainer = panel.append('div')
 			.classed('monopoly-trade-player-panels', true);
 		
-		renderPlayerPanel(panelContainer, tradeTask.currentPlayer(), tradeTask);
-		renderPlayerPanel(panelContainer, tradeTask.otherPlayer(), tradeTask);
+		renderPlayerPanel(panelContainer, tradeTask.currentPlayer(), tradeTask, 0);
+		renderPlayerPanel(panelContainer, tradeTask.otherPlayer(), tradeTask, 1);
 		
 		panel.append('button')
 			.classed('monopoly-trade-make-offer-btn', true)
 			.text(i18n.TRADE_MAKE_OFFER);
 	};
 	
-	function renderPlayerPanel(container, player, tradeTask) {
+	function renderPlayerPanel(container, player, tradeTask, playerIndex) {
 		var panel = container.append('div')
 			.classed('monopoly-trade-player-panel', true)
 			.attr('data-ui', player.id());
@@ -41,7 +41,7 @@
 			
 		tradeTask.offer()
 			.map(function (offer) {
-				return offer.properties;
+				return offer[playerIndex].properties;
 			})
 			.distinctUntilChanged()
 			.subscribe(function (selectedProperties) {
@@ -58,7 +58,7 @@
 						return property.group().color();
 					})
 					.on('click', function (property) {
-						tradeTask.togglePropertySelection(property.id());
+						tradeTask.togglePropertyOfferForPlayer(property.id(), playerIndex);
 					});
 					
 				items.classed('monopoly-trade-player-property-selected', function (property) {
