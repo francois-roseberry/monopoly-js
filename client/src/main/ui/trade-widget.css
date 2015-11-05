@@ -7,6 +7,10 @@
 	margin-top: 0;
 }
 
+.monopoly-trade-player-panels {
+	overflow: auto;
+}
+
 .monopoly-trade-player-panel {
 	width: 50%;
 	float: left;
