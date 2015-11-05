@@ -58,7 +58,7 @@
 						return property.group().color();
 					})
 					.on('click', function (property) {
-						tradeTask.togglePropertyOfferForPlayer(property.id(), playerIndex);
+						tradeTask.togglePropertyOfferedByPlayer(property.id(), playerIndex);
 					});
 					
 				items.classed('monopoly-trade-player-property-selected', function (property) {
@@ -71,7 +71,8 @@
 			.classed('monopoly-trade-player-money-spinner', true)
 			.each(function () {
 				$(this).spinner({
-					min: 0, max: player.money(), step: 1
+					min: 0, max: player.money(), step: 1,
+					change: onMoneySpinnerChange(tradeTask, playerIndex)
 				})
 				.val(0);
 			});
@@ -79,5 +80,11 @@
 		panel.append('span')
 			.classed('monopoly-trade-player-money-total', true)
 			.text('/ ' + i18n.formatPrice(player.money()));
+	}
+	
+	function onMoneySpinnerChange(task, playerIndex) {
+		return function (event, ui) {
+			task.setMoneyOfferedByPlayer($(event.target).spinner('value'), playerIndex);
+		};
 	}
 }());

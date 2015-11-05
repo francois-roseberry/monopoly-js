@@ -11,12 +11,17 @@
 	describeInDom('A Trade widget', function (domContext) {
 		var currentPlayer;
 		var otherPlayer;
+		var currentOffer;
 		
 		beforeEach(function () {
 			currentPlayer = testData.players()[0].buyProperty(Board.properties().readingRailroad);
 			otherPlayer = testData.players()[1];
 			var task = TradeTask.start(currentPlayer, otherPlayer);
 			TradeWidget.render(domContext.rootElement, task);
+			
+			task.offer().subscribe(function(offer) {
+				currentOffer = offer;
+			});
 		});
 		
 		it('is rendered in the given div', function () {
@@ -66,6 +71,15 @@
 		
 		it('renders a money spinner for both players', function () {
 			domContext.assertElementCount('.monopoly-trade-player-money-spinner', 2);
+		});
+		
+		it.only('entering an amount in the money spinner changes the offer', function () {
+			var selector = '.monopoly-trade-player-panel[data-ui=' + currentPlayer.id() +
+				'] .monopoly-trade-player-money-spinner';
+				
+			$(selector).spinner('value', 1);
+			
+			expect(currentOffer[0].money).to.eql(1);
 		});
 		
 		it('renders the money total for both players', function () {

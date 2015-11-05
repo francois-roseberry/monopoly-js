@@ -31,10 +31,10 @@
 		return this._otherPlayer;
 	};
 	
-	TradeTask.prototype.togglePropertyOfferForPlayer = function (propertyId, playerIndex) {
+	TradeTask.prototype.togglePropertyOfferedByPlayer = function (propertyId, playerIndex) {
 		precondition(_.isString(propertyId), 'Requires a property id');
 		precondition(_.isNumber(playerIndex) && (playerIndex === 0 || playerIndex === 1),
-			'Requires a player index of 0 or 1');
+			'Only the player with index 0 or 1 can offer something');
 			
 		var properties = (playerIndex === 0) ?
 			this._currentPlayerPropertiesOffer :
@@ -59,19 +59,18 @@
 		}
 	}
 	
-	TradeTask.prototype.setMoneyOfferedByCurrentPlayer = function (money) {
+	TradeTask.prototype.setMoneyOfferedByPlayer = function (money, playerIndex) {
 		precondition(_.isNumber(money) && money >= 0 && money <= this._currentPlayer.money(),
 			'A player can only offer an amount of money between 0 and the total he has (inclusively)');
+		precondition(_.isNumber(playerIndex) && (playerIndex === 0 || playerIndex === 1),
+			'Only the player with index 0 or 1 can offer something');
 			
-		this._currentPlayerMoneyOffer = money;
-		this._offer.onNext(currentOffer(this));
-	};
-	
-	TradeTask.prototype.setMoneyOfferedByOtherPlayer = function (money) {
-		precondition(_.isNumber(money) && money >= 0 && money <= this._otherPlayer.money(),
-			'A player can only offer an amount of money between 0 and the total he has (inclusively)');
-			
-		this._otherPlayerMoneyOffer = money;
+		if (playerIndex === 0) {
+			this._currentPlayerMoneyOffer = money;
+		} else {
+			this._otherPlayerMoneyOffer = money;
+		}
+		
 		this._offer.onNext(currentOffer(this));
 	};
 	
