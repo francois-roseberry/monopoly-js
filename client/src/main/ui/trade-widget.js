@@ -24,7 +24,21 @@
 		
 		panel.append('button')
 			.classed('monopoly-trade-make-offer-btn', true)
-			.text(i18n.TRADE_MAKE_OFFER);
+			.text(i18n.TRADE_MAKE_OFFER)
+			.on('click', function () {
+				tradeTask.makeOffer();
+			});
+			
+		panel.append('button')
+			.classed('monopoly-trade-cancel-btn', true)
+			.text(i18n.TRADE_CANCEL)
+			.on('click', function () {
+				tradeTask.cancel();
+			});
+			
+		tradeTask.offer().subscribeOnCompleted(function () {
+			panel.remove();
+		});
 	};
 	
 	function renderPlayerPanel(container, player, tradeTask, playerIndex) {
@@ -40,6 +54,9 @@
 			.classed('monopoly-trade-player-properties', true);
 			
 		tradeTask.offer()
+			.filter(function (offer) {
+				return offer.length > 0;
+			})
 			.map(function (offer) {
 				return offer[playerIndex].properties;
 			})

@@ -41,14 +41,18 @@
 		
 		playGameTask.tradeTaskCreated().subscribe(function (task) {
 			var positionning = {
-				top: "400px",
+				top: "180px",
 				left: "200px",
 				width: "900px",
 				height: "400px"
 			};
 			
-			var popup = Popup.render($(document.body), positionning);
+			var popup = Popup.render($(document.body), positionning, { closeBtn: false });
 			TradeWidget.render($(popup.contentContainer()[0]), task);
+			
+			task.offer().subscribeOnCompleted(function () {
+				popup.close();
+			});
 		});
 	};
 }());

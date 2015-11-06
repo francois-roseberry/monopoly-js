@@ -3,16 +3,23 @@
 
     var precondition = require('./contract').precondition;
 
-    exports.render = function (container, positioning) {
+    exports.render = function (container, positioning, options) {
         precondition(container, "A popup require a positionned container to render into");
         // Example : top + height + left + width, OR top + bottom + left + width, and so forth
         precondition(isFullyPositioned(positioning), "The popup must be fully positioned vertically and horizontally");
 
+		options = options || defaultOptions();
         var htmlElements = renderDom(container, positioning);
-        var closedSubject = bindEvents(htmlElements);
+        var closedSubject = bindEvents(htmlElements.popupElement, options);
 
         return externalInterface(htmlElements, closedSubject);
     };
+	
+	function defaultOptions() {
+		return {
+			closeBtn : true
+		};
+	}
 
     function isFullyPositioned(positioning) {
         var cssAttributes = _.keys(positioning);
@@ -32,34 +39,34 @@
             .style('position', 'absolute')
             .style(positioning);
 
-        var closeButton = popupElement.append('button')
-            .classed('popup-close-btn', true)
-            .attr('data-ui', 'popup-close');
-			
-		closeButton.append('span')
-			.classed({
-				'glyphicon': true,
-				'glyphicon-remove': true
-			});
-
         var contentContainer = popupElement.append('div')
             .classed('popup-content', true);
 
         return {
             popupElement: popupElement,
-            closeButton: closeButton,
             contentContainer: contentContainer
         };
     }
 
-    function bindEvents(htmlElements) {
-        var closedSubject = new Rx.AsyncSubject();
-
-        htmlElements.closeButton.on('click', function () {
-            closePopup(htmlElements, closedSubject);
-        });
-
-        return closedSubject;
+    function bindEvents(popupElement, options) {
+		var closedSubject = new Rx.AsyncSubject();
+		
+		if (options.closeBtn) {
+			var closeButton = popupElement.append('button')
+				.classed('popup-close-btn', true)
+				.attr('data-ui', 'popup-close')
+				.on('click', function () {
+					closePopup(popupElement, closedSubject);
+				});
+				
+			closeButton.append('span')
+				.classed({
+					'glyphicon': true,
+					'glyphicon-remove': true
+				});
+		}
+        
+		return closedSubject;
     }
 
     function externalInterface(htmlElements, closedSubject) {
@@ -73,14 +80,14 @@
             },
 
             close: function () {
-                closePopup(htmlElements, closedSubject);
+                closePopup(htmlElements.popupElement, closedSubject);
             }
         };
     }
 
-    function closePopup(htmlElement, closedSubject) {
-        htmlElement.popupElement.classed('.popup-closing', true);
-        htmlElement.popupElement.remove();
+    function closePopup(popupElement, closedSubject) {
+        popupElement.classed('.popup-closing', true);
+        popupElement.remove();
         closedSubject.onNext(true);
         closedSubject.onCompleted();
     }

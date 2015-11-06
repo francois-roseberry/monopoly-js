@@ -5,7 +5,7 @@
 
     var describeInDom = require('./dom-fixture').describeInDom;
 
-    describeInDom('An HTML popup', function (domContext) {
+    describeInDom('An HTML popup with default options', function (domContext) {
         var positioning = {
             top: "10px",
             right: "20px",
@@ -59,4 +59,21 @@
             domContext.assertNothingOf('.popup');
         }
     });
+	
+	describeInDom('An HTML popup without a close button', function (domContext) {
+		var positioning = {
+            top: "10px",
+            right: "20px",
+            bottom: "30px",
+            left: "40px"
+        };
+		
+		beforeEach(function () {
+            Popup.render(domContext.rootElement, positioning, { closeBtn: false });
+        });
+		
+		it('does not render a close button', function () {
+			domContext.assertNothingOf('[data-ui=popup-close]');
+		});
+	});
 }());

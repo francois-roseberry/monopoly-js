@@ -9,12 +9,15 @@
 	describe('A TradeTask', function () {
 		var task;
 		var currentOffer;
+		var completed = false;
 		
 		beforeEach(function () {
 			task = TradeTask.start(testData.players()[0], testData.players()[1]);
 			
 			task.offer().subscribe(function (offer) {
 				currentOffer = offer;
+			}, _.noop, function () {
+				completed = true;
 			});
 		});
 		
@@ -57,6 +60,28 @@
 			
 			expect(currentOffer[0].money).to.eql(0);
 			expect(currentOffer[1].money).to.eql(1);
+		});
+		
+		describe('when making offer', function () {
+			it('task is completed', function () {
+				task.makeOffer();
+				
+				expect(completed).to.be(true);
+			});
+		});
+		
+		describe('when canceling the trade', function () {
+			beforeEach(function () {
+				task.cancel();
+			});
+			
+			it('offer becomes empty', function () {
+				expect(currentOffer).to.eql([]);
+			});
+			
+			it('task is completed', function () {
+				expect(completed).to.be(true);
+			});
 		});
 	});
 }());

@@ -74,6 +74,15 @@
 		this._offer.onNext(currentOffer(this));
 	};
 	
+	TradeTask.prototype.makeOffer = function () {
+		this._offer.onCompleted();
+	};
+	
+	TradeTask.prototype.cancel = function () {
+		this._offer.onNext([]);
+		this._offer.onCompleted();
+	};
+	
 	TradeTask.prototype.offer = function () {
 		return this._offer.asObservable();
 	};

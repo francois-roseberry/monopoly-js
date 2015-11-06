@@ -20,6 +20,7 @@
 	exports.CHOICE_CALCULATE_DICE_RENT = 'Lancer les dés et payer un loyer de {multiplier} fois le résultat';
 	exports.CHOICE_TRADE = "Échanger avec {player}";
 	exports.TRADE_MAKE_OFFER = "Faire cette offre";
+	exports.TRADE_CANCEL = "Annuler l'échange";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';

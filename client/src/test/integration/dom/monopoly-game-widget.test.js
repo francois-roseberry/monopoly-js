@@ -52,16 +52,34 @@
 			domContext.assertOneOf('.monopoly-players');
 		});
 		
-		it('renders the dice-widget when the task requires it', function () {
+		it('renders the dice-widget when a dice task is created', function () {
 			task.handleChoicesTask().makeChoice(MoveChoice.newChoice());
 			
 			domContext.assertOneOf('.dice-container');
 		});
 		
-		it('renders the trade widget in a popup when the task requires it', function () {
-			task.handleChoicesTask().makeChoice(TradeChoice.newChoice(currentState.players()[1]));
+		describe('when a trade task is created', function () {
+			beforeEach(function () {
+				task.handleChoicesTask().makeChoice(TradeChoice.newChoice(currentState.players()[1]));
+			});
 			
-			domContext.body.assertOneOf('.popup .monopoly-trade-panel');
+			it('renders the trade widget in a popup without close button', function () {
+				domContext.body.assertOneOf('.popup .monopoly-trade-panel');
+				
+				domContext.body.assertNothingOf('[data-ui=popup-close]');
+				
+				cancelTrade();
+			});
+			
+			it('closes the popup when the task is completed', function () {
+				cancelTrade();
+				
+				domContext.assertNothingOf('.popup');
+			});
+			
+			function cancelTrade() {
+				domContext.body.clickOn('.monopoly-trade-cancel-btn');
+			}
 		});
 	});
 }());

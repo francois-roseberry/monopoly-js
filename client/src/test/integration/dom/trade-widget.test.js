@@ -73,7 +73,7 @@
 			domContext.assertElementCount('.monopoly-trade-player-money-spinner', 2);
 		});
 		
-		it.only('entering an amount in the money spinner changes the offer', function () {
+		it('entering an amount in the money spinner changes the offer', function () {
 			var selector = '.monopoly-trade-player-panel[data-ui=' + currentPlayer.id() +
 				'] .monopoly-trade-player-money-spinner';
 				
@@ -88,6 +88,22 @@
 		
 		it('renders a button to make the offer', function () {
 			domContext.assertOneOf('.monopoly-trade-make-offer-btn');
+		});
+		
+		it('renders a button to cancel the trade', function () {
+			domContext.assertOneOf('.monopoly-trade-cancel-btn');
+		});
+		
+		it('clicking on the make offer button erases the widget', function () {
+			domContext.clickOn('.monopoly-trade-make-offer-btn');
+			
+			domContext.assertNothingOf('.monopoly-trade-panel');
+		});
+		
+		it('clicking on the cancel trade button erases the widget', function () {
+			domContext.clickOn('.monopoly-trade-cancel-btn');
+			
+			domContext.assertNothingOf('.monopoly-trade-panel');
 		});
 	});
 }());
