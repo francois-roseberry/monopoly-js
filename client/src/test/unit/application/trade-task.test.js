@@ -22,44 +22,41 @@
 		});
 		
 		it('has an empty initial offer', function () {
-			expect(currentOffer[0].money).to.eql(0);
-			expect(currentOffer[1].money).to.eql(0);
-			expect(currentOffer[0].properties).to.eql([]);
-			expect(currentOffer[1].properties).to.eql([]);
+			expect(currentOffer.isEmpty()).to.be(true);
 		});
 		
 		it('can toggle a property in the offer by current player', function () {
 			task.togglePropertyOfferedByPlayer(Board.properties().readingRailroad.id(), 0);
 			
-			expect(currentOffer[0].properties).to.eql([Board.properties().readingRailroad.id()]);
+			expect(currentOffer.propertiesFor(0)).to.eql([Board.properties().readingRailroad.id()]);
 			
 			task.togglePropertyOfferedByPlayer(Board.properties().readingRailroad.id(), 0);
 			
-			expect(currentOffer[0].properties).to.eql([]);
+			expect(currentOffer.propertiesFor(0)).to.eql([]);
 		});
 		
 		it('can toggle a property in the offer by other player', function () {
 			task.togglePropertyOfferedByPlayer(Board.properties().readingRailroad.id(), 1);
 			
-			expect(currentOffer[1].properties).to.eql([Board.properties().readingRailroad.id()]);
+			expect(currentOffer.propertiesFor(1)).to.eql([Board.properties().readingRailroad.id()]);
 			
 			task.togglePropertyOfferedByPlayer(Board.properties().readingRailroad.id(), 1);
 			
-			expect(currentOffer[1].properties).to.eql([]);
+			expect(currentOffer.propertiesFor(1)).to.eql([]);
 		});
 		
 		it('can set the money offered by current player', function () {
 			task.setMoneyOfferedByPlayer(1, 0);
 			
-			expect(currentOffer[0].money).to.eql(1);
-			expect(currentOffer[1].money).to.eql(0);
+			expect(currentOffer.moneyFor(0)).to.eql(1);
+			expect(currentOffer.moneyFor(0)).to.eql(0);
 		});
 		
 		it('can set the money offered by other player', function () {
 			task.setMoneyOfferedByPlayer(1, 1);
 			
-			expect(currentOffer[0].money).to.eql(0);
-			expect(currentOffer[1].money).to.eql(1);
+			expect(currentOffer.moneyFor(0)).to.eql(0);
+			expect(currentOffer.moneyFor(1)).to.eql(1);
 		});
 		
 		describe('when making offer', function () {
@@ -76,7 +73,7 @@
 			});
 			
 			it('offer becomes empty', function () {
-				expect(currentOffer).to.eql([]);
+				expect(currentOffer.isEmpty()).to.be(true);
 			});
 			
 			it('task is completed', function () {

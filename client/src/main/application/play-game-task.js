@@ -95,26 +95,40 @@
 	function computeNextState(self, choice) {
 		return function (state) {
 			if (choice.requiresDice()) {
-				var task = RollDiceTask.start({
-					fast: self._options.fastDice,
-					dieFunction: self._options.dieFunction
-				});
-				
-				self._rollDiceTaskCreated.onNext(task);
-				return task.diceRolled().last()
-					.map(function (dice) {
-						return choice.computeNextState(state, dice);
-					});
+				return computeNextStateWithDice(self, choice, state);
 			}
 			
 			if (_.isFunction(choice.requiresTrade)) {
-				var currentPlayer = state.players()[state.currentPlayerIndex()];
-				var otherPlayer = choice.otherPlayer();
-				self._tradeTaskCreated.onNext(TradeTask.start(currentPlayer, otherPlayer));
+				return computeNextStateWithTrade(self, choice, state);
 			}
 			
 			var nextState = choice.computeNextState(state);
 			return Rx.Observable.return(nextState);
 		};
+	}
+	
+	function computeNextStateWithDice(self, choice, state) {
+		var task = RollDiceTask.start({
+			fast: self._options.fastDice,
+			dieFunction: self._options.dieFunction
+		});
+		
+		self._rollDiceTaskCreated.onNext(task);
+		return task.diceRolled().last()
+			.map(function (dice) {
+				return choice.computeNextState(state, dice);
+			});
+	}
+	
+	function computeNextStateWithTrade(self, choice, state) {
+		var currentPlayer = state.players()[state.currentPlayerIndex()];
+		var otherPlayer = choice.otherPlayer();
+		var task = TradeTask.start(currentPlayer, otherPlayer);
+		
+		self._tradeTaskCreated.onNext(task);
+		return task.offer().last()
+			.map(function (offer) {
+				return choice.computeNextState(state, offer);
+			});
 	}
 }());

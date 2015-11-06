@@ -5,6 +5,7 @@
 	var precondition = require('./contract').precondition;
 	
 	var GameState = require('./game-state');
+	var TradeOffer = require('./trade-offer');
 	var Player = require('./player');
 	
 	exports.newChoice = function (player) {
@@ -39,9 +40,10 @@
 		return this._player;
 	};
 	
-	TradeChoice.prototype.computeNextState = function (state) {
+	TradeChoice.prototype.computeNextState = function (state, offer) {
 		precondition(GameState.isGameState(state),
 			'TradeChoice requires a game state to compute the next one');
+		precondition(TradeOffer.isOffer(offer), 'TradeChoice requires a game offer');
 		
 		return state;
 	};

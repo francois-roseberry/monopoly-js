@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var Player = require('./player');
+	var TradeOffer = require('./trade-offer');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -79,7 +80,7 @@
 	};
 	
 	TradeTask.prototype.cancel = function () {
-		this._offer.onNext([]);
+		this._offer.onNext(TradeOffer.emptyOffer());
 		this._offer.onCompleted();
 	};
 	
@@ -88,7 +89,7 @@
 	};
 	
 	function currentOffer(self) {
-		return [
+		return TradeOffer.newOffer([
 			{
 				properties: self._currentPlayerPropertiesOffer,
 				money: self._currentPlayerMoneyOffer
@@ -97,6 +98,6 @@
 				properties: self._otherPlayerPropertiesOffer,
 				money: self._otherPlayerMoneyOffer
 			}
-		];
+		]);
 	}
 }());

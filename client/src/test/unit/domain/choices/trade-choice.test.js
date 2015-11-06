@@ -23,7 +23,7 @@
 			var nextState;
 			
 			beforeEach(function () {
-				nextState = choice.computeNextState(state);
+				nextState = choice.computeNextState(state, []);
 			});
 			
 			it('stays the same', function () {

@@ -54,7 +54,7 @@
 				otherPlayer.properties().length);
 		});
 		
-		it('clicking on a property selects it', function () {
+		it.only('clicking on a property selects it', function () {
 			var selector = '.monopoly-trade-player-panel[data-ui=' + currentPlayer.id() +
 				'] .monopoly-trade-player-property:first-child';
 			
@@ -79,7 +79,7 @@
 				
 			$(selector).spinner('value', 1);
 			
-			expect(currentOffer[0].money).to.eql(1);
+			expect(currentOffer.moneyFor(0)).to.eql(1);
 		});
 		
 		it('renders the money total for both players', function () {

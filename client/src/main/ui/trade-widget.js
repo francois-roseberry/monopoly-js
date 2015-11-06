@@ -54,11 +54,8 @@
 			.classed('monopoly-trade-player-properties', true);
 			
 		tradeTask.offer()
-			.filter(function (offer) {
-				return offer.length > 0;
-			})
 			.map(function (offer) {
-				return offer[playerIndex].properties;
+				return offer.propertiesFor(playerIndex);
 			})
 			.distinctUntilChanged()
 			.subscribe(function (selectedProperties) {
