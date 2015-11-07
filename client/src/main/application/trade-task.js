@@ -91,10 +91,12 @@
 	function currentOffer(self) {
 		return TradeOffer.newOffer([
 			{
+				playerId: self._currentPlayer.id(),
 				properties: self._currentPlayerPropertiesOffer,
 				money: self._currentPlayerMoneyOffer
 			},
 			{
+				playerId: self._otherPlayer.id(),
 				properties: self._otherPlayerPropertiesOffer,
 				money: self._otherPlayerMoneyOffer
 			}

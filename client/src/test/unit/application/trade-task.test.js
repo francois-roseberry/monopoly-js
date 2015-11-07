@@ -49,7 +49,7 @@
 			task.setMoneyOfferedByPlayer(1, 0);
 			
 			expect(currentOffer.moneyFor(0)).to.eql(1);
-			expect(currentOffer.moneyFor(0)).to.eql(0);
+			expect(currentOffer.moneyFor(1)).to.eql(0);
 		});
 		
 		it('can set the money offered by other player', function () {

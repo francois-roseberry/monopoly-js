@@ -54,7 +54,7 @@
 				otherPlayer.properties().length);
 		});
 		
-		it.only('clicking on a property selects it', function () {
+		it('clicking on a property selects it', function () {
 			var selector = '.monopoly-trade-player-panel[data-ui=' + currentPlayer.id() +
 				'] .monopoly-trade-player-property:first-child';
 			

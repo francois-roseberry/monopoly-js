@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var TradeChoice = require('./trade-choice');
+	var TradeOffer = require('./trade-offer');
 	
 	var games = require('./sample-games');
 	
@@ -23,7 +24,7 @@
 			var nextState;
 			
 			beforeEach(function () {
-				nextState = choice.computeNextState(state, []);
+				nextState = choice.computeNextState(state, TradeOffer.emptyOffer());
 			});
 			
 			it('stays the same', function () {
