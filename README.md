@@ -1,4 +1,7 @@
 # Monopoly-js
+Update November 7, 2015
+if there has been no published commits for a while now, it's because I'm working on the trade now, and and all my commits are local. So the project hasn't stopped
+
 Implementation of the Monopoly game in javascript, rendering done with D3
 
 Not yet a complete Monopoly game, right now players alternate, roll the dice, buy properties and pay rents (and eventually go bankrupt). That's it. Not very exciting but at least the main game flow is operational, from the beginning to the end.
