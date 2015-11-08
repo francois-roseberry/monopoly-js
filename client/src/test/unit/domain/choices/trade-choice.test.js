@@ -3,6 +3,8 @@
 	
 	var TradeChoice = require('./trade-choice');
 	var TradeOffer = require('./trade-offer');
+	var RejectOfferChoice = require('./reject-offer-choice');
+	var AcceptOfferChoice = require('./accept-offer-choice');
 	
 	var games = require('./sample-games');
 	
@@ -21,13 +23,39 @@
 		});
 		
 		describe('when computing next state', function () {
-			var nextState;
-			
-			beforeEach(function () {
-				nextState = choice.computeNextState(state, TradeOffer.emptyOffer());
+			describe('when offer is not empty', function () {
+				var nextState;
+				
+				beforeEach(function () {
+					var offer = TradeOffer.newOffer([
+						{
+							playerId: state.players()[0].id(),
+							properties: [],
+							money: 1
+						},
+						{
+							playerId: state.players()[1].id(),
+							properties: [],
+							money: 1
+						}
+					]);
+					nextState = choice.computeNextState(state, offer);
+				});
+				
+				it('offers the RejectOffer and AcceptOffer choices', function () {
+					expect(nextState.choices().length).to.eql(2);
+					expect(nextState.choices()[0].equals(RejectOfferChoice.newChoice())).to.be(true);
+					expect(nextState.choices()[1].equals(AcceptOfferChoice.newChoice())).to.be(true);
+				});
+				
+				it('current player is now the other player in the offer', function () {
+					expect(nextState.currentPlayerIndex()).to.eql(1);
+				});
 			});
 			
-			it('stays the same', function () {
+			it('if offer is empty, stays the same', function () {
+				var nextState = choice.computeNextState(state, TradeOffer.emptyOffer());
+				
 				expect(nextState.equals(state)).to.be(true);
 			});
 		});

@@ -21,6 +21,7 @@
 	exports.CHOICE_TRADE = "Échanger avec {player}";
 	exports.TRADE_MAKE_OFFER = "Faire cette offre";
 	exports.TRADE_CANCEL = "Annuler l'échange";
+	exports.TRADE_REJECT_OFFER = "Rejeter l'offre";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';

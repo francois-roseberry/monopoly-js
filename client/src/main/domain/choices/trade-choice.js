@@ -45,6 +45,10 @@
 			'TradeChoice requires a game state to compute the next one');
 		precondition(TradeOffer.isOffer(offer), 'TradeChoice requires a game offer');
 		
-		return state;
+		if (offer.isEmpty()) {
+			return state;
+		}
+		
+		return GameState.gameInTradeState(state.squares(), state.players(), offer);
 	};
 }());

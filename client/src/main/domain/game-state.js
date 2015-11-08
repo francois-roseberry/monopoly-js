@@ -8,11 +8,36 @@
 	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
 	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
 	var TradeChoice = require('./trade-choice');
+	var AcceptOfferChoice = require('./accept-offer-choice');
+	var RejectOfferChoice = require('./reject-offer-choice');
+	var TradeOffer = require('./trade-offer');
 	
 	var precondition = require('./contract').precondition;
 	
 	exports.isGameState = function (candidate) {
 		return candidate instanceof GameState;
+	};
+	
+	exports.gameInTradeState = function (squares, players, offer) {
+		precondition(_.isArray(squares) && squares.length === 40,
+			'GameInTradeState requires an array of 40 squares');
+		precondition(_.isArray(players),
+			'GameInTradeState requires an array of players');
+		precondition(TradeOffer.isOffer(offer),
+			'GameInTradeState requires an offer');
+			
+		var otherPlayerIndex = _.findIndex(players, function (player) {
+			return player.id() === offer.otherPlayerId();
+		});
+		
+		precondition(otherPlayerIndex >= 0,
+			'Offer must be destined to an existing player');
+		
+		return new GameState({
+			squares: squares,
+			players: players,
+			currentPlayerIndex: otherPlayerIndex
+		}, [RejectOfferChoice.newChoice(), AcceptOfferChoice.newChoice()]);
 	};
 	
 	exports.gameFinishedState = function (squares, winner) {
