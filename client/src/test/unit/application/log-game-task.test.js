@@ -9,6 +9,8 @@
 	var PayRentChoice = require('./pay-rent-choice');
 	var MoveChoice = require('./move-choice');
 	var BuyPropertyChoice = require('./buy-property-choice');
+	var RejectOfferChoice = require('./reject-offer-choice');
+	var TradeChoice = require('./trade-choice');
 	
 	var testData = require('./test-data');
 	
@@ -86,6 +88,23 @@
 			}, done, done);
 			
 			gameTask.handleChoicesTask().makeChoice(MoveChoice.newChoice());
+		});
+		
+		it.skip('when player rejects an offer, sends a message', function () {
+			gameTask.tradeTaskCreated().subscribe(function (task) {
+				task.setMoneyOfferedByPlayer(1, 0);
+				task.setMoneyOfferedByPlayer(1, 1);
+				task.makeOffer();
+			});
+			
+			gameTask.handleChoicesTask().makeChoice(TradeChoice.newChoice(testData.players()[1]));
+			
+			var choice = RejectOfferChoice.newChoice(testData.players()[0].id());
+			gameTask.handleChoicesTask().makeChoice(choice);
+			
+			var message = Messages.logOfferRejected();
+			expect(logs.length).to.eql(1);
+			expect(logs[0].equals(message)).to.be(true);
 		});
 		
 		function assertLogged(logs, done) {

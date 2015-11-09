@@ -8,10 +8,12 @@
 	describe('An RejectOffer Choice', function () {
 		var choice;
 		var state;
+		var offerCurrentPlayerId;
 		
 		beforeEach(function () {
 			state = games.turnStart();
-			choice = RejectOfferChoice.newChoice();
+			offerCurrentPlayerId = state.players()[1].id();
+			choice = RejectOfferChoice.newChoice(offerCurrentPlayerId);
 		});
 		
 		it('does not require dice', function () {
@@ -25,8 +27,8 @@
 				nextState = choice.computeNextState(state);
 			});
 			
-			it('stays the same', function () {
-				expect(nextState.equals(state)).to.be(true);
+			it('current player becomes offer current player', function () {
+				expect(nextState.currentPlayer().id()).to.eql(offerCurrentPlayerId);
 			});
 		});
 	});

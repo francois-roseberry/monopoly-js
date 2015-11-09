@@ -88,6 +88,10 @@
 		return new Log('tax-paid', message);
 	};
 	
+	exports.logOfferRejected = function () {
+		return new Log('offer-rejected', i18n.LOG_OFFER_REJECTED);
+	};
+	
 	exports.simpleLog = function () {
 		return new Log('simple', 'A message');
 	};

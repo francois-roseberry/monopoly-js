@@ -33,11 +33,22 @@
 		precondition(otherPlayerIndex >= 0,
 			'Offer must be destined to an existing player');
 		
-		return new GameState({
+		var choices = [
+			RejectOfferChoice.newChoice(offer.currentPlayerId()),
+			AcceptOfferChoice.newChoice()
+		];
+		
+		var state = new GameState({
 			squares: squares,
 			players: players,
 			currentPlayerIndex: otherPlayerIndex
-		}, [RejectOfferChoice.newChoice(), AcceptOfferChoice.newChoice()]);
+		}, choices);
+		
+		state.offer = function () {
+			return offer;
+		};
+		
+		return state;
 	};
 	
 	exports.gameFinishedState = function (squares, winner) {

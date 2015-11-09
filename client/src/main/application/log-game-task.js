@@ -47,6 +47,12 @@
 			.subscribe(function (info) {
 				messages.onNext(Messages.logTaxPaid(info.amount, info.player));
 			});
+			
+		onOfferRejected(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function () {
+				messages.onNext(Messages.logOfferRejected());
+			});
 	}
 	
 	function diceMessage(dice) {
@@ -129,6 +135,13 @@
 		.map(function (states) {
 			return states.current.players()[states.current.currentPlayerIndex()];
 		});
+	}
+	
+	function onOfferRejected(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+			.filter(function (states) {
+				return _.isFunction(states.previous.offer) && !states.current.offer;
+			});
 	}
 	
 	function onTaxPaid(playGameTask) {

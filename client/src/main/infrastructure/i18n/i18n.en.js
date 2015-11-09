@@ -30,6 +30,7 @@
 	exports.LOG_RENT_PAID = '{fromPlayer} paid {amount} to {toPlayer}';
 	exports.LOG_SALARY = "{player} passed GO and received $200";
 	exports.LOG_TAX_PAID = "{player} paid a {amount} tax";
+	exports.LOG_OFFER_REJECTED = "The offer has been rejected";
 	
 	// Squares
 	exports.CHANCE = 'Chance';

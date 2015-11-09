@@ -25,9 +25,10 @@
 		describe('when computing next state', function () {
 			describe('when offer is not empty', function () {
 				var nextState;
+				var offer;
 				
 				beforeEach(function () {
-					var offer = TradeOffer.newOffer([
+					offer = TradeOffer.newOffer([
 						{
 							playerId: state.players()[0].id(),
 							properties: [],
@@ -43,8 +44,10 @@
 				});
 				
 				it('offers the RejectOffer and AcceptOffer choices', function () {
+					var rejectOffer = RejectOfferChoice.newChoice(offer.currentPlayerId());
+					
 					expect(nextState.choices().length).to.eql(2);
-					expect(nextState.choices()[0].equals(RejectOfferChoice.newChoice())).to.be(true);
+					expect(nextState.choices()[0].equals(rejectOffer)).to.be(true);
 					expect(nextState.choices()[1].equals(AcceptOfferChoice.newChoice())).to.be(true);
 				});
 				
