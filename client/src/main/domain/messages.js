@@ -6,6 +6,7 @@
 	
 	var Player = require('./player');
 	var Property = require('./property');
+	var TradeOffer = require('./trade-offer');
 	
 	exports.logDiceRoll = function (player, die1, die2) {
 		precondition(player && Player.isPlayer(player),
@@ -87,6 +88,30 @@
 						
 		return new Log('tax-paid', message);
 	};
+	
+	exports.logOfferMade = function (player1, player2, offer) {
+		precondition(_.isString(player1),
+			'A log about an offer being made requires the first player name');
+		precondition(_.isString(player2),
+			'A log about an offer being made requires the second player name');
+		precondition(TradeOffer.isOffer(offer) && !offer.isEmpty(),
+			'A log about an offer being made requires that offer');
+			
+		var message = i18n.LOG_OFFER_MADE
+						.replace('{player1}', player1)
+						.replace('{player2}', player2)
+						.replace('{offer1}', enumerateOfferFor(offer, 0))
+						.replace('{offer2}', enumerateOfferFor(offer, 1));
+		
+		return new Log('offer-made', message);
+	};
+	
+	function enumerateOfferFor(offer, playerIndex) {
+		var items = offer.propertiesFor(playerIndex).slice();
+		items.push(i18n.formatPrice(offer.moneyFor(playerIndex)));
+		
+		return items.join(', ');
+	}
 	
 	exports.logOfferRejected = function () {
 		return new Log('offer-rejected', i18n.LOG_OFFER_REJECTED);

@@ -91,28 +91,42 @@
 			gameTask.handleChoicesTask().makeChoice(MoveChoice.newChoice());
 		});
 		
-		it('when player rejects an offer, sends a message', function () {
-			var offer = TradeOffer.newOffer([
-				{
-					playerId: testData.players()[0].id(),
-					properties: [],
-					money: 1
-				},
-				{
-					playerId: testData.players()[1].id(),
-					properties: [],
-					money: 1
-				}
-			]);
+		describe('when player makes an offer', function () {
+			var offer;
 			
-			gameTask.handleChoicesTask().makeChoice(TradeChoice.newChoice(testData.players()[1]), offer);
+			beforeEach(function () {
+				offer = TradeOffer.newOffer([
+					{
+						playerId: testData.players()[0].id(),
+						properties: [],
+						money: 1
+					},
+					{
+						playerId: testData.players()[1].id(),
+						properties: [],
+						money: 1
+					}
+				]);
+				
+				gameTask.handleChoicesTask().makeChoice(TradeChoice.newChoice(testData.players()[1]), offer);
+			});
 			
-			var choice = RejectOfferChoice.newChoice(testData.players()[0].id());
-			gameTask.handleChoicesTask().makeChoice(choice);
+			it('sends a message describing the offer', function () {
+				var message = Messages.logOfferMade(
+					testData.players()[0].name(), testData.players()[1].name(), offer);
+					
+				expect(logs.length).to.eql(1);
+				expect(logs[0].equals(message)).to.be(true);
+			});
 			
-			var message = Messages.logOfferRejected();
-			expect(logs.length).to.eql(1);
-			expect(logs[0].equals(message)).to.be(true);
+			it('if it is rejected, sends a message', function () {
+				var choice = RejectOfferChoice.newChoice(testData.players()[0].id());
+				gameTask.handleChoicesTask().makeChoice(choice);
+				
+				var message = Messages.logOfferRejected();
+				expect(logs.length).to.eql(2);
+				expect(logs[1].equals(message)).to.be(true);
+			});
 		});
 		
 		function assertLogged(logs, done) {

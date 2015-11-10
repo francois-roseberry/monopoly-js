@@ -48,6 +48,12 @@
 				messages.onNext(Messages.logTaxPaid(info.amount, info.player));
 			});
 			
+		onOfferMade(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (info) {
+				messages.onNext(Messages.logOfferMade(info.player1, info.player2, info.offer));
+			});
+			
 		onOfferRejected(playGameTask)
 			.takeUntil(playGameTask.completed())
 			.subscribe(function () {
@@ -126,15 +132,39 @@
 	
 	function onSalaryEarned(playGameTask) {
 		return combineWithPrevious(playGameTask.gameState())
-		.filter(function (states) {
-			var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
-			var previousPlayer = states.previous.players()[states.current.currentPlayerIndex()];
-			
-			return currentPlayer.money() === (previousPlayer.money() + 200);
-		})
-		.map(function (states) {
-			return states.current.players()[states.current.currentPlayerIndex()];
-		});
+			.filter(function (states) {
+				var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
+				var previousPlayer = states.previous.players()[states.current.currentPlayerIndex()];
+				
+				return currentPlayer.money() === (previousPlayer.money() + 200);
+			})
+			.map(function (states) {
+				return states.current.players()[states.current.currentPlayerIndex()];
+			});
+	}
+	
+	function onOfferMade(playGameTask) {
+		return playGameTask.gameState()
+			.filter(function (state) {
+				return _.isFunction(state.offer);
+			})
+			.map(function (state) {
+				var currentPlayerIndex = _.findIndex(state.players(), function (player) {
+					return player.id() === state.offer().currentPlayerId();
+				});
+				var otherPlayerIndex = _.findIndex(state.players(), function (player) {
+					return player.id() === state.offer().otherPlayerId();
+				});
+				
+				var currentPlayerName = state.players()[currentPlayerIndex].name();
+				var otherPlayerName = state.players()[otherPlayerIndex].name();
+				
+				return {
+					player1: currentPlayerName,
+					player2: otherPlayerName,
+					offer: state.offer()
+				};
+			});
 	}
 	
 	function onOfferRejected(playGameTask) {
