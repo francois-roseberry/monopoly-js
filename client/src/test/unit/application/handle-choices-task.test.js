@@ -44,11 +44,13 @@
 			});
 			
 		it('sends a choiceMade event when a choice is made', function (done) {
-			task.choiceMade().take(1).subscribe(function (choice) {
-				expect(choice.id).to.eql(MoveChoice.newChoice().id);
+			var arg = 2;
+			task.choiceMade().take(1).subscribe(function (action) {
+				expect(action.choice.id).to.eql(MoveChoice.newChoice().id);
+				expect(action.arg).to.eql(arg);
 			}, done, done);
 			
-			task.makeChoice(MoveChoice.newChoice());
+			task.makeChoice(MoveChoice.newChoice(), arg);
 		});
 		
 		it('sends an empty choices event to the human player when it makes a choice', function (done) {

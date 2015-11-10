@@ -7,6 +7,7 @@
 	var HandleChoicesTask = require('./handle-choices-task');
 	var Player = require('./player');
 	var GameState = require('./game-state');
+	var TradeOffer = require('./trade-offer');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -83,23 +84,23 @@
 	};
 	
 	function makeChoice(self) {
-		return function (choice) {
+		return function (action) {
 			self._gameState.take(1)
-				.flatMap(computeNextState(self, choice))
+				.flatMap(computeNextState(self, action.choice, action.arg))
 				.subscribe(function (state) {
 					self._gameState.onNext(state);
 				});			
 		};
 	}
 	
-	function computeNextState(self, choice) {
+	function computeNextState(self, choice, arg) {
 		return function (state) {
 			if (choice.requiresDice()) {
-				return computeNextStateWithDice(self, choice, state);
+				return computeNextStateWithDice(self, state, choice);
 			}
 			
 			if (_.isFunction(choice.requiresTrade)) {
-				return computeNextStateWithTrade(self, choice, state);
+				return computeNextStateWithTrade(self, state, choice, arg);
 			}
 			
 			var nextState = choice.computeNextState(state);
@@ -107,7 +108,7 @@
 		};
 	}
 	
-	function computeNextStateWithDice(self, choice, state) {
+	function computeNextStateWithDice(self, state, choice) {
 		var task = RollDiceTask.start({
 			fast: self._options.fastDice,
 			dieFunction: self._options.dieFunction
@@ -120,7 +121,12 @@
 			});
 	}
 	
-	function computeNextStateWithTrade(self, choice, state) {
+	function computeNextStateWithTrade(self, state, choice, arg) {
+		if (TradeOffer.isOffer(arg) && !arg.isEmpty()) {
+			var nextState = choice.computeNextState(state, arg);
+			return Rx.Observable.return(nextState);
+		}
+				
 		var currentPlayer = state.players()[state.currentPlayerIndex()];
 		var otherPlayer = choice.otherPlayer();
 		var task = TradeTask.start(currentPlayer, otherPlayer);

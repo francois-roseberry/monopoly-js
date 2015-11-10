@@ -5,6 +5,7 @@
 	var LogGameTask = require('./log-game-task');
 	var Messages = require('./messages');
 	var Board = require('./board');
+	var TradeOffer = require('./trade-offer');
 	var PayTaxChoice = require('./pay-tax-choice');
 	var PayRentChoice = require('./pay-rent-choice');
 	var MoveChoice = require('./move-choice');
@@ -90,14 +91,21 @@
 			gameTask.handleChoicesTask().makeChoice(MoveChoice.newChoice());
 		});
 		
-		it.skip('when player rejects an offer, sends a message', function () {
-			gameTask.tradeTaskCreated().subscribe(function (task) {
-				task.setMoneyOfferedByPlayer(1, 0);
-				task.setMoneyOfferedByPlayer(1, 1);
-				task.makeOffer();
-			});
+		it('when player rejects an offer, sends a message', function () {
+			var offer = TradeOffer.newOffer([
+				{
+					playerId: testData.players()[0].id(),
+					properties: [],
+					money: 1
+				},
+				{
+					playerId: testData.players()[1].id(),
+					properties: [],
+					money: 1
+				}
+			]);
 			
-			gameTask.handleChoicesTask().makeChoice(TradeChoice.newChoice(testData.players()[1]));
+			gameTask.handleChoicesTask().makeChoice(TradeChoice.newChoice(testData.players()[1]), offer);
 			
 			var choice = RejectOfferChoice.newChoice(testData.players()[0].id());
 			gameTask.handleChoicesTask().makeChoice(choice);

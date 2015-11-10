@@ -35,9 +35,9 @@
 		return this._choiceMade.asObservable();
 	};
 	
-	HandleChoicesTask.prototype.makeChoice = function (choice) {
+	HandleChoicesTask.prototype.makeChoice = function (choice, arg) {
 		this._humanChoices.onNext([]);
-		this._choiceMade.onNext(choice);
+		this._choiceMade.onNext({choice: choice, arg: arg});
 	};
 	
 	function choicesForPlayerType(playGameTask, type) {
@@ -58,7 +58,7 @@
 	function applyChoice(task) {
 		return function (choice) {
 			Rx.Observable.timer(0).subscribe(function () {
-				task._choiceMade.onNext(choice);
+				task._choiceMade.onNext({choice: choice});
 			});
 		};
 	}

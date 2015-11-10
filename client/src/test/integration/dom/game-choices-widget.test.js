@@ -20,8 +20,8 @@
 				currentChoices = choices;
 			});
 			
-			task.choiceMade().subscribe(function (choice) {
-				choiceMade = choice;
+			task.choiceMade().subscribe(function (action) {
+				choiceMade = action.choice;
 			});
 		});
 		
