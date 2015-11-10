@@ -12,7 +12,7 @@
 			.classed('game-log-console', true);
 			
 		messages.subscribe(function (log) {
-			console.insert('span', '.game-log-message')
+			console.insert('p', '.game-log-message')
 				.classed('game-log-message', true)
 				.text(log.message())
 				.style('opacity', 0)
