@@ -48,7 +48,7 @@
 					
 					expect(nextState.choices().length).to.eql(2);
 					expect(nextState.choices()[0].equals(rejectOffer)).to.be(true);
-					expect(nextState.choices()[1].equals(AcceptOfferChoice.newChoice())).to.be(true);
+					expect(nextState.choices()[1].equals(AcceptOfferChoice.newChoice(offer))).to.be(true);
 				});
 				
 				it('current player is now the other player in the offer', function () {

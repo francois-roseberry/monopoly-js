@@ -2,6 +2,7 @@
 	"use strict";
 	
 	var AcceptOfferChoice = require('./accept-offer-choice');
+	var TradeOffer = require('./trade-offer');
 	
 	var games = require('./sample-games');
 	
@@ -11,7 +12,19 @@
 		
 		beforeEach(function () {
 			state = games.turnStart();
-			choice = AcceptOfferChoice.newChoice();
+			var offer = TradeOffer.newOffer([
+				{
+					playerId: state.players()[0].id(),
+					properties: [],
+					money: 1
+				},
+				{
+					playerId: state.players()[1].id(),
+					properties: [],
+					money: 1
+				}
+			]);
+			choice = AcceptOfferChoice.newChoice(offer);
 		});
 		
 		it('does not require dice', function () {

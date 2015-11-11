@@ -35,7 +35,7 @@
 		
 		var choices = [
 			RejectOfferChoice.newChoice(offer.currentPlayerId()),
-			AcceptOfferChoice.newChoice()
+			AcceptOfferChoice.newChoice(offer)
 		];
 		
 		var state = new GameState({

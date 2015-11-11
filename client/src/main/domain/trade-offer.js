@@ -67,4 +67,50 @@
 	TradeOffer.prototype.moneyFor = function (playerIndex) {
 		return (playerIndex === 0) ? this._currentPlayerMoney : this._otherPlayerMoney;
 	};
+	
+	TradeOffer.prototype.equals = function (other) {
+		if (!(other instanceof TradeOffer)) {
+			return false;
+		}
+		
+		if (this._currentPlayerId !== other._currentPlayerId) {
+			return false;
+		}
+		
+		if (this._otherPlayerId !== other._otherPlayerId) {
+			return false;
+		}
+		
+		if (this._currentPlayerMoney !== other._currentPlayerMoney) {
+			return false;
+		}
+		
+		if (this._otherPlayerMoney !== other._otherPlayerMoney) {
+			return false;
+		}
+		
+		if (!arrayEquals(this._currentPlayerProperties, other._currentPlayerProperties)) {
+			return false;
+		}
+		
+		if (!arrayEquals(this._otherPlayerProperties, other._otherPlayerProperties)) {
+			return false;
+		}
+		
+		return true;
+	};
+	
+	function arrayEquals(left, right) {
+		if (left.length !== right.length) {
+			return false;
+		}
+		
+		_.each(left, function (element, index) {
+			if (element !== right[index]) {
+				return false;
+			}
+		});
+		
+		return true;
+	}
 }());

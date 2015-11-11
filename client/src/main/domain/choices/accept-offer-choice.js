@@ -5,18 +5,26 @@
 	var precondition = require('./contract').precondition;
 	
 	var GameState = require('./game-state');
+	var TradeOffer = require('./trade-offer');
 	
-	exports.newChoice = function () {
-		return new AcceptOfferChoice();
+	exports.newChoice = function (offer) {
+		precondition(TradeOffer.isOffer(offer), 'An AcceptOfferChoice requires an offer');
+		
+		return new AcceptOfferChoice(offer);
 	};
 	
-	function AcceptOfferChoice() {
+	function AcceptOfferChoice(offer) {
 		this.id = 'accept-offer';
 		this.name = i18n.ACCEPT_OFFER;
+		this._offer = offer;
 	}
 	
 	AcceptOfferChoice.prototype.equals = function (other) {
 		if (!(other instanceof AcceptOfferChoice)) {
+			return false;
+		}
+		
+		if (!this._offer.equals(other._offer)) {
 			return false;
 		}
 		
@@ -29,7 +37,7 @@
 	
 	AcceptOfferChoice.prototype.computeNextState = function (state) {
 		precondition(GameState.isGameState(state),
-			'RejectOfferChoice requires a game state to compute the next one');
+			'AcceptOfferChoice requires a game state to compute the next one');
 		
 		return state;
 	};
