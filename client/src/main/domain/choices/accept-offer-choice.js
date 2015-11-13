@@ -39,6 +39,33 @@
 		precondition(GameState.isGameState(state),
 			'AcceptOfferChoice requires a game state to compute the next one');
 		
-		return state;
+		var self = this;
+		var playerIndex = _.findIndex(state.players(), function (player) {
+			return player.id() === self._offer.currentPlayerId();
+		});
+		
+		precondition(playerIndex >= 0, 'Offer accepted must have been made by a valid player');
+		
+		// TODO : transfer possessions
+		// First make players pay and earn the money in the offer
+		var newPlayers = _.map(state.players(), function (player) {
+			if (player.id() === self._offer.currentPlayerId()) {
+				return player.pay(self._offer.moneyFor(0))
+					.earn(self._offer.moneyFor(1));
+			}
+			
+			if (player.id() === self._offer.otherPlayerId()) {
+				return player.pay(self._offer.moneyFor(1))
+					.earn(self._offer.moneyFor(0));
+			}
+			
+			return player;
+		});
+		
+		return GameState.turnStartState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: playerIndex
+		});
 	};
 }());
