@@ -12,7 +12,9 @@
 		var completed = false;
 		
 		beforeEach(function () {
-			task = TradeTask.start(testData.players()[0], testData.players()[1]);
+			task = TradeTask.start(
+				testData.players()[0].buyProperty(Board.properties().readingRailroad),
+				testData.players()[1].buyProperty(Board.properties().readingRailroad));
 			
 			task.offer().subscribe(function (offer) {
 				currentOffer = offer;

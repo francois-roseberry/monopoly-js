@@ -97,12 +97,12 @@
 			beforeEach(function () {
 				offer = TradeOffer.newOffer([
 					{
-						playerId: testData.players()[0].id(),
+						player: testData.players()[0],
 						properties: [],
 						money: 1
 					},
 					{
-						playerId: testData.players()[1].id(),
+						player: testData.players()[1],
 						properties: [],
 						money: 1
 					}

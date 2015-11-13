@@ -125,8 +125,8 @@
 			return false;
 		}
 		
-		return _.every(left, function (element, index) {
-			return element === right[index];
+		return _.every(left, function (property, index) {
+			return property.id() === right[index].id();
 		});
 	}
 	
@@ -162,6 +162,12 @@
 	Player.prototype.buyProperty = function (property) {
 		precondition(property && Property.isProperty(property), 'Player buying property requires a property');
 		
+		var alreadyOwned = !!_.find(this.properties(), function (ownedProperty) {
+			return ownedProperty.id() === property.id();
+		});
+		
+		precondition(!alreadyOwned, 'Player cannot buy a property he already owns');
+		
 		return newPlayer({
 			id: this.id(),
 			name: this.name(),
@@ -194,6 +200,48 @@
 		// It comes after, so look further in the array
 		return insertPropertyAt(property, index + 1, properties);
 	}
+	
+	Player.prototype.gainProperty = function (property) {
+		precondition(property && Property.isProperty(property), 'Player gaining property requires a property');
+		
+		var alreadyOwned = !!_.find(this.properties(), function (ownedProperty) {
+			return ownedProperty.id() === property.id();
+		});
+		
+		precondition(!alreadyOwned, 'Player cannot gain a property he already owns');
+		
+		return newPlayer({
+			id: this.id(),
+			name: this.name(),
+			money: this.money(),
+			position: this.position(),
+			color: this.color(),
+			type: this.type(),
+			properties: insertProperty(property, this.properties())
+		});
+	};
+	
+	Player.prototype.loseProperty = function (property) {
+		precondition(property && Property.isProperty(property), 'Player losing property requires a property');
+		
+		var alreadyOwned = !!_.find(this.properties(), function (ownedProperty) {
+			return ownedProperty.id() === property.id();
+		});
+		
+		precondition(alreadyOwned, 'Player cannot lose a property he does not already owns');
+		
+		return newPlayer({
+			id: this.id(),
+			name: this.name(),
+			money: this.money(),
+			position: this.position(),
+			color: this.color(),
+			type: this.type(),
+			properties: _.filter(this.properties(), function (ownedProperty) {
+				return ownedProperty.id() !== property.id();
+			})
+		});
+	};
 	
 	Player.prototype.pay = function (amount) {
 		precondition(_.isNumber(amount) && amount > 0,

@@ -15,12 +15,12 @@
 			state = games.turnStartWithSomePropertiesOwned();
 			offer = TradeOffer.newOffer([
 				{
-					playerId: state.players()[1].id(),
+					player: state.players()[1],
 					properties: [state.players()[1].properties()[0].id()],
 					money: 1
 				},
 				{
-					playerId: state.players()[0].id(),
+					player: state.players()[0],
 					properties: [state.players()[0].properties()[0].id()],
 					money: 2
 				}
@@ -47,6 +47,13 @@
 				var newMoney = state.players()[1].money() - offer.moneyFor(0) + offer.moneyFor(1);
 				
 				expect(nextState.currentPlayer().money()).to.eql(newMoney);
+			});
+			
+			it.skip('current player lost the properties he offered and gained the properties the other offered',
+				function () {
+				var newProperties = state.players()[1].properties() - offer.propertiesFor(0) + offer.propertiesFor(1);
+				
+				expect(nextState.currentPlayer().properties()).to.eql(newProperties);
 			});
 			
 			it('other player lost the money he offered and gained the money the current offered', function () {

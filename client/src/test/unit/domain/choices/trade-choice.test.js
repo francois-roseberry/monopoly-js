@@ -30,12 +30,12 @@
 				beforeEach(function () {
 					offer = TradeOffer.newOffer([
 						{
-							playerId: state.players()[0].id(),
+							player: state.players()[0],
 							properties: [],
 							money: 1
 						},
 						{
-							playerId: state.players()[1].id(),
+							player: state.players()[1],
 							properties: [],
 							money: 1
 						}

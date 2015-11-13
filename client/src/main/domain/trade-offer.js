@@ -3,6 +3,8 @@
 	
 	var precondition = require('./contract').precondition;
 	
+	var Player = require('./player');
+	
 	exports.isOffer = function (candidate) {
 		return candidate instanceof TradeOffer;
 	};
@@ -21,28 +23,40 @@
 	};
 	
 	exports.newOffer = function (info) {
-		precondition(_.isString(info[0].playerId),
-			'A TradeOffer requires the id of current player');
+		precondition(Player.isPlayer(info[0].player),
+			'A TradeOffer requires the current player');
 		precondition(_.isArray(info[0].properties),
 			'A TradeOffer requires a list of properties for the current player');
 		precondition(_.isNumber(info[0].money),
 			'A TradeOffer requires an amount of money for the current player');
+		precondition(propertiesOwnedBy(info[0].properties, info[0].player),
+			'Properties offered by current player must be owned by current player');
 			
-		precondition(_.isString(info[1].playerId),
-			'A TradeOffer requires the id of other player');
+		precondition(Player.isPlayer(info[1].player),
+			'A TradeOffer requires the other player');
 		precondition(_.isArray(info[1].properties),
 			'A TradeOffer requires a list of properties for the other player');
 		precondition(_.isNumber(info[1].money),
 			'A TradeOffer requires an amount of money for the other player');
+		precondition(propertiesOwnedBy(info[1].properties, info[1].player),
+			'Properties offered by other player must be owned by other player');
 		
 		return new TradeOffer(info);
 	};
 	
+	function propertiesOwnedBy(propertyIds, player) {
+		return _.every(propertyIds, function (propertyId) {
+			return !!_.find(player.properties(), function (property) {
+				return property.id() === propertyId;
+			});
+		});
+	}
+	
 	function TradeOffer(info) {
-		this._currentPlayerId = info[0].playerId;
+		this._currentPlayer = info[0].player;
 		this._currentPlayerProperties = info[0].properties;
 		this._currentPlayerMoney = info[0].money;
-		this._otherPlayerId = info[1].playerId;
+		this._otherPlayer = info[1].player;
 		this._otherPlayerProperties = info[1].properties;
 		this._otherPlayerMoney = info[1].money;
 	}
@@ -53,15 +67,15 @@
 	};
 	
 	TradeOffer.prototype.currentPlayerId = function () {
-		return this._currentPlayerId;
+		return this._currentPlayer.id();
 	};
 	
 	TradeOffer.prototype.otherPlayerId = function () {
-		return this._otherPlayerId;
+		return this._otherPlayer.id();
 	};
 	
 	TradeOffer.prototype.propertiesFor = function (playerIndex) {
-		return (playerIndex === 0) ? this._currentPlayerProperties : this._otherPlayerProperties;
+		return (playerIndex === 0) ? this._currentPlayerProperties.slice() : this._otherPlayerProperties.slice();
 	};
 	
 	TradeOffer.prototype.moneyFor = function (playerIndex) {
@@ -73,11 +87,11 @@
 			return false;
 		}
 		
-		if (this._currentPlayerId !== other._currentPlayerId) {
+		if (this._currentPlayer.id() !== other._currentPlayer.id()) {
 			return false;
 		}
 		
-		if (this._otherPlayerId !== other._otherPlayerId) {
+		if (this._otherPlayer.id() !== other._otherPlayer.id()) {
 			return false;
 		}
 		
