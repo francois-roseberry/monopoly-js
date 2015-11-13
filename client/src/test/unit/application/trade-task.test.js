@@ -30,7 +30,8 @@
 		it('can toggle a property in the offer by current player', function () {
 			task.togglePropertyOfferedByPlayer(Board.properties().readingRailroad.id(), 0);
 			
-			expect(currentOffer.propertiesFor(0)).to.eql([Board.properties().readingRailroad.id()]);
+			expect(currentOffer.propertiesFor(0).length).to.eql(1);
+			expect(currentOffer.propertiesFor(0)[0].equals(Board.properties().readingRailroad)).to.be(true);
 			
 			task.togglePropertyOfferedByPlayer(Board.properties().readingRailroad.id(), 0);
 			
@@ -40,7 +41,8 @@
 		it('can toggle a property in the offer by other player', function () {
 			task.togglePropertyOfferedByPlayer(Board.properties().readingRailroad.id(), 1);
 			
-			expect(currentOffer.propertiesFor(1)).to.eql([Board.properties().readingRailroad.id()]);
+			expect(currentOffer.propertiesFor(1).length).to.eql(1);
+			expect(currentOffer.propertiesFor(1)[0].equals(Board.properties().readingRailroad)).to.be(true);
 			
 			task.togglePropertyOfferedByPlayer(Board.properties().readingRailroad.id(), 1);
 			

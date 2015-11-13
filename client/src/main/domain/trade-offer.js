@@ -32,6 +32,8 @@
 		precondition(propertiesOwnedBy(info[0].properties, info[0].player),
 			'Properties offered by current player must be owned by current player');
 			
+		info[0].properties = realProperties(info[0].properties, info[0].player);
+			
 		precondition(Player.isPlayer(info[1].player),
 			'A TradeOffer requires the other player');
 		precondition(_.isArray(info[1].properties),
@@ -40,6 +42,8 @@
 			'A TradeOffer requires an amount of money for the other player');
 		precondition(propertiesOwnedBy(info[1].properties, info[1].player),
 			'Properties offered by other player must be owned by other player');
+			
+		info[1].properties = realProperties(info[1].properties, info[1].player);
 		
 		return new TradeOffer(info);
 	};
@@ -47,6 +51,14 @@
 	function propertiesOwnedBy(propertyIds, player) {
 		return _.every(propertyIds, function (propertyId) {
 			return !!_.find(player.properties(), function (property) {
+				return property.id() === propertyId;
+			});
+		});
+	}
+	
+	function realProperties(propertyIds, player) {
+		return _.map(propertyIds, function (propertyId) {
+			return _.find(player.properties(), function (property) {
 				return property.id() === propertyId;
 			});
 		});
@@ -103,28 +115,24 @@
 			return false;
 		}
 		
-		if (!arrayEquals(this._currentPlayerProperties, other._currentPlayerProperties)) {
+		if (!sameProperties(this._currentPlayerProperties, other._currentPlayerProperties)) {
 			return false;
 		}
 		
-		if (!arrayEquals(this._otherPlayerProperties, other._otherPlayerProperties)) {
+		if (!sameProperties(this._otherPlayerProperties, other._otherPlayerProperties)) {
 			return false;
 		}
 		
 		return true;
 	};
 	
-	function arrayEquals(left, right) {
+	function sameProperties(left, right) {
 		if (left.length !== right.length) {
 			return false;
 		}
 		
-		_.each(left, function (element, index) {
-			if (element !== right[index]) {
-				return false;
-			}
+		return _.every(left, function (property, index) {
+			return property.id() === right[index].id();
 		});
-		
-		return true;
 	}
 }());

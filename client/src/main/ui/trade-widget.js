@@ -76,7 +76,11 @@
 					});
 					
 				items.classed('monopoly-trade-player-property-selected', function (property) {
-					return _.contains(selectedProperties, property.id());
+					var propertyIds = _.map(selectedProperties, function (property) {
+						return property.id();
+					});
+					
+					return _.contains(propertyIds, property.id());
 				});
 			});
 		
