@@ -49,18 +49,51 @@
 				expect(nextState.currentPlayer().money()).to.eql(newMoney);
 			});
 			
-			it.skip('current player lost the properties he offered and gained the properties the other offered',
+			it('current player lost the properties he offered and gained the properties the other offered',
 				function () {
-				var newProperties = state.players()[1].properties() - offer.propertiesFor(0) + offer.propertiesFor(1);
-				
-				expect(nextState.currentPlayer().properties()).to.eql(newProperties);
+					var newProperties = addProperties(
+						substractProperties(state.players()[1].properties(), offer.propertiesFor(0)),
+						offer.propertiesFor(1));
+					
+					expect(sameProperties(nextState.currentPlayer().properties(), newProperties)).to.be(true);
 			});
 			
-			it('other player lost the money he offered and gained the money the current offered', function () {
+			it('other lost the money he offered and gained the money the current player offered', function () {
 				var newMoney = state.players()[0].money() - offer.moneyFor(1) + offer.moneyFor(0);
 				
 				expect(nextState.players()[0].money()).to.eql(newMoney);
 			});
+			
+			it('other lost the properties he offered and gained the properties the current player offered',
+				function () {
+					var newProperties = addProperties(
+						substractProperties(state.players()[0].properties(), offer.propertiesFor(1)),
+						offer.propertiesFor(0));
+					
+					expect(sameProperties(nextState.players()[0].properties(), newProperties)).to.be(true);
+			});
+			
+			function substractProperties(properties, toSubstract) {
+				return _.reduce(toSubstract, function (newProperties, propertyToSubstract) {
+					return _.filter(properties, function (property) {
+						return property.id() !== propertyToSubstract.id();
+					});
+				}, properties);
+			}
+			
+			function addProperties(properties, propertiesToAdd) {
+				return properties.concat(propertiesToAdd);
+			}
+			
+			function sameProperties(left, right) {
+				if (left.length !== right.length) {
+					return false;
+				}
+				
+				return _.every(left, function (property, index) {
+					return property.id() === right[index].id();
+				});
+			}
 		});
 	});
 }());
