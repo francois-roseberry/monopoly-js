@@ -10,6 +10,7 @@
 	var PayRentChoice = require('./pay-rent-choice');
 	var MoveChoice = require('./move-choice');
 	var BuyPropertyChoice = require('./buy-property-choice');
+	var AcceptOfferChoice = require('./accept-offer-choice');
 	var RejectOfferChoice = require('./reject-offer-choice');
 	var TradeChoice = require('./trade-choice');
 	
@@ -104,7 +105,7 @@
 					{
 						player: testData.players()[1],
 						properties: [],
-						money: 1
+						money: 2
 					}
 				]);
 				
@@ -124,6 +125,15 @@
 				gameTask.handleChoicesTask().makeChoice(choice);
 				
 				var message = Messages.logOfferRejected();
+				expect(logs.length).to.eql(2);
+				expect(logs[1].equals(message)).to.be(true);
+			});
+			
+			it('if it is accepted, sends a message', function () {
+				var choice = AcceptOfferChoice.newChoice(offer);
+				gameTask.handleChoicesTask().makeChoice(choice);
+				
+				var message = Messages.logOfferAccepted();
 				expect(logs.length).to.eql(2);
 				expect(logs[1].equals(message)).to.be(true);
 			});

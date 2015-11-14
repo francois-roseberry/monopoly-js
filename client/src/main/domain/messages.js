@@ -113,6 +113,10 @@
 		return items.join(', ');
 	}
 	
+	exports.logOfferAccepted = function () {
+		return new Log('offer-accepted', i18n.LOG_OFFER_ACCEPTED);
+	};
+	
 	exports.logOfferRejected = function () {
 		return new Log('offer-rejected', i18n.LOG_OFFER_REJECTED);
 	};

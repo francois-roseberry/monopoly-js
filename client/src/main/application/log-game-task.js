@@ -20,44 +20,44 @@
 	function watchGame(messages, playGameTask) {
 		onDiceRolled(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function (dice) {
-				messages.onNext(diceMessage(dice));
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 			
 		onPropertyBought(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function (info) {
-				messages.onNext(Messages.logPropertyBought(info.player, info.property));
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 			
 		onRentPaid(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function (info) {
-				messages.onNext(Messages.logRentPaid(info.amount, info.fromPlayer, info.toPlayer));
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 			
 		onSalaryEarned(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function (player) {
-				messages.onNext(Messages.logSalaryReceived(player));
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 			
 		onTaxPaid(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function (info) {
-				messages.onNext(Messages.logTaxPaid(info.amount, info.player));
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 			
 		onOfferMade(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function (info) {
-				messages.onNext(Messages.logOfferMade(info.player1, info.player2, info.offer));
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 			
-		onOfferRejected(playGameTask)
+		onOfferAcceptedOrRejected(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function () {
-				messages.onNext(Messages.logOfferRejected());
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 	}
 	
@@ -75,6 +75,9 @@
 				return task.diceRolled().last().withLatestFrom(
 					playGameTask.gameState(),
 					combineDiceAndState);
+			})
+			.map(function (dice) {
+				return diceMessage(dice);
 			});
 	}
 	
@@ -92,16 +95,17 @@
 				var player = states.previous.players()[states.current.currentPlayerIndex()];
 				var newProperty = findNewProperty(states);
 				
-				return {
-					player: player,
-					property: newProperty
-				};
+				return Messages.logPropertyBought(player, newProperty);
 			});
 	}
 	
 	function onRentPaid(playGameTask) {
 		return combineWithPrevious(playGameTask.gameState())
 			.filter(function (states) {
+				if (_.isFunction(states.previous.offer)) {
+					return false;
+				}
+				
 				var fromPlayer = _.find(states.current.players(), function (player, index) {
 					return player.money() < states.previous.players()[index].money();
 				});
@@ -122,11 +126,7 @@
 				var amount = states.previous.players()[states.current.currentPlayerIndex()].money() -
 					states.current.players()[states.current.currentPlayerIndex()].money();
 				
-				return {
-					fromPlayer: fromPlayer,
-					toPlayer: toPlayer,
-					amount: amount
-				};
+				return Messages.logRentPaid(amount, fromPlayer, toPlayer);
 			});
 	}
 	
@@ -139,7 +139,9 @@
 				return currentPlayer.money() === (previousPlayer.money() + 200);
 			})
 			.map(function (states) {
-				return states.current.players()[states.current.currentPlayerIndex()];
+				var player = states.current.players()[states.current.currentPlayerIndex()];
+				
+				return Messages.logSalaryReceived(player);
 			});
 	}
 	
@@ -159,19 +161,45 @@
 				var currentPlayerName = state.players()[currentPlayerIndex].name();
 				var otherPlayerName = state.players()[otherPlayerIndex].name();
 				
-				return {
-					player1: currentPlayerName,
-					player2: otherPlayerName,
-					offer: state.offer()
-				};
+				return Messages.logOfferMade(currentPlayerName, otherPlayerName, state.offer());
 			});
 	}
 	
-	function onOfferRejected(playGameTask) {
+	function onOfferAcceptedOrRejected(playGameTask) {
 		return combineWithPrevious(playGameTask.gameState())
 			.filter(function (states) {
 				return _.isFunction(states.previous.offer) && !states.current.offer;
+			})
+			.map(function (states) {
+				var somePlayerHasChanged =_.some(states.previous.players(), function (player, index) {
+					if (player.money() !== states.current.players()[index].money()) {
+						return true;
+					}
+					
+					if (!sameProperties(player.properties(), states.current.players()[index].properties())) {
+						return true;
+					}
+					
+					
+					return false;
+				});
+				
+				if (somePlayerHasChanged) {
+					return Messages.logOfferAccepted();
+				}
+				
+				return Messages.logOfferRejected();
 			});
+	}
+	
+	function sameProperties(left, right) {
+		if (left.length !== right.length) {
+			return false;
+		}
+		
+		return _.every(left, function (property, index) {
+			return property.id() === right[index].id();
+		});
 	}
 	
 	function onTaxPaid(playGameTask) {
@@ -207,10 +235,7 @@
 				var amount = states.previous.players()[states.current.currentPlayerIndex()].money() -
 					playerWhoPaid.money();
 				
-				return {
-					player: playerWhoPaid,
-					amount: amount
-				};
+				return Messages.logTaxPaid(amount, playerWhoPaid);
 			});
 	}
 	
