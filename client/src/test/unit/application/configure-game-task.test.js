@@ -5,32 +5,36 @@
 	
 	describe('A ConfigureGameTask', function () {
 		var task;
+		var currentSlots = null;
+		var completed = false;
 		
 		beforeEach(function () {
 			task = ConfigureGameTask.start();
+			
+			task.playerSlots().subscribe(function (slots) {
+				currentSlots = slots;
+			}, _.noop, function () {
+				completed = true;
+			});
 		});
 		
 		it('the available player types are human and computer', function () {
 			expect(task.availablePlayerTypes()).to.eql(['human', 'computer']);
 		});
 		
-		it('at start, creates 3 player slots', function (done) {
-			task.playerSlots().take(1).subscribe(function (slots) {
-				expect(slots).to.eql([
-					{ type: 'human' },
-					{ type: 'computer' },
-					{ type: 'computer' }
-				]);
-			}, done, done);
+		it('at start, creates 3 player slots', function () {
+			expect(currentSlots).to.eql([
+				{ type: 'human' },
+				{ type: 'computer' },
+				{ type: 'computer' }
+			]);
 		});
 		
-		it('adding a player slot sends an event', function (done) {
-			task.playerSlots().skip(1).take(1).subscribe(function (slots) {
-				expect(slots.length).to.eql(4);
-				expect(slots[3]).to.eql({ type: 'computer' });
-			}, done, done);
-			
+		it('adding a player slot sends an event', function () {
 			task.addPlayerSlot('computer');
+			
+			expect(currentSlots.length).to.eql(4);
+			expect(currentSlots[3]).to.eql({ type: 'computer' });
 		});
 		
 		it('if there are at least 3 players, game configuration is valid', function (done) {
@@ -70,16 +74,10 @@
 			}, done, done);
 		});
 		
-		it('when starting game, sends a completed event', function (done) {
-			task.completed().subscribe(_.noop, done, done);
-			
+		it('when starting game, completes the the task', function () {
 			task.startGame();
-		});
-		
-		it('when starting game, completes the playerSlots event', function (done) {
-			task.playerSlots().last().subscribe(_.noop, _.noop, done);
 			
-			task.startGame();
+			expect(completed).to.be(true);
 		});
 	});
 }());

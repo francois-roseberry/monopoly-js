@@ -10,7 +10,7 @@
 		choicesForPlayerType(playGameTask, 'human')
 			.subscribe(humanChoices);
 		
-		var task = new HandleChoicesTask(humanChoices);
+		var task = new HandleChoicesTask(humanChoices, playGameTask);
 		
 		choicesForPlayerType(playGameTask, 'computer')
 			.filter(function (choices) {
@@ -22,17 +22,18 @@
 		return task;
 	};
 	
-	function HandleChoicesTask(humanChoices) {
+	function HandleChoicesTask(humanChoices, playGameTask) {
 		this._humanChoices = humanChoices;
 		this._choiceMade = new Rx.Subject();
+		this._playGameTask = playGameTask;
 	}
 	
 	HandleChoicesTask.prototype.choices = function () {
-		return this._humanChoices.asObservable();
+		return this._humanChoices.takeUntil(this._playGameTask.completed());
 	};
 	
 	HandleChoicesTask.prototype.choiceMade = function () {
-		return this._choiceMade.asObservable();
+		return this._choiceMade.takeUntil(this._playGameTask.completed());
 	};
 	
 	HandleChoicesTask.prototype.makeChoice = function (choice, arg) {
@@ -42,13 +43,13 @@
 	
 	function choicesForPlayerType(playGameTask, type) {
 		return playGameTask.gameState()
+			.takeUntil(playGameTask.completed())
 			.filter(function (state) {
 				return state.currentPlayer().type() === type;
 			})
 			.map(function (state) {
 				return state.choices();
-			})
-			.takeUntil(playGameTask.completed());
+			});
 	}
 	
 	function computerPlayer(choices) {

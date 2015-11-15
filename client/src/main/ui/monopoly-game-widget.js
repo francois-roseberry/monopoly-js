@@ -32,8 +32,8 @@
 		
 		GameChoicesWidget.render($(centralComponentsContainer[0]), playGameTask.handleChoicesTask());
 		LogGameWidget.render($(centralComponentsContainer[0]), playGameTask.messages());
-		BoardWidget.render($(panel[0]), playGameTask.gameState());
-		PlayersWidget.render($(panel[0]), playGameTask.gameState());
+		BoardWidget.render($(panel[0]), playGameTask.gameState().takeUntil(playGameTask.completed()));
+		PlayersWidget.render($(panel[0]), playGameTask.gameState().takeUntil(playGameTask.completed()));
 		
 		playGameTask.rollDiceTaskCreated().subscribe(function (task) {
 			DiceWidget.render($(centralComponentsContainer[0]), task);

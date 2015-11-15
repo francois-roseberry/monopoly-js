@@ -35,12 +35,10 @@
 				playGameTask.gameState().take(1)
 					.map(onlyChoices)
 					.subscribe(function () {
-						task.choices().skip(1).take(1).subscribe(function () {
+						task.choices().skip(1).subscribe(function () {
 							throw new Error('Should never be called');
-						}, done, done);
-					
-					done();
-				});
+						});
+				}, done, done);
 			});
 			
 		it('sends a choiceMade event when a choice is made', function (done) {

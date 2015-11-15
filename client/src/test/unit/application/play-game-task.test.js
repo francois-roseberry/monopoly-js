@@ -21,20 +21,20 @@
 			});
 		});
 		
-		it('at start, sends an event with the initial game state', function (done) {
-			assertInitialGameState(task.gameState(), done);
+		it('at start, sends an event with the initial game state', function () {
+			assertInitialGameState(currentState);
 		});
 		
-		it('when turn starts, sends the gameState with the roll-dice-choice', function (done) {
-			assertRollDiceChoice(task.gameState(), done);
+		it('when turn starts, sends the gameState with the roll-dice-choice', function () {
+			assertRollDiceChoice(currentState);
 		});
 		
 		it('has a messages observable', function () {
-			expect(task.messages()).to.not.be(undefined);
+			expect(task.messages()).to.be.ok();
 		});
 		
 		it('has a HandleChoicesTask', function () {
-			expect(task.handleChoicesTask()).to.not.be(undefined);
+			expect(task.handleChoicesTask()).to.be.ok();
 		});
 		
 		it('stopping the task sends an event', function (done) {
@@ -71,17 +71,12 @@
 			task.handleChoicesTask().makeChoice(TradeChoice.newChoice(currentState.players()[1]));
 		});
 		
-		function assertRollDiceChoice(gameState, done) {
-			gameState.take(1)
-				.map(onlyChoices)
-				.map(toChoiceIds)
-				.subscribe(function (choices) {
-					expect(choices).to.contain(MoveChoice.newChoice().id);
-				}, done, done);
-		}
-		
-		function onlyChoices(state) {
-			return state.choices();
+		function assertRollDiceChoice(state) {
+			var choiceIds = _.map(state.choices(), function (choice) {
+				return choice.id;
+			});
+			
+			expect(choiceIds).to.contain(MoveChoice.newChoice().id);
 		}
 		
 		function gameTaskWithCheatedDice(dieValue) {
@@ -99,20 +94,18 @@
 				});
 		}
 		
-		function assertInitialGameState(gameState, done) {
-			gameState.take(1).subscribe(function (state) {
-				expect(state.squares().length).to.eql(Board.squares().length);
-				expect(state.players().length).to.eql(testData.playersConfiguration().length);
-				_.each(state.players(), function (player, index) {
-					expect(player.name()).to.eql('Joueur ' + (index + 1));
-					expect(player.money()).to.eql(1500);
-					expect(player.position()).to.eql(0);
-					expect(player.color()).to.eql(PlayerColors[index]);
-					expect(['human', 'computer']).to.contain(player.type());
-				});
-				expect(state.currentPlayerIndex()).to.eql(0);
-				expect(toChoiceIds(state.choices())).to.contain(MoveChoice.newChoice().id);
-			}, done, done);
+		function assertInitialGameState(state) {
+			expect(state.squares().length).to.eql(Board.squares().length);
+			expect(state.players().length).to.eql(testData.playersConfiguration().length);
+			_.each(state.players(), function (player, index) {
+				expect(player.name()).to.eql('Joueur ' + (index + 1));
+				expect(player.money()).to.eql(1500);
+				expect(player.position()).to.eql(0);
+				expect(player.color()).to.eql(PlayerColors[index]);
+				expect(['human', 'computer']).to.contain(player.type());
+			});
+			expect(state.currentPlayerIndex()).to.eql(0);
+			expect(toChoiceIds(state.choices())).to.contain(MoveChoice.newChoice().id);
 		}
 	});
 }());

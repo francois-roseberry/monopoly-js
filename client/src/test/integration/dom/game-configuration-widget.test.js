@@ -110,7 +110,7 @@
 		it('clicking the start game button completes the game configuration task', function (done) {
 			domContext.clickOn('.btn-start-game');
 			
-			task.completed().subscribe(_.noop, done, done);
+			task.playerSlots().subscribe(_.noop, done, done);
 		});
 	});
 }());

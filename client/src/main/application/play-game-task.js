@@ -19,27 +19,42 @@
 		precondition(gameConfiguration.options,
 			'PlayGameTask requires a configuration with an options object');
 		
-		return new PlayGameTask(gameConfiguration);
+		var task = new PlayGameTask(gameConfiguration);
+		
+		listenForChoices(task);	
+		
+		return task;
 	};
 	
-	function PlayGameTask(gameConfiguration) {
-		this._gameState = new Rx.ReplaySubject(1);
+	function PlayGameTask(gameConfiguration) {		
 		this._options = gameConfiguration.options;
 		this._completed = new Rx.AsyncSubject();
 		this._rollDiceTaskCreated = new Rx.Subject();
 		this._tradeTaskCreated = new Rx.Subject();
+		
+		var initialState = initialGameState(gameConfiguration.squares, gameConfiguration.players);
+		
+		this._gameState = new Rx.ReplaySubject(1);
+		this._gameState.onNext(initialState);
+		
 		this._logGameTask = LogGameTask.start(this);
-		
-		this._handleChoicesTask = HandleChoicesTask.start(this);
-		listenForChoices(this);
-		
-		startTurn(this, initialGameState(gameConfiguration.squares, gameConfiguration.players));
+		this._handleChoicesTask = HandleChoicesTask.start(this);	
 	}
 	
 	function listenForChoices(self) {
 		self._handleChoicesTask.choiceMade()
 			.takeUntil(self._completed)
-			.subscribe(makeChoice(self));
+			.withLatestFrom(self._gameState, function (action, state) {
+				return {
+					choice: action.choice,
+					arg: action.arg,
+					state: state
+				};
+			})
+			.flatMap(computeNextState(self))
+			.subscribe(function (state) {
+				self._gameState.onNext(state);
+			});
 	}
 	
 	function initialGameState(squares, players) {
@@ -50,16 +65,12 @@
 		});
 	}
 	
-	function startTurn(self, state) {
-		self._gameState.onNext(state);
-	}
-	
 	PlayGameTask.prototype.handleChoicesTask = function () {
 		return this._handleChoicesTask;
 	};
 	
 	PlayGameTask.prototype.messages = function () {
-		return this._logGameTask.messages();
+		return this._logGameTask.messages().takeUntil(this._completed);
 	};
 	
 	PlayGameTask.prototype.gameState = function () {
@@ -67,11 +78,11 @@
 	};
 	
 	PlayGameTask.prototype.rollDiceTaskCreated = function () {
-		return this._rollDiceTaskCreated.asObservable();
+		return this._rollDiceTaskCreated.takeUntil(this._completed);
 	};
 	
 	PlayGameTask.prototype.tradeTaskCreated = function () {
-		return this._tradeTaskCreated.asObservable();
+		return this._tradeTaskCreated.takeUntil(this._completed);
 	};
 	
 	PlayGameTask.prototype.completed = function () {
@@ -83,27 +94,17 @@
 		this._completed.onCompleted();
 	};
 	
-	function makeChoice(self) {
+	function computeNextState(self) {
 		return function (action) {
-			self._gameState.take(1)
-				.flatMap(computeNextState(self, action.choice, action.arg))
-				.subscribe(function (state) {
-					self._gameState.onNext(state);
-				});			
-		};
-	}
-	
-	function computeNextState(self, choice, arg) {
-		return function (state) {
-			if (choice.requiresDice()) {
-				return computeNextStateWithDice(self, state, choice);
+			if (action.choice.requiresDice()) {
+				return computeNextStateWithDice(self, action.state, action.choice);
 			}
 			
-			if (_.isFunction(choice.requiresTrade)) {
-				return computeNextStateWithTrade(self, state, choice, arg);
+			if (_.isFunction(action.choice.requiresTrade)) {
+				return computeNextStateWithTrade(self, action.state, action.choice, action.arg);
 			}
 			
-			var nextState = choice.computeNextState(state);
+			var nextState = action.choice.computeNextState(action.state);
 			return Rx.Observable.return(nextState);
 		};
 	}

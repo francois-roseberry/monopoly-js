@@ -2,7 +2,6 @@
 	"use strict";
 	
 	var PlayGameTask = require('./play-game-task');
-	var LogGameTask = require('./log-game-task');
 	var Messages = require('./messages');
 	var Board = require('./board');
 	var TradeOffer = require('./trade-offer');
@@ -18,16 +17,14 @@
 	
 	describe('The log game task', function () {
 		var gameTask;
-		var logTask;
 		var logs;
 		var firstPlayer;
 		var secondPlayer;
 		
 		beforeEach(function () {
 			gameTask = PlayGameTask.start(testData.gameConfiguration());
-			logTask = LogGameTask.start(gameTask);
 			logs = [];
-			logTask.messages().subscribe(function (log) {
+			gameTask.messages().subscribe(function (log) {
 				logs.push(log);
 			});
 			
@@ -41,11 +38,15 @@
 		it('when dice finishes rolling, sends a message', function (done) {
 			gameTask.rollDiceTaskCreated().take(1).subscribe(function (task) {
 				task.diceRolled().last().subscribe(function () {
-					assertLogged([
+					expect(logs.length).to.eql(1);
+					
+					var possibleLogs = [
 						Messages.logDiceRoll(firstPlayer, 2, 3).id(),
 						Messages.logDoubleDiceRoll(firstPlayer, 5).id()
-					], done);
-				});
+					];
+					
+					expect(possibleLogs).to.contain(logs[0].id());
+				}, done, done);
 			});
 			
 			gameTask.handleChoicesTask().makeChoice(MoveChoice.newChoice());
@@ -84,8 +85,7 @@
 		
 		it('when player wraps around the board, sends a message', function (done) {
 			gameTask = gameTaskWithCheatedDice(21);
-			logTask = LogGameTask.start(gameTask);
-			logTask.messages().skip(1).take(1).subscribe(function (log) {
+			gameTask.messages().skip(1).take(1).subscribe(function (log) {
 				expect(log.equals(Messages.logSalaryReceived(firstPlayer))).to.be(true);
 			}, done, done);
 			
@@ -138,12 +138,6 @@
 				expect(logs[1].equals(message)).to.be(true);
 			});
 		});
-		
-		function assertLogged(logs, done) {
-			logTask.messages().take(1).subscribe(function (log) {
-				expect(logs).to.contain(log.id());
-			}, done, done);
-		}
 		
 		function gameTaskWithCheatedDice(dieValue) {
 			return PlayGameTask.start({ squares: Board.squares(), players: testData.playersConfiguration(), options: { 

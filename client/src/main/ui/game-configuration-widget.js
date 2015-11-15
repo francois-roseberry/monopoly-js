@@ -40,14 +40,12 @@
 			});
 			
 		configureGameTask.canAddPlayerSlot()
-			.takeUntil(configureGameTask.completed())
 			.subscribe(function (canAdd) {
 				emptyBlock.style('display', (canAdd ? null : 'none'));
 			});
 		
 		
 		configureGameTask.playerSlots()
-			.takeUntil(configureGameTask.completed())
 			.subscribe(function (slots) {
 				var slotsSelection = activeSlotsContainer
 					.selectAll('.player-slot')
@@ -66,7 +64,6 @@
 			});
 			
 		configureGameTask.configurationValid()
-			.takeUntil(configureGameTask.completed())
 			.subscribe(function (valid) {
 				startButton.attr('disabled', (valid ? null : 'disabled'));
 			});
