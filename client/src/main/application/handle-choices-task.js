@@ -7,14 +7,17 @@
 		precondition(playGameTask, 'HandleChoicesTask requires a PlayGameTask');
 		
 		var humanChoices = new Rx.ReplaySubject(1);
-		choicesForPlayerType(playGameTask, 'human')
+		gameStateForPlayerType(playGameTask, 'human')
+			.map(function (state) {
+				return state.choices();
+			})
 			.subscribe(humanChoices);
 		
 		var task = new HandleChoicesTask(humanChoices, playGameTask);
 		
-		choicesForPlayerType(playGameTask, 'computer')
-			.filter(function (choices) {
-				return choices.length > 0;
+		gameStateForPlayerType(playGameTask, 'computer')
+			.filter(function (state) {
+				return state.choices().length > 0;
 			})
 			.map(computerPlayer)
 			.subscribe(applyChoice(task));
@@ -41,19 +44,33 @@
 		this._choiceMade.onNext({choice: choice, arg: arg});
 	};
 	
-	function choicesForPlayerType(playGameTask, type) {
+	function gameStateForPlayerType(playGameTask, type) {
 		return playGameTask.gameState()
 			.takeUntil(playGameTask.completed())
 			.filter(function (state) {
 				return state.currentPlayer().type() === type;
-			})
-			.map(function (state) {
-				return state.choices();
 			});
 	}
 	
-	function computerPlayer(choices) {
-		return choices[0];
+	function computerPlayer(state) {
+		if (_.isFunction(state.offer)) {
+			var valueForCurrentPlayer = calculateOfferValueFor(state.offer(), 0);
+			var valueForOtherPlayer = calculateOfferValueFor(state.offer(), 1);
+			
+			if (valueForCurrentPlayer >= valueForOtherPlayer) {
+				return state.choices()[0];
+			}
+			
+			return state.choices()[1];
+		}
+		
+		return state.choices()[0];
+	}
+	
+	function calculateOfferValueFor(offer, playerIndex) {
+		return _.reduce(offer.propertiesFor(playerIndex), function (totalValue, property) {
+			return totalValue + property.price();
+		}, offer.moneyFor(playerIndex));
 	}
 	
 	function applyChoice(task) {

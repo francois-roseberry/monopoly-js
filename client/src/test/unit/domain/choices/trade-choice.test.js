@@ -43,12 +43,12 @@
 					nextState = choice.computeNextState(state, offer);
 				});
 				
-				it('offers the RejectOffer and AcceptOffer choices', function () {
+				it('offers the AcceptOffer and RejectOffer choices', function () {
 					var rejectOffer = RejectOfferChoice.newChoice(offer.currentPlayerId());
 					
 					expect(nextState.choices().length).to.eql(2);
-					expect(nextState.choices()[0].equals(rejectOffer)).to.be(true);
-					expect(nextState.choices()[1].equals(AcceptOfferChoice.newChoice(offer))).to.be(true);
+					expect(nextState.choices()[0].equals(AcceptOfferChoice.newChoice(offer))).to.be(true);
+					expect(nextState.choices()[1].equals(rejectOffer)).to.be(true);					
 				});
 				
 				it('current player is now the other player in the offer', function () {

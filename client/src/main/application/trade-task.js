@@ -61,14 +61,20 @@
 	}
 	
 	TradeTask.prototype.setMoneyOfferedByPlayer = function (money, playerIndex) {
-		precondition(_.isNumber(money) && money >= 0 && money <= this._currentPlayer.money(),
-			'A player can only offer an amount of money between 0 and the total he has (inclusively)');
+		precondition(_.isNumber(money) && money >= 0,
+			'A player can only offer an amount of money greater than or equal to 0');
 		precondition(_.isNumber(playerIndex) && (playerIndex === 0 || playerIndex === 1),
 			'Only the player with index 0 or 1 can offer something');
 			
 		if (playerIndex === 0) {
+			precondition(money <= this._currentPlayer.money(),
+				'A player cannot offer more money than he has');
+			
 			this._currentPlayerMoneyOffer = money;
 		} else {
+			precondition(money <= this._otherPlayer.money(),
+				'A player cannot offer more money than he has');
+				
 			this._otherPlayerMoneyOffer = money;
 		}
 		

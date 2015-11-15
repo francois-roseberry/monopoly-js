@@ -34,8 +34,8 @@
 			'Offer must be destined to an existing player');
 		
 		var choices = [
-			RejectOfferChoice.newChoice(offer.currentPlayerId()),
-			AcceptOfferChoice.newChoice(offer)
+			AcceptOfferChoice.newChoice(offer),
+			RejectOfferChoice.newChoice(offer.currentPlayerId())
 		];
 		
 		var state = new GameState({

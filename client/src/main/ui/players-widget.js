@@ -122,5 +122,7 @@
 			});
 			
 		selection.order();
+		
+		selection.exit().remove();
 	}
 }());

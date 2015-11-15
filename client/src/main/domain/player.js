@@ -244,8 +244,8 @@
 	};
 	
 	Player.prototype.pay = function (amount) {
-		precondition(_.isNumber(amount) && amount > 0,
-			'Player requires an amount to pay, that is greater than 0');
+		precondition(_.isNumber(amount) && amount >= 0,
+			'Player requires an amount to pay, that is greater than or equal to 0');
 			
 		precondition(this.money() > amount, 'Player does not have enough money to pay ' + amount);
 		
@@ -253,8 +253,8 @@
 	};
 	
 	Player.prototype.earn = function (amount) {
-		precondition(_.isNumber(amount) && amount > 0,
-			'Player requires an amount to earn, that is greater than 0');
+		precondition(_.isNumber(amount) && amount >= 0,
+			'Player requires an amount to earn, that is greater than or equal to 0');
 		
 		return playerWithAdditionalMoney(this, amount);
 	};

@@ -84,6 +84,10 @@
 	function onPropertyBought(playGameTask) {
 		return combineWithPrevious(playGameTask.gameState())
 			.filter(function (states) {
+				if (_.isFunction(states.previous.offer)) {
+					return false;
+				}
+				
 				return _.some(states.current.players(), function (player, index) {
 					var currentProperties = player.properties();
 					var previousProperties = states.previous.players()[index].properties();

@@ -107,10 +107,18 @@
 	};
 	
 	function enumerateOfferFor(offer, playerIndex) {
-		var items = offer.propertiesFor(playerIndex).slice();
-		items.push(i18n.formatPrice(offer.moneyFor(playerIndex)));
+		var propertiesOffer = _.map(offer.propertiesFor(playerIndex), function (property) {
+			return property.name();
+		})
+		.join(', ');
 		
-		return items.join(', ');
+		var priceOffer = i18n.formatPrice(offer.moneyFor(playerIndex));
+		
+		if (propertiesOffer === '') {
+			return priceOffer;
+		}
+		
+		return propertiesOffer + ' ' + i18n.LOG_CONJUNCTION + ' ' + priceOffer;
 	}
 	
 	exports.logOfferAccepted = function () {

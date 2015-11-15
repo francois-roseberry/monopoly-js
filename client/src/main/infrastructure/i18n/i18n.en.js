@@ -32,6 +32,7 @@
 	exports.LOG_TAX_PAID = "{player} paid a {amount} tax";
 	exports.LOG_OFFER_MADE = "{player1} offered {player2} : {offer1} for {offer2}";
 	exports.LOG_OFFER_ACCEPTED = "The offer has been accepted";
+	exports.LOG_CONJUNCTION = 'and';
 	exports.LOG_OFFER_REJECTED = "The offer has been rejected";
 	
 	// Squares
