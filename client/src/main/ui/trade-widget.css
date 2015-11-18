@@ -32,7 +32,7 @@
 }
 
 .monopoly-trade-player-property-selected {
-	text-shadow: 1px 1px #fff;
+	text-shadow: 1px 1px #fff, -1px -1px #fff, -1px 1px #fff, 1px -1px #fff;
 	color: #000;
 }
 
