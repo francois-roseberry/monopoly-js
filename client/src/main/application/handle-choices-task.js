@@ -39,6 +39,10 @@
 		return this._choiceMade.takeUntil(this._playGameTask.completed());
 	};
 	
+	HandleChoicesTask.prototype.completed = function () {
+		return this._playGameTask.completed();
+	};
+	
 	HandleChoicesTask.prototype.makeChoice = function (choice, arg) {
 		this._humanChoices.onNext([]);
 		this._choiceMade.onNext({choice: choice, arg: arg});

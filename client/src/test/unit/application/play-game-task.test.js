@@ -9,6 +9,7 @@
 	var TradeChoice = require('./trade-choice');
 	
 	var testData = require('./test-data');
+	var assert = require('./assert');
 	
 	describe('The PlayGame task', function () {
 		var task;
@@ -37,10 +38,12 @@
 			expect(task.handleChoicesTask()).to.be.ok();
 		});
 		
-		it('stopping the task sends an event', function (done) {
-			task.stop();
-			
-			task.completed().subscribe(_.noop, done, done);
+		it('completes correctly', function () {
+			assert.taskStopCorrectly(task, [
+				task.messages(),
+				task.rollDiceTaskCreated(),
+				task.tradeTaskCreated()
+			]);
 		});
 		
 		describe('when a choice is made, sends the next game state', function () {
