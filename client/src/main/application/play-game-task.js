@@ -42,7 +42,6 @@
 	
 	function listenForChoices(self) {
 		self._handleChoicesTask.choiceMade()
-			.takeUntil(self._completed)
 			.withLatestFrom(self._gameState, function (action, state) {
 				return {
 					choice: action.choice,
