@@ -14,7 +14,7 @@
 			task = GameTask.start();
 			GameWidget.render(domContext.rootElement, task);
 			
-			task.statusChanged().subscribe(function (status) {
+			task.status().subscribe(function (status) {
 				currentStatus = status;
 			});
 		});

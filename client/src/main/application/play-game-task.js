@@ -34,8 +34,7 @@
 		
 		var initialState = initialGameState(gameConfiguration.squares, gameConfiguration.players);
 		
-		this._gameState = new Rx.ReplaySubject(1);
-		this._gameState.onNext(initialState);
+		this._gameState = new Rx.BehaviorSubject(initialState);
 		
 		this._logGameTask = LogGameTask.start(this);
 		this._handleChoicesTask = HandleChoicesTask.start(this);	

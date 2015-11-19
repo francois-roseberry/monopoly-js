@@ -10,7 +10,7 @@
 		precondition(container, 'A Game widget requires a container to render into');
 		precondition(gameTask, 'A Game widget requires a game task');
 		
-		gameTask.statusChanged().subscribe(function (status) {
+		gameTask.status().subscribe(function (status) {
 			d3.select(container[0]).selectAll('*').remove();
 			status.match({
 				'configuring': renderGameConfiguration(container),

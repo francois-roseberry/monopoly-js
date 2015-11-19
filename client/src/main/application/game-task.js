@@ -10,15 +10,14 @@
 	};
 
 	function GameTask() {
-		this._statusChanged = new Rx.ReplaySubject(1);
-		this._statusChanged.onNext(configuringStatus(this._statusChanged));
+		this._status = new Rx.BehaviorSubject(configuringStatus(this));
 	}
 	
-	function configuringStatus(statusChanged) {
+	function configuringStatus(self) {
 		var task = ConfigureGameTask.start();
 		task.playerSlots().last()
 			.subscribe(function (players) {
-				startGame(players, statusChanged);
+				startGame(players, self);
 			});
 		
 		return {
@@ -29,11 +28,11 @@
 		};
 	}
 	
-	function playingStatus(players, statusChanged) {
+	function playingStatus(players, self) {
 		var gameConfiguration = { squares: Board.squares(), players: players, options: { fastDice: false }};
 		var task = PlayGameTask.start(gameConfiguration);
 		task.completed().subscribe(function () {
-			newGame(statusChanged);
+			newGame(self);
 		});
 				
 		return {
@@ -44,15 +43,15 @@
 		};
 	}
 	
-	function newGame(statusChanged) {
-		statusChanged.onNext(configuringStatus(statusChanged));
+	function newGame(self) {
+		self._status.onNext(configuringStatus(self));
 	}
 	
-	function startGame(players, statusChanged) {
-		statusChanged.onNext(playingStatus(players, statusChanged));
+	function startGame(players, self) {
+		self._status.onNext(playingStatus(players, self));
 	}
 	
-	GameTask.prototype.statusChanged = function () {
-		return this._statusChanged.asObservable();
+	GameTask.prototype.status = function () {
+		return this._status.asObservable();
 	};
 }());
