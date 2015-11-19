@@ -21,7 +21,8 @@
 	exports.CHOICE_TRADE = "Trade with {player}";
 	exports.TRADE_MAKE_OFFER = "Make this offer";
 	exports.TRADE_CANCEL = "Cancel trade";
-	exports.TRADE_REJECT_OFFER = "Reject offer";
+	exports.CHOICE_ACCEPT_OFFER = "Accept offer";
+	exports.CHOICE_REJECT_OFFER = "Reject offer";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';

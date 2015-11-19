@@ -15,7 +15,7 @@
 	
 	function AcceptOfferChoice(offer) {
 		this.id = 'accept-offer';
-		this.name = i18n.ACCEPT_OFFER;
+		this.name = i18n.CHOICE_ACCEPT_OFFER;
 		this._offer = offer;
 	}
 	

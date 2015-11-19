@@ -14,7 +14,7 @@
 	
 	function RejectOfferChoice(offerCurrentPlayerId) {
 		this.id = 'reject-offer';
-		this.name = i18n.REJECT_OFFER;
+		this.name = i18n.CHOICE_REJECT_OFFER;
 		this._offerCurrentPlayerId = offerCurrentPlayerId;
 	}
 	
