@@ -92,7 +92,29 @@
 					min: 0, max: player.money(), step: 1,
 					change: onMoneySpinnerChange(tradeTask, playerIndex)
 				})
-				.val(0);
+				.val(0)
+				.on('input', function () {
+					if ($(this).data('onInputPrevented')) {
+						return;
+					}
+					var val = this.value;
+					var $this = $(this);
+					var max = $this.spinner('option', 'max');
+					var min = $this.spinner('option', 'min');
+					// We want only number, no alpha. 
+					// We set it to previous default value.         
+					if (!val.match(/^[+-]?[\d]{0,}$/)) {
+						val = $(this).data('defaultValue');
+					}
+					this.value = val > max ? max : val < min ? min : val;
+				}).on('keydown', function (e) {
+					// we set default value for spinner.
+					if (!$(this).data('defaultValue')) {
+						$(this).data('defaultValue', this.value);
+					}
+					// To handle backspace
+					$(this).data('onInputPrevented', e.which === 8 ? true : false);
+				});
 			});
 			
 		panel.append('span')
