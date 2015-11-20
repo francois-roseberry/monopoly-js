@@ -9,6 +9,7 @@
 
 .monopoly-trade-player-panels {
 	overflow: auto;
+	margin-bottom: 20px;
 }
 
 .monopoly-trade-player-panel {
@@ -45,6 +46,5 @@
 }
 
 .monopoly-trade-make-offer-btn {
-	margin-top: 20px;
 	margin-right: 10px;
 }

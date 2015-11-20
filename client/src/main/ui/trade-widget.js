@@ -23,14 +23,22 @@
 		renderPlayerPanel(panelContainer, tradeTask.otherPlayer(), tradeTask, 1);
 		
 		var makeOfferBtn = panel.append('button')
-			.classed('monopoly-trade-make-offer-btn', true)
+			.classed({
+				'monopoly-trade-make-offer-btn': true,
+				'btn': true,
+				'btn-default': true
+			})
 			.text(i18n.TRADE_MAKE_OFFER)
 			.on('click', function () {
 				tradeTask.makeOffer();
 			});
 			
 		panel.append('button')
-			.classed('monopoly-trade-cancel-btn', true)
+			.classed({
+				'monopoly-trade-cancel-btn': true,
+				'btn': true,
+				'btn-default': true
+			})
 			.text(i18n.TRADE_CANCEL)
 			.on('click', function () {
 				tradeTask.cancel();
