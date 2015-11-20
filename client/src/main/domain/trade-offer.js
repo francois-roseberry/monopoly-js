@@ -78,6 +78,13 @@
 			this._otherPlayerProperties.length === 0 && this._otherPlayerMoney === 0;
 	};
 	
+	TradeOffer.prototype.isValid = function () {
+		var currentPlayerOfferValid = (this._currentPlayerProperties.length > 0 || this._currentPlayerMoney > 0);
+		var otherPlayerOfferValid = (this._otherPlayerProperties.length > 0 || this._otherPlayerMoney > 0);
+		
+		return currentPlayerOfferValid && otherPlayerOfferValid;
+	};
+	
 	TradeOffer.prototype.currentPlayerId = function () {
 		return this._currentPlayer.id();
 	};

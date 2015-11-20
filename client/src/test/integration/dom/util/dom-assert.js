@@ -182,7 +182,7 @@
                 });
             },
 
-            assertIsDisabled: function (selector) {
+            assertDisabled: function (selector) {
                 checkIsSelector(selector);
 
                 if (!isDisabled(rootElement(), selector)) {
@@ -190,7 +190,7 @@
                 }
             },
 
-            assertIsNotDisabled: function (selector) {
+            assertEnabled: function (selector) {
                 checkIsSelector(selector);
 
                 if (isDisabled(rootElement(), selector)) {

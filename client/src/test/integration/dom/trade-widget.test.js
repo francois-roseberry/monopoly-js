@@ -16,6 +16,7 @@
 		beforeEach(function () {
 			currentPlayer = testData.players()[0].buyProperty(Board.properties().readingRailroad);
 			otherPlayer = testData.players()[1];
+			
 			var task = TradeTask.start(currentPlayer, otherPlayer);
 			TradeWidget.render(domContext.rootElement, task);
 			
@@ -94,10 +95,24 @@
 			domContext.assertOneOf('.monopoly-trade-cancel-btn');
 		});
 		
-		it('clicking on the make offer button erases the widget', function () {
-			domContext.clickOn('.monopoly-trade-make-offer-btn');
+		it('when offer is invalid, the make offer button is disabled', function () {
+			domContext.assertDisabled('.monopoly-trade-make-offer-btn');
+		});
+		
+		describe('when offer is valid', function () {
+			beforeEach(function () {
+				selectValidOffer();
+			});
 			
-			domContext.assertNothingOf('.monopoly-trade-panel');
+			it('the make offer button is enabled', function () {
+				domContext.assertEnabled('.monopoly-trade-make-offer-btn');
+			});
+			
+			it('clicking on the make offer button closes the widget', function () {
+				domContext.clickOn('.monopoly-trade-make-offer-btn');
+			
+				domContext.assertNothingOf('.monopoly-trade-panel');
+			});
 		});
 		
 		it('clicking on the cancel trade button erases the widget', function () {
@@ -105,5 +120,17 @@
 			
 			domContext.assertNothingOf('.monopoly-trade-panel');
 		});
+		
+		function selectValidOffer() {
+			var currentPlayerSelector = '.monopoly-trade-player-panel[data-ui=' + currentPlayer.id() +
+				'] .monopoly-trade-player-money-spinner';
+				
+			$(currentPlayerSelector).spinner('value', 1);
+			
+			var otherPlayerSelector = '.monopoly-trade-player-panel[data-ui=' + otherPlayer.id() +
+				'] .monopoly-trade-player-money-spinner';
+				
+			$(otherPlayerSelector).spinner('value', 1);
+		}
 	});
 }());

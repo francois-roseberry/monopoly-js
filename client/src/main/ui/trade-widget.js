@@ -22,7 +22,7 @@
 		renderPlayerPanel(panelContainer, tradeTask.currentPlayer(), tradeTask, 0);
 		renderPlayerPanel(panelContainer, tradeTask.otherPlayer(), tradeTask, 1);
 		
-		panel.append('button')
+		var makeOfferBtn = panel.append('button')
 			.classed('monopoly-trade-make-offer-btn', true)
 			.text(i18n.TRADE_MAKE_OFFER)
 			.on('click', function () {
@@ -35,6 +35,14 @@
 			.on('click', function () {
 				tradeTask.cancel();
 			});
+			
+			tradeTask.offer()
+				.map(function (offer) {
+					return offer.isValid();
+				})
+				.subscribe(function (valid) {
+					makeOfferBtn.attr('disabled', valid ? null : 'disabled');
+				});
 			
 		tradeTask.offer().subscribeOnCompleted(function () {
 			panel.remove();
