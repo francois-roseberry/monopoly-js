@@ -11,12 +11,7 @@
 }
 
 .btn-start-game {
-	border-radius: 3px;
 	margin-top: 20px;
-}
-
-.btn-start-game:disabled {
-	color: gray;
 }
 
 .player-slot {

@@ -57,7 +57,11 @@
 			});
 		
 		var startButton = panel.append('button')
-			.classed('btn-start-game', true)
+			.classed({
+				'btn-start-game': true,
+				'btn': true,
+				'btn-default': true
+			})
 			.text(i18n.BUTTON_START_GAME)
 			.on('click', function () {
 				configureGameTask.startGame();

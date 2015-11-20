@@ -25,6 +25,10 @@
 			
 		centralComponentsContainer.append('button')
 			.attr('id', 'new-game-button')
+			.classed({
+				'btn': true,
+				'btn-default': true
+			})
 			.text(i18n.BUTTON_NEW_GAME)
 			.on('click', function() {
 				playGameTask.stop();
