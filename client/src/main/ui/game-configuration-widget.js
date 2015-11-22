@@ -40,14 +40,12 @@
 			});
 			
 		configureGameTask.canAddPlayerSlot()
-			.takeUntil(configureGameTask.completed())
 			.subscribe(function (canAdd) {
 				emptyBlock.style('display', (canAdd ? null : 'none'));
 			});
 		
 		
 		configureGameTask.playerSlots()
-			.takeUntil(configureGameTask.completed())
 			.subscribe(function (slots) {
 				var slotsSelection = activeSlotsContainer
 					.selectAll('.player-slot')
@@ -59,14 +57,17 @@
 			});
 		
 		var startButton = panel.append('button')
-			.classed('btn-start-game', true)
+			.classed({
+				'btn-start-game': true,
+				'btn': true,
+				'btn-default': true
+			})
 			.text(i18n.BUTTON_START_GAME)
 			.on('click', function () {
 				configureGameTask.startGame();
 			});
 			
 		configureGameTask.configurationValid()
-			.takeUntil(configureGameTask.completed())
 			.subscribe(function (valid) {
 				startButton.attr('disabled', (valid ? null : 'disabled'));
 			});

@@ -7,11 +7,48 @@
 	var BuyPropertyChoice = require('./buy-property-choice');
 	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
 	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
+	var TradeChoice = require('./trade-choice');
+	var AcceptOfferChoice = require('./accept-offer-choice');
+	var RejectOfferChoice = require('./reject-offer-choice');
+	var TradeOffer = require('./trade-offer');
 	
 	var precondition = require('./contract').precondition;
 	
 	exports.isGameState = function (candidate) {
 		return candidate instanceof GameState;
+	};
+	
+	exports.gameInTradeState = function (squares, players, offer) {
+		precondition(_.isArray(squares) && squares.length === 40,
+			'GameInTradeState requires an array of 40 squares');
+		precondition(_.isArray(players),
+			'GameInTradeState requires an array of players');
+		precondition(TradeOffer.isOffer(offer),
+			'GameInTradeState requires an offer');
+			
+		var otherPlayerIndex = _.findIndex(players, function (player) {
+			return player.id() === offer.otherPlayerId();
+		});
+		
+		precondition(otherPlayerIndex >= 0,
+			'Offer must be destined to an existing player');
+		
+		var choices = [
+			AcceptOfferChoice.newChoice(offer),
+			RejectOfferChoice.newChoice(offer.currentPlayerId())
+		];
+		
+		var state = new GameState({
+			squares: squares,
+			players: players,
+			currentPlayerIndex: otherPlayerIndex
+		}, choices);
+		
+		state.offer = function () {
+			return offer;
+		};
+		
+		return state;
 	};
 	
 	exports.gameFinishedState = function (squares, winner) {
@@ -29,13 +66,20 @@
 	exports.turnStartState = function (info) {
 		validateInfo(info);
 			
-		var choices = newTurnChoices();
+		var choices = newTurnChoices(info);
 		
 		return new GameState(info, choices);
 	};
 	
-	function newTurnChoices() {
-		return [MoveChoice.newChoice()];
+	function newTurnChoices(info) {
+		var tradeChoices = _.filter(info.players, function (player, index) {
+				return index !== info.currentPlayerIndex;
+			})
+			.map(function (player) {
+				return TradeChoice.newChoice(player);
+			});
+			
+		return [MoveChoice.newChoice()].concat(tradeChoices);
 	}
 	
 	exports.turnEndState = function (info, paid) {
@@ -204,10 +248,24 @@
 	GameState.prototype.changeChoices = function (choices) {
 		precondition(_.isArray(choices), 'Changing a game state choices list requires a list of choices');
 		
-		return new GameState({
+		var state = new GameState({
 			squares: this._squares,
 			players: this._players,
 			currentPlayerIndex: this._currentPlayerIndex
 		}, choices);
+		state._oldChoices = this._choices;
+		
+		return state;
+	};
+	
+	GameState.prototype.restoreChoices = function () {
+		precondition(_.isArray(this._oldChoices),
+			'Restoring the choices of a game state require a list of choices to restore');
+			
+		return new GameState({
+			squares: this._squares,
+			players: this._players,
+			currentPlayerIndex: this._currentPlayerIndex
+		}, this._oldChoices);
 	};
 }());

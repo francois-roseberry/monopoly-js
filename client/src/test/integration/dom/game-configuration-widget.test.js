@@ -98,19 +98,19 @@
 		it('renders the start game button', function () {
 			domContext.assertOneOf('.btn-start-game');
 			
-			domContext.assertIsNotDisabled('.btn-start-game');
+			domContext.assertEnabled('.btn-start-game');
 		});
 		
 		it('disable the start game button when the configuration is invalid', function () {
 			domContext.d3.clickOn('.remove-player-slot-btn[data-index="0"]');
 			
-			domContext.assertIsDisabled('.btn-start-game');
+			domContext.assertDisabled('.btn-start-game');
 		});
 		
 		it('clicking the start game button completes the game configuration task', function (done) {
 			domContext.clickOn('.btn-start-game');
 			
-			task.completed().subscribe(_.noop, done, done);
+			task.playerSlots().subscribe(_.noop, done, done);
 		});
 	});
 }());

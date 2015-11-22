@@ -18,6 +18,11 @@
 	exports.CHOOSE_FLAT_TAX = 'Choose a flat {amount} tax';
 	exports.CHOOSE_PERCENTAGE_TAX = 'Choose a {percentage}% tax';
 	exports.CHOICE_CALCULATE_DICE_RENT = 'Roll the dice and pay a rent of {multiplier} times the result';
+	exports.CHOICE_TRADE = "Trade with {player}";
+	exports.TRADE_MAKE_OFFER = "Make this offer";
+	exports.TRADE_CANCEL = "Cancel trade";
+	exports.CHOICE_ACCEPT_OFFER = "Accept offer";
+	exports.CHOICE_REJECT_OFFER = "Reject offer";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
@@ -26,6 +31,10 @@
 	exports.LOG_RENT_PAID = '{fromPlayer} paid {amount} to {toPlayer}';
 	exports.LOG_SALARY = "{player} passed GO and received $200";
 	exports.LOG_TAX_PAID = "{player} paid a {amount} tax";
+	exports.LOG_OFFER_MADE = "{player1} offered {player2} : {offer1} for {offer2}";
+	exports.LOG_OFFER_ACCEPTED = "The offer has been accepted";
+	exports.LOG_CONJUNCTION = 'and';
+	exports.LOG_OFFER_REJECTED = "The offer has been rejected";
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -81,4 +90,7 @@
 	exports.formatPrice = function (price) {
 		return '$' + price;
 	};
+	
+	// Trade
+	exports.TRADE_TITLE = "Trade";
 }());

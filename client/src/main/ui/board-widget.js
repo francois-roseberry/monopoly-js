@@ -106,7 +106,7 @@
 			'jail': renderJail(container),
 			'go-to-jail': _.noop,
 			'parking': function () {
-				writeAngledText(container, i18n.FREE_PARKING, -8, 100, 12, SQUARE_WIDTH * 2);
+				writeAngledText(container, i18n.FREE_PARKING,  {x: -8, y: 100}, 12, SQUARE_WIDTH * 2);
 			}
 		});
 	}
@@ -199,7 +199,7 @@
 	
 	function renderStart(container) {
 		return function () {
-			var angledContainer = writeAngledText(container, i18n.START_DESCRIPTION, 4, 58);
+			var angledContainer = writeAngledText(container, i18n.START_DESCRIPTION, {x: 4, y: 58});
 			angledContainer.append('g')
 				.attr('transform', 'translate(20, 30)')
 				.html(Symbols.go());
@@ -250,9 +250,9 @@
 		TextWrapper.wrap(container, text.toUpperCase(), fontSize || 8, y, SQUARE_WIDTH);
 	}
 	
-	function writeAngledText(container, text, x, y, fontSize, width) {
+	function writeAngledText(container, text, position, fontSize, width) {
 		var angledContainer = container.append('g')
-			.attr('transform', 'translate(' + x + ', ' + y + ') rotate(-45)');
+			.attr('transform', 'translate(' + position.x + ', ' + position.y + ') rotate(-45)');
 			
 		TextWrapper.wrap(angledContainer, text.toUpperCase(), fontSize || 8, 0, width || SQUARE_WIDTH);
 		

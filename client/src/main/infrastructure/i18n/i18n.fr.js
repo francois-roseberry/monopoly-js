@@ -18,6 +18,11 @@
 	exports.CHOOSE_FLAT_TAX = 'Choisir une taxe fixe de {amount}';
 	exports.CHOOSE_PERCENTAGE_TAX = 'Choisir une taxe de {percentage}%';
 	exports.CHOICE_CALCULATE_DICE_RENT = 'Lancer les dés et payer un loyer de {multiplier} fois le résultat';
+	exports.CHOICE_TRADE = "Échanger avec {player}";
+	exports.TRADE_MAKE_OFFER = "Faire cette offre";
+	exports.TRADE_CANCEL = "Annuler l'échange";
+	exports.CHOICE_ACCEPT_OFFER = "Accepter l'offre";
+	exports.CHOICE_REJECT_OFFER = "Rejeter l'offre";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';
@@ -26,6 +31,10 @@
 	exports.LOG_RENT_PAID = '{fromPlayer} a payé {amount} à {toPlayer}';
 	exports.LOG_SALARY = "{player} a passé GO et reçu $200";
 	exports.LOG_TAX_PAID = "{player} a payé une taxe de {amount}";
+	exports.LOG_OFFER_MADE = "{player1} a offert à {player2} : {offer1} pour {offer2}";
+	exports.LOG_OFFER_ACCEPTED = "L'offre a été acceptée";
+	exports.LOG_CONJUNCTION = 'et';
+	exports.LOG_OFFER_REJECTED = "L'offre a été rejetée";
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -81,4 +90,7 @@
 	exports.formatPrice = function (price) {
 		return price + ' $';
 	};
+	
+	// Trade
+	exports.TRADE_TITLE = "Échange";
 }());

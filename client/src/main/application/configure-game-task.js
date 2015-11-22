@@ -24,11 +24,11 @@
 	};
 	
 	ConfigureGameTask.prototype.playerSlots = function () {
-		return this._playerSlots.asObservable().takeUntil(this._completed);
+		return this._playerSlots.takeUntil(this._completed);
 	};
 	
 	ConfigureGameTask.prototype.configurationValid = function () {
-		return this._configurationValid.asObservable();
+		return this._configurationValid.takeUntil(this._completed);
 	};
 	
 	ConfigureGameTask.prototype.addPlayerSlot = function (type) {
@@ -71,15 +71,11 @@
 	};
 	
 	ConfigureGameTask.prototype.canAddPlayerSlot = function () {
-		return this._canAddPlayerSlot.asObservable();
+		return this._canAddPlayerSlot.takeUntil(this._completed);
 	};
 	
 	ConfigureGameTask.prototype.startGame = function () {
 		this._completed.onNext(true);
 		this._completed.onCompleted();
-	};
-	
-	ConfigureGameTask.prototype.completed = function () {
-		return this._completed.asObservable();
 	};
 }());

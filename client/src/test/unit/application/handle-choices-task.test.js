@@ -2,61 +2,74 @@
 	"use strict";
 	
 	var PlayGameTask = require('./play-game-task');
-	var HandleChoicesTask = require('./handle-choices-task');
 	var MoveChoice = require('./move-choice');
 	var FinishTurnChoice = require('./finish-turn-choice');
 	
 	var testData = require('./test-data');
+	var assert = require('./assert');
 	
 	describe('A HandleChoicesTask', function () {
 		var playGameTask;
 		var task;
+		var currentChoices;
+		var currentHumanChoices;
+		var actionMade;
 		
 		beforeEach(function () {
 			playGameTask = PlayGameTask.start(testData.gameConfiguration());
-			task = HandleChoicesTask.start(playGameTask);
+			task = playGameTask.handleChoicesTask();
+			
+			playGameTask.gameState()
+				.map(onlyChoices)
+				.subscribe(function (choices) {
+					currentChoices = choices;
+				});
+				
+			task.choices()
+				.subscribe(function (choices) {
+					currentHumanChoices = choices;
+				});
+				
+			task.choiceMade()
+				.subscribe(function (action) {
+					actionMade = action;
+				});
 		});
 		
 		it('sends the choices event when its playGameTask sends game state for a human player',
-			function (done) {
-				playGameTask.gameState().take(1)
-					.map(onlyChoices)
-					.subscribe(function (choices) {
-						task.choices().take(1).subscribe(function (humanChoices) {
-							expect(toChoiceIds(humanChoices)).to.eql(toChoiceIds(choices));
-						}, done, done);
-				});
+			function () {
+				expect(toChoiceIds(currentHumanChoices)).to.eql(toChoiceIds(currentChoices));
 			});
 			
 		it('does not send the choices event when its playGameTask sends choices for a computer player',
-			function (done) {
+			function () {
 				switchTurnToComputerPlayer();
 				
-				playGameTask.gameState().take(1)
-					.map(onlyChoices)
-					.subscribe(function () {
-						task.choices().skip(1).take(1).subscribe(function () {
-							throw new Error('Should never be called');
-						}, done, done);
-					
-					done();
-				});
+				expect(currentHumanChoices).to.eql([]);
 			});
 			
-		it('sends a choiceMade event when a choice is made', function (done) {
-			task.choiceMade().take(1).subscribe(function (choice) {
-				expect(choice.id).to.eql(MoveChoice.newChoice().id);
-			}, done, done);
+		it('sends a choiceMade event when a choice is made', function () {
+			var arg = 2;
 			
-			task.makeChoice(MoveChoice.newChoice());
+			task.makeChoice(MoveChoice.newChoice(), arg);
+			
+			expect(actionMade.choice.id).to.eql(MoveChoice.newChoice().id);
+			expect(actionMade.arg).to.eql(arg);
 		});
 		
-		it('sends an empty choices event to the human player when it makes a choice', function (done) {
+		it('sends an empty choices event to the human player when it makes a choice', function () {
 			task.makeChoice(MoveChoice.newChoice());
 			
-			task.choices().take(1).subscribe(function (choices) {
-				expect(choices).to.eql([]);
-			}, done, done);
+			expect(currentHumanChoices).to.eql([]);
+		});
+		
+		it('stops when parent PlayGameTask stops', function () {
+			assert.taskStopCorrectlyOnEvent(task, [
+				task.choices(),
+				task.choiceMade()
+			], function () {
+				playGameTask.stop();
+			});
 		});
 		
 		function switchTurnToComputerPlayer() {

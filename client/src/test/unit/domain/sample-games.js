@@ -14,6 +14,20 @@
 		});
 	};
 	
+	exports.turnStartWithSomePropertiesOwned = function () {
+		var players = testData.players();
+		
+		return GameState.turnStartState({
+			squares: Board.squares(),
+			players: [
+				players[0].buyProperty(Board.properties().mediterranean),
+				players[1].buyProperty(Board.properties().readingRailroad),
+				players[2]
+			],
+			currentPlayerIndex: 0
+		});
+	};
+	
 	exports.turnEndStateWithPlayerOnBroadwalkAndGroupOwned = function () {
 		var players = testData.players();
 		

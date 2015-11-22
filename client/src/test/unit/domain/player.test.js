@@ -83,6 +83,58 @@
 			});
 		});
 		
+		describe('when gaining property', function () {
+			var PROPERTY = Board.properties().mediterranean;
+			var newPlayer;
+			
+			beforeEach(function () {
+				newPlayer = player.gainProperty(PROPERTY);
+			});
+			
+			it('money stays the same', function () {
+				expect(newPlayer.money()).to.eql(player.money());
+			});
+			
+			it('insert them in order', function () {
+				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
+				
+				newPlayer = newPlayer.gainProperty(Board.properties().shortRailroad);
+				
+				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
+				expect(newPlayer.properties()[1].equals(Board.properties().shortRailroad)).to.be(true);
+				
+				newPlayer = newPlayer.gainProperty(Board.properties().broadwalk);
+				
+				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
+				expect(newPlayer.properties()[1].equals(Board.properties().broadwalk)).to.be(true);
+				expect(newPlayer.properties()[2].equals(Board.properties().shortRailroad)).to.be(true);
+				
+				newPlayer = newPlayer.gainProperty(Board.properties().connecticut);
+				
+				expect(newPlayer.properties()[0].equals(PROPERTY)).to.be(true);
+				expect(newPlayer.properties()[1].equals(Board.properties().connecticut)).to.be(true);
+				expect(newPlayer.properties()[2].equals(Board.properties().broadwalk)).to.be(true);
+				expect(newPlayer.properties()[3].equals(Board.properties().shortRailroad)).to.be(true);
+			});
+		});
+		
+		describe('when losing property', function () {
+			var PROPERTY = Board.properties().mediterranean;
+			var newPlayer;
+			
+			beforeEach(function () {
+				newPlayer = player.gainProperty(PROPERTY).loseProperty(PROPERTY);
+			});
+			
+			it('money stays the same', function () {
+				expect(newPlayer.money()).to.eql(player.money());
+			});
+			
+			it('property lost is not in the player properties list', function () {
+				expect(newPlayer.properties().length).to.eql(0);
+			});
+		});
+		
 		it('substracts the money when paying it', function () {
 			var amount = 100;
 			var newPlayer = player.pay(amount);

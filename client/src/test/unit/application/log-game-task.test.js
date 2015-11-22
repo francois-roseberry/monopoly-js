@@ -2,28 +2,29 @@
 	"use strict";
 	
 	var PlayGameTask = require('./play-game-task');
-	var LogGameTask = require('./log-game-task');
 	var Messages = require('./messages');
 	var Board = require('./board');
+	var TradeOffer = require('./trade-offer');
 	var PayTaxChoice = require('./pay-tax-choice');
 	var PayRentChoice = require('./pay-rent-choice');
 	var MoveChoice = require('./move-choice');
 	var BuyPropertyChoice = require('./buy-property-choice');
+	var AcceptOfferChoice = require('./accept-offer-choice');
+	var RejectOfferChoice = require('./reject-offer-choice');
+	var TradeChoice = require('./trade-choice');
 	
 	var testData = require('./test-data');
 	
 	describe('The log game task', function () {
 		var gameTask;
-		var logTask;
 		var logs;
 		var firstPlayer;
 		var secondPlayer;
 		
 		beforeEach(function () {
 			gameTask = PlayGameTask.start(testData.gameConfiguration());
-			logTask = LogGameTask.start(gameTask);
 			logs = [];
-			logTask.messages().subscribe(function (log) {
+			gameTask.messages().subscribe(function (log) {
 				logs.push(log);
 			});
 			
@@ -37,11 +38,15 @@
 		it('when dice finishes rolling, sends a message', function (done) {
 			gameTask.rollDiceTaskCreated().take(1).subscribe(function (task) {
 				task.diceRolled().last().subscribe(function () {
-					assertLogged([
+					expect(logs.length).to.eql(1);
+					
+					var possibleLogs = [
 						Messages.logDiceRoll(firstPlayer, 2, 3).id(),
 						Messages.logDoubleDiceRoll(firstPlayer, 5).id()
-					], done);
-				});
+					];
+					
+					expect(possibleLogs).to.contain(logs[0].id());
+				}, done, done);
 			});
 			
 			gameTask.handleChoicesTask().makeChoice(MoveChoice.newChoice());
@@ -80,19 +85,59 @@
 		
 		it('when player wraps around the board, sends a message', function (done) {
 			gameTask = gameTaskWithCheatedDice(21);
-			logTask = LogGameTask.start(gameTask);
-			logTask.messages().skip(1).take(1).subscribe(function (log) {
+			gameTask.messages().skip(1).take(1).subscribe(function (log) {
 				expect(log.equals(Messages.logSalaryReceived(firstPlayer))).to.be(true);
 			}, done, done);
 			
 			gameTask.handleChoicesTask().makeChoice(MoveChoice.newChoice());
 		});
 		
-		function assertLogged(logs, done) {
-			logTask.messages().take(1).subscribe(function (log) {
-				expect(logs).to.contain(log.id());
-			}, done, done);
-		}
+		describe('when player makes an offer', function () {
+			var offer;
+			
+			beforeEach(function () {
+				offer = TradeOffer.newOffer([
+					{
+						player: testData.players()[0],
+						properties: [],
+						money: 1
+					},
+					{
+						player: testData.players()[1],
+						properties: [],
+						money: 2
+					}
+				]);
+				
+				gameTask.handleChoicesTask().makeChoice(TradeChoice.newChoice(testData.players()[1]), offer);
+			});
+			
+			it('sends a message describing the offer', function () {
+				var message = Messages.logOfferMade(
+					testData.players()[0].name(), testData.players()[1].name(), offer);
+					
+				expect(logs.length).to.eql(1);
+				expect(logs[0].equals(message)).to.be(true);
+			});
+			
+			it('if it is rejected, sends a message', function () {
+				var choice = RejectOfferChoice.newChoice(testData.players()[0].id());
+				gameTask.handleChoicesTask().makeChoice(choice);
+				
+				var message = Messages.logOfferRejected();
+				expect(logs.length).to.eql(2);
+				expect(logs[1].equals(message)).to.be(true);
+			});
+			
+			it('if it is accepted, sends a message', function () {
+				var choice = AcceptOfferChoice.newChoice(offer);
+				gameTask.handleChoicesTask().makeChoice(choice);
+				
+				var message = Messages.logOfferAccepted();
+				expect(logs.length).to.eql(2);
+				expect(logs[1].equals(message)).to.be(true);
+			});
+		});
 		
 		function gameTaskWithCheatedDice(dieValue) {
 			return PlayGameTask.start({ squares: Board.squares(), players: testData.playersConfiguration(), options: { 

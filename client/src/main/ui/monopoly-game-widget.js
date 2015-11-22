@@ -6,6 +6,8 @@
 	var GameChoicesWidget = require('./game-choices-widget');
 	var PlayersWidget = require('./players-widget');
 	var LogGameWidget = require('./log-game-widget');
+	var TradeWidget = require('./trade-widget');
+	var Popup = require('./popup');
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
@@ -23,6 +25,10 @@
 			
 		centralComponentsContainer.append('button')
 			.attr('id', 'new-game-button')
+			.classed({
+				'btn': true,
+				'btn-default': true
+			})
 			.text(i18n.BUTTON_NEW_GAME)
 			.on('click', function() {
 				playGameTask.stop();
@@ -30,11 +36,27 @@
 		
 		GameChoicesWidget.render($(centralComponentsContainer[0]), playGameTask.handleChoicesTask());
 		LogGameWidget.render($(centralComponentsContainer[0]), playGameTask.messages());
-		BoardWidget.render($(panel[0]), playGameTask.gameState());
-		PlayersWidget.render($(panel[0]), playGameTask.gameState());
+		BoardWidget.render($(panel[0]), playGameTask.gameState().takeUntil(playGameTask.completed()));
+		PlayersWidget.render($(panel[0]), playGameTask.gameState().takeUntil(playGameTask.completed()));
 		
 		playGameTask.rollDiceTaskCreated().subscribe(function (task) {
 			DiceWidget.render($(centralComponentsContainer[0]), task);
+		});
+		
+		playGameTask.tradeTaskCreated().subscribe(function (task) {
+			var positionning = {
+				top: "180px",
+				left: "200px",
+				width: "900px",
+				height: "400px"
+			};
+			
+			var popup = Popup.render($(document.body), positionning, { closeBtn: false });
+			TradeWidget.render($(popup.contentContainer()[0]), task);
+			
+			task.offer().subscribeOnCompleted(function () {
+				popup.close();
+			});
 		});
 	};
 }());
