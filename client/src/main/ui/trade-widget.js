@@ -106,7 +106,8 @@
 			.each(function () {
 				$(this).spinner({
 					min: 0, max: player.money(), step: 1,
-					change: onMoneySpinnerChange(tradeTask, playerIndex)
+					change: onMoneySpinnerChange(tradeTask, playerIndex),
+					stop: onMoneySpinnerChange(tradeTask, playerIndex)
 				})
 				.val(0)
 				.on('input', function () {
@@ -140,6 +141,7 @@
 	
 	function onMoneySpinnerChange(task, playerIndex) {
 		return function (event, ui) {
+			console.log('spinner change, value : ' + $(event.target).spinner('value'));
 			task.setMoneyOfferedByPlayer($(event.target).spinner('value'), playerIndex);
 		};
 	}
