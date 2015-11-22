@@ -141,7 +141,6 @@
 	
 	function onMoneySpinnerChange(task, playerIndex) {
 		return function (event, ui) {
-			console.log('spinner change, value : ' + $(event.target).spinner('value'));
 			task.setMoneyOfferedByPlayer($(event.target).spinner('value'), playerIndex);
 		};
 	}
