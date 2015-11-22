@@ -2,6 +2,89 @@
 (function() {
 	"use strict";
 	
+	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
+	
+	var GameState = require('./game-state');
+	var TradeOffer = require('./trade-offer');
+	
+	exports.newChoice = function (offer) {
+		precondition(TradeOffer.isOffer(offer), 'An AcceptOfferChoice requires an offer');
+		
+		return new AcceptOfferChoice(offer);
+	};
+	
+	function AcceptOfferChoice(offer) {
+		this.id = 'accept-offer';
+		this.name = i18n.CHOICE_ACCEPT_OFFER;
+		this._offer = offer;
+	}
+	
+	AcceptOfferChoice.prototype.equals = function (other) {
+		if (!(other instanceof AcceptOfferChoice)) {
+			return false;
+		}
+		
+		if (!this._offer.equals(other._offer)) {
+			return false;
+		}
+		
+		return true;
+	};
+	
+	AcceptOfferChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	AcceptOfferChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'AcceptOfferChoice requires a game state to compute the next one');
+		
+		var self = this;
+		var playerIndex = _.findIndex(state.players(), function (player) {
+			return player.id() === self._offer.currentPlayerId();
+		});
+		
+		precondition(playerIndex >= 0, 'Offer accepted must have been made by a valid player');
+		
+		var newPlayers = _.map(state.players(), function (player) {
+			if (player.id() === self._offer.currentPlayerId()) {
+				return transferPossessionsInOffer(player, self._offer, 0, 1);
+			}
+			
+			if (player.id() === self._offer.otherPlayerId()) {
+				return transferPossessionsInOffer(player, self._offer, 1, 0);
+			}
+			
+			return player;
+		});
+		
+		return GameState.turnStartState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: playerIndex
+		});
+	};
+	
+	function transferPossessionsInOffer(player, offer, playerIndexFrom, playerIndexTo) {
+		var newPlayer = player.pay(offer.moneyFor(playerIndexFrom))
+			.earn(offer.moneyFor(playerIndexTo));
+		
+		newPlayer = _.reduce(offer.propertiesFor(playerIndexFrom), function (newPlayer, property) {
+			return newPlayer.loseProperty(property);
+		}, newPlayer);
+		
+		newPlayer = _.reduce(offer.propertiesFor(playerIndexTo), function (newPlayer, property) {
+			return newPlayer.gainProperty(property);
+		}, newPlayer);
+		
+		return newPlayer;
+	}
+}());
+},{"./contract":10,"./game-state":16,"./i18n":23,"./trade-offer":43}],2:[function(require,module,exports){
+(function() {
+	"use strict";
+	
 	var precondition = require('./contract').precondition;
 	var i18n = require('./i18n').i18n();
 	
@@ -70,7 +153,7 @@
 				.each(function (square, index) {
 					var graphicalSquare = d3.select(this);
 					graphicalSquare.attr('data-ui', index);
-					renderPlayerTokens(graphicalSquare, index, state.players());
+					renderPlayerTokens(graphicalSquare, index, square, state.players());
 				});
 			};
 	}
@@ -106,17 +189,21 @@
 			'go': renderStart(container),
 			'jail': renderJail(container),
 			'go-to-jail': _.noop,
-			'parking': _.noop
+			'parking': function () {
+				writeAngledText(container, i18n.FREE_PARKING,  {x: -8, y: 100}, 12, SQUARE_WIDTH * 2);
+			}
 		});
 	}
 	
-	function renderPlayerTokens(container, squareIndex, players) {
+	function renderPlayerTokens(container, squareIndex, square, players) {
 		var playersOnSquare = _.filter(players, function (player) {
 			return player.position() === squareIndex;
 		});
 		
 		var tokens = container.selectAll('.player-token')
 			.data(playersOnSquare);
+			
+		var tokenRadius = 8;
 			
 		tokens
 			.enter()
@@ -127,12 +214,34 @@
 			})
 			.attr({
 				cx: function (_, index) {
-					return (SQUARE_WIDTH / 5) * (index % 4 + 1);
+					return square.match({
+						'jail': function () {
+							if (index < 4) {
+								return SQUARE_HEIGHT - ((SQUARE_HEIGHT / 4 - tokenRadius) / 2 + tokenRadius);
+							}
+							
+							return (SQUARE_HEIGHT / 5) * (index % 4 + 1);
+						},
+						_: function () {
+							return (SQUARE_WIDTH / 5) * (index % 4 + 1);
+						}
+					});
 				},
 				cy: function (_, index) {
-					return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
+					return square.match({
+						'jail': function () {
+							if (index < 4) {
+								return (SQUARE_HEIGHT / 5) * (index % 4 + 1);
+							}
+							
+							return SQUARE_HEIGHT - ((SQUARE_HEIGHT / 4 - tokenRadius) / 2 + tokenRadius);
+						},
+						_: function () {
+							return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
+						}
+					});
 				},
-				r: 8,
+				r: tokenRadius,
 				stroke: 'black',
 				'stroke-width': 1
 			});
@@ -174,7 +283,7 @@
 	
 	function renderStart(container) {
 		return function () {
-			var angledContainer = writeAngledText(container, i18n.START_DESCRIPTION, 4, 58);
+			var angledContainer = writeAngledText(container, i18n.START_DESCRIPTION, {x: 4, y: 58});
 			angledContainer.append('g')
 				.attr('transform', 'translate(20, 30)')
 				.html(Symbols.go());
@@ -210,6 +319,14 @@
 					stroke: 'black',
 					transform: 'translate(' + (SQUARE_HEIGHT * 3/11) + ') rotate(45)'
 				});
+				
+			var words = i18n.VISITING_JAIL.split(' ');
+			writeText(container, words[0], SQUARE_HEIGHT - 8, 12);
+			
+			var reversedContainer = container.append('g')
+				.attr('transform', 'translate(' + (SQUARE_HEIGHT - 8) + ' ' + (SQUARE_HEIGHT * 3/4) + ') rotate(-90)');
+				
+			writeText(reversedContainer, words[1], 0, 12);
 		};
 	}
 	
@@ -217,11 +334,11 @@
 		TextWrapper.wrap(container, text.toUpperCase(), fontSize || 8, y, SQUARE_WIDTH);
 	}
 	
-	function writeAngledText(container, text, x, y) {
+	function writeAngledText(container, text, position, fontSize, width) {
 		var angledContainer = container.append('g')
-			.attr('transform', 'translate(' + x + ', ' + y + ') rotate(-45)');
+			.attr('transform', 'translate(' + position.x + ', ' + position.y + ') rotate(-45)');
 			
-		TextWrapper.wrap(angledContainer, text.toUpperCase(), 8, 0, SQUARE_WIDTH);
+		TextWrapper.wrap(angledContainer, text.toUpperCase(), fontSize || 8, 0, width || SQUARE_WIDTH);
 		
 		return angledContainer;
 	}
@@ -246,7 +363,7 @@
 		return transforms[rowIndex];
 	}
 }());
-},{"./contract":9,"./i18n":22,"./symbols":38,"./text-wrapper":39}],2:[function(require,module,exports){
+},{"./contract":10,"./i18n":23,"./symbols":40,"./text-wrapper":41}],3:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -255,15 +372,6 @@
 	
 	var Property = require('./property');
 	var PropertyGroup = require('./property-group');
-	
-	function groupMembers(groupIndex) {
-		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 10,
-			'Listing members of a group in board requires the group index');
-		
-		return _.filter(exports.properties(), function (square) {
-			return square.group().index() === groupIndex;
-		});
-	}
 	
 	exports.properties = function () {
 		var groups = [
@@ -364,51 +472,68 @@
 		];
 	};
 	
+	function groupMembers(groupIndex) {
+		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 10,
+			'Listing members of a group in board requires the group index');
+		
+		return _.filter(exports.properties(), function (square) {
+			return square.group().index() === groupIndex;
+		});
+	}
+	
 	function go() {
 		return {
-			match: match('go')
+			match: match('go'),
+			equals: hasId('go')
 		};
 	}
 	
 	function jail() {
 		return {
-			match: match('jail')
+			match: match('jail'),
+			equals: hasId('jail')
 		};
 	}
 	
 	function parking() {
 		return {
-			match: match('parking')
+			match: match('parking'),
+			equals: hasId('parking')
 		};
 	}
 	
 	function goToJail() {
 		return {
-			match: match('go-to-jail')
+			match: match('go-to-jail'),
+			equals: hasId('go-to-jail')
 		};
 	}
 	
 	function communityChest() {
 		return {
-			match: match('community-chest', [i18n.COMMUNITY_CHEST])
+			match: match('community-chest', [i18n.COMMUNITY_CHEST]),
+			equals: hasId('community-chest')
 		};
 	}
 	
 	function chance() {
 		return {
-			match: match('chance', [i18n.CHANCE])
+			match: match('chance', [i18n.CHANCE]),
+			equals: hasId('chance')
 		};
 	}
 	
 	function incomeTax() {
 		return {
-			match: match('income-tax', [i18n.INCOME_TAX])
+			match: match('income-tax', [i18n.INCOME_TAX]),
+			equals: hasId('income-tax')
 		};
 	}
 	
 	function luxuryTax() {
 		return {
-			match: match('luxury-tax', [i18n.LUXURY_TAX])
+			match: match('luxury-tax', [i18n.LUXURY_TAX]),
+			equals: hasId('luxury-tax')
 		};
 	}
 	
@@ -421,8 +546,22 @@
 			return visitor['_']();
 		};
 	}
+	
+	function hasId(id) {
+		return function (other) {
+			precondition(other, 'Testing a square for equality with something else requires that something else');
+			
+			if (_.isFunction(other.match)) {
+				var matcher = { _: function () { return false; } };
+				matcher[id] = function () { return true; };
+				return other.match(matcher);
+			}
+			
+			return false;
+		};
+	}
 }());
-},{"./contract":9,"./i18n":22,"./property":35,"./property-group":34}],3:[function(require,module,exports){
+},{"./contract":10,"./i18n":23,"./property":37,"./property-group":36}],4:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -445,7 +584,7 @@
 }());
 
 
-},{"./fail-fast":11,"./game-task":16,"./game-widget":17}],4:[function(require,module,exports){
+},{"./fail-fast":12,"./game-task":17,"./game-widget":18}],5:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -481,6 +620,9 @@
 	};
 	
 	BuyPropertyChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'BuyPropertyChoice requires a game state to compute the next one');
+			
 		return transferOwnership(state, this._property);
 	};
 	
@@ -500,16 +642,16 @@
 		});
 	}
 }());
-},{"./contract":9,"./game-state":15,"./i18n":22,"./property":35}],5:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":23,"./property":37}],6:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
-	var PayRentChoice = require('./pay-rent-choice');
-	var GoBankruptChoice = require('./go-bankrupt-choice');
+	var GameState = require('./game-state');
 	var Player = require('./player');
+	var Choices = require('./choices');
 	
 	exports.newChoice = function (multiplier, toPlayer) {
 		precondition(_.isNumber(multiplier) && multiplier > 0,
@@ -540,80 +682,62 @@
 	};
 	
 	CalculateDiceRentChoice.prototype.computeNextState = function (state, dice) {
-		precondition(state, 'To compute next state, a roll-dice choice requires the actual state');
+		precondition(GameState.isGameState(state),
+			'To compute next state, a roll-dice choice requires the actual state');
 		precondition(dice, 'To compute next state, a roll-dice choice requires the result of a dice roll');
 		
 		var rent = this._multiplier * (dice[0] + dice[1]);
-		var money = state.players()[state.currentPlayerIndex()].money();
+		var currentPlayer = state.currentPlayer();
 		
-		var choice;
-		if (rent > money) {
-			choice = GoBankruptChoice.newChoice();
-		} else {
-			choice = PayRentChoice.newChoice(rent, this._toPlayer);
-		}
-		
-		return state.changeChoices([choice]);
+		return state.changeChoices(Choices.rentChoices(rent, currentPlayer, this._toPlayer));
 	};
 }());
-},{"./contract":9,"./go-bankrupt-choice":18,"./i18n":22,"./pay-rent-choice":27,"./player":31}],6:[function(require,module,exports){
+},{"./choices":7,"./contract":10,"./game-state":16,"./i18n":23,"./player":33}],7:[function(require,module,exports){
 (function() {
 	"use strict";
 	
-	var RollDiceChoice = require('./roll-dice-choice');
-	var FinishTurnChoice = require('./finish-turn-choice');
-	var BuyPropertyChoice = require('./buy-property-choice');
-	var PayRentChoice = require('./pay-rent-choice');
 	var GoBankruptChoice = require('./go-bankrupt-choice');
+	var PayRentChoice = require('./pay-rent-choice');
 	var PayTaxChoice = require('./pay-tax-choice');
-	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
-	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
-
-	exports.rollDice = function () {
-		return RollDiceChoice.newChoice();
+	var Player = require('./player');
+	
+	var precondition = require('./contract').precondition;
+	
+	exports.rentChoices = function (rent, fromPlayer, toPlayer) {
+		precondition(_.isNumber(rent) && rent > 0, 'Rent choices requires a rent greater than 0');
+		precondition(fromPlayer && Player.isPlayer(fromPlayer),
+			'Rent choices requires the player who pays');
+		precondition(toPlayer && Player.isPlayer(toPlayer),
+			'Rent choices requires the player to pay to');
+		
+		if (rent > fromPlayer.money()) {
+			return [GoBankruptChoice.newChoice()];
+		}
+		
+		return [PayRentChoice.newChoice(rent, toPlayer)];
 	};
 	
-	exports.finishTurn = function () {
-		return FinishTurnChoice.newChoice();
-	};
-	
-	exports.buyProperty = function (property) {
-		return BuyPropertyChoice.newChoice(property);
-	};
-	
-	exports.payRent = function (rent, toPlayer) {
-		return PayRentChoice.newChoice(rent, toPlayer);
-	};
-	
-	exports.goBankrupt = function () {
-		return GoBankruptChoice.newChoice();
-	};
-	
-	exports.payTax = function (amount) {
-		return PayTaxChoice.newChoice(amount);
-	};
-	
-	exports.chooseFlatTax = function (amount) {
-		return ChooseTaxTypeChoice.newFlatTax(amount);
-	};
-	
-	exports.choosePercentageTax = function (percentage, amount) {
-		return ChooseTaxTypeChoice.newPercentageTax(percentage, amount);
-	};
-	
-	exports.calculateDiceRent = function (multiplier, toPlayer) {
-		return CalculateDiceRentChoice.newChoice(multiplier, toPlayer);
+	exports.taxChoices = function (tax, fromPlayer) {
+		precondition(_.isNumber(tax) && tax > 0, 'Tax choices requires a rent greater than 0');
+		precondition(fromPlayer && Player.isPlayer(fromPlayer),
+			'Tax choices requires the player who pays');
+		
+		if (tax > fromPlayer.money()) {
+			return [GoBankruptChoice.newChoice()];
+		}
+		
+		return [PayTaxChoice.newChoice(tax)];
 	};
 }());
-},{"./buy-property-choice":4,"./calculate-dice-rent-choice":5,"./choose-tax-type-choice":7,"./finish-turn-choice":12,"./go-bankrupt-choice":18,"./pay-rent-choice":27,"./pay-tax-choice":28,"./roll-dice-choice":36}],7:[function(require,module,exports){
+},{"./contract":10,"./go-bankrupt-choice":19,"./pay-rent-choice":29,"./pay-tax-choice":30,"./player":33}],8:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
-	var Choices = require('./choices');
 	var GameState = require('./game-state');
+	var Choices = require('./choices');
 	
 	exports.newFlatTax = function (amount) {
 		precondition(_.isNumber(amount) && amount > 0, 'A PayFlatTaxChoice requires a tax greater than 0');
@@ -654,15 +778,12 @@
 		precondition(GameState.isGameState(state),
 			'ChooseTaxTypeChoice requires a game state to compute the next one');
 		
-		var currentPlayer = state.players()[state.currentPlayerIndex()];
+		var currentPlayer = state.currentPlayer();
 		
-		var choice = (currentPlayer.money() > this._amount) ?
-			[Choices.payTax(this._amount)] : [Choices.goBankrupt()];
-		
-		return state.changeChoices(choice);
+		return state.changeChoices(Choices.taxChoices(this._amount, currentPlayer));
 	};
 }());
-},{"./choices":6,"./contract":9,"./game-state":15,"./i18n":22}],8:[function(require,module,exports){
+},{"./choices":7,"./contract":10,"./game-state":16,"./i18n":23}],9:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -689,11 +810,11 @@
 	};
 	
 	ConfigureGameTask.prototype.playerSlots = function () {
-		return this._playerSlots.asObservable().takeUntil(this._completed);
+		return this._playerSlots.takeUntil(this._completed);
 	};
 	
 	ConfigureGameTask.prototype.configurationValid = function () {
-		return this._configurationValid.asObservable();
+		return this._configurationValid.takeUntil(this._completed);
 	};
 	
 	ConfigureGameTask.prototype.addPlayerSlot = function (type) {
@@ -736,19 +857,15 @@
 	};
 	
 	ConfigureGameTask.prototype.canAddPlayerSlot = function () {
-		return this._canAddPlayerSlot.asObservable();
+		return this._canAddPlayerSlot.takeUntil(this._completed);
 	};
 	
 	ConfigureGameTask.prototype.startGame = function () {
 		this._completed.onNext(true);
 		this._completed.onCompleted();
 	};
-	
-	ConfigureGameTask.prototype.completed = function () {
-		return this._completed.asObservable();
-	};
 }());
-},{"./contract":9}],9:[function(require,module,exports){
+},{"./contract":10}],10:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -759,7 +876,7 @@
         throw new Error("Precondition: " + message);
     };
 }());
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -829,7 +946,7 @@
 		return "<circle fill='black' r=5 cx=" + x + " cy=" + y + " />";
 	}
 }());
-},{"./contract":9}],11:[function(require,module,exports){
+},{"./contract":10}],12:[function(require,module,exports){
 (function () {
     'use strict';
 
@@ -878,12 +995,14 @@
         window.isDisplayingError = true;
     }
 }());
-},{}],12:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
 	var GameState = require('./game-state');
+	
+	var precondition = require('./contract').precondition;
 	
 	exports.newChoice = function() {
 		return new FinishTurnChoice();
@@ -903,6 +1022,9 @@
 	};
 	
 	FinishTurnChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'FinishTurnChoice requires a game state to compute the next one');
+			
 		return GameState.turnStartState({
 			squares: state.squares(),
 			players: state.players(),
@@ -910,7 +1032,7 @@
 		});
 	};
 }());
-},{"./game-state":15,"./i18n":22}],13:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":23}],14:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -953,7 +1075,7 @@
 			.remove();
 	}
 }());
-},{"./contract":9}],14:[function(require,module,exports){
+},{"./contract":10}],15:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -996,14 +1118,12 @@
 			});
 			
 		configureGameTask.canAddPlayerSlot()
-			.takeUntil(configureGameTask.completed())
 			.subscribe(function (canAdd) {
 				emptyBlock.style('display', (canAdd ? null : 'none'));
 			});
 		
 		
 		configureGameTask.playerSlots()
-			.takeUntil(configureGameTask.completed())
 			.subscribe(function (slots) {
 				var slotsSelection = activeSlotsContainer
 					.selectAll('.player-slot')
@@ -1015,14 +1135,17 @@
 			});
 		
 		var startButton = panel.append('button')
-			.classed('btn-start-game', true)
+			.classed({
+				'btn-start-game': true,
+				'btn': true,
+				'btn-default': true
+			})
 			.text(i18n.BUTTON_START_GAME)
 			.on('click', function () {
 				configureGameTask.startGame();
 			});
 			
 		configureGameTask.configurationValid()
-			.takeUntil(configureGameTask.completed())
 			.subscribe(function (valid) {
 				startButton.attr('disabled', (valid ? null : 'disabled'));
 			});
@@ -1123,16 +1246,58 @@
 		selection.exit().remove();
 	}
 }());
-},{"./contract":9,"./i18n":22,"./popup":33}],15:[function(require,module,exports){
+},{"./contract":10,"./i18n":23,"./popup":35}],16:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var Choices = require('./choices');
+	var MoveChoice = require('./move-choice');
+	var FinishTurnChoice = require('./finish-turn-choice');
+	var BuyPropertyChoice = require('./buy-property-choice');
+	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
+	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
+	var TradeChoice = require('./trade-choice');
+	var AcceptOfferChoice = require('./accept-offer-choice');
+	var RejectOfferChoice = require('./reject-offer-choice');
+	var TradeOffer = require('./trade-offer');
 	
 	var precondition = require('./contract').precondition;
 	
 	exports.isGameState = function (candidate) {
 		return candidate instanceof GameState;
+	};
+	
+	exports.gameInTradeState = function (squares, players, offer) {
+		precondition(_.isArray(squares) && squares.length === 40,
+			'GameInTradeState requires an array of 40 squares');
+		precondition(_.isArray(players),
+			'GameInTradeState requires an array of players');
+		precondition(TradeOffer.isOffer(offer),
+			'GameInTradeState requires an offer');
+			
+		var otherPlayerIndex = _.findIndex(players, function (player) {
+			return player.id() === offer.otherPlayerId();
+		});
+		
+		precondition(otherPlayerIndex >= 0,
+			'Offer must be destined to an existing player');
+		
+		var choices = [
+			AcceptOfferChoice.newChoice(offer),
+			RejectOfferChoice.newChoice(offer.currentPlayerId())
+		];
+		
+		var state = new GameState({
+			squares: squares,
+			players: players,
+			currentPlayerIndex: otherPlayerIndex
+		}, choices);
+		
+		state.offer = function () {
+			return offer;
+		};
+		
+		return state;
 	};
 	
 	exports.gameFinishedState = function (squares, winner) {
@@ -1150,13 +1315,20 @@
 	exports.turnStartState = function (info) {
 		validateInfo(info);
 			
-		var choices = newTurnChoices();
+		var choices = newTurnChoices(info);
 		
 		return new GameState(info, choices);
 	};
 	
-	function newTurnChoices() {
-		return [Choices.rollDice()];
+	function newTurnChoices(info) {
+		var tradeChoices = _.filter(info.players, function (player, index) {
+				return index !== info.currentPlayerIndex;
+			})
+			.map(function (player) {
+				return TradeChoice.newChoice(player);
+			});
+			
+		return [MoveChoice.newChoice()].concat(tradeChoices);
 	}
 	
 	exports.turnEndState = function (info, paid) {
@@ -1189,29 +1361,28 @@
 	function payLuxuryTax(currentPlayer, paid) {
 		return function () {
 			if (!paid) {
-				if (currentPlayer.money() < 75) {
-					return [Choices.goBankrupt()];
-				}
-
-				return [Choices.payTax(75)];
+				return Choices.taxChoices(75, currentPlayer);
 			}
 			
-			return [Choices.finishTurn()];
+			return [FinishTurnChoice.newChoice()];
 		};
 	}
 	
 	function payIncomeTax(currentPlayer, paid) {
 		return function () {
 			if (!paid) {
-				return [Choices.choosePercentageTax(10, currentPlayer.netWorth()), Choices.chooseFlatTax(200)];
+				return [
+					ChooseTaxTypeChoice.newPercentageTax(10, currentPlayer.netWorth()),
+					ChooseTaxTypeChoice.newFlatTax(200)
+				];
 			}
 			
-			return [Choices.finishTurn()];
+			return [FinishTurnChoice.newChoice()];
 		};
 	}
 	
 	function onlyFinishTurn() {
-		return [Choices.finishTurn()];
+		return [FinishTurnChoice.newChoice()];
 	}
 	
 	function choicesForProperty(square, players, currentPlayer, paid) {
@@ -1221,21 +1392,17 @@
 			if (!paid && owner && owner.id() !== currentPlayer.id()) {
 				var rent = square.rent(owner.properties());
 				if (rent.amount) {
-					if (currentPlayer.money() <= rent.amount) {
-						return [Choices.goBankrupt()];
-					}
-						
-					return [Choices.payRent(rent.amount, owner)];
-				} else {
-					return [Choices.calculateDiceRent(rent.multiplier, owner)];
-				}			
+					return Choices.rentChoices(rent.amount, currentPlayer, owner);
+				}
+				
+				return [CalculateDiceRentChoice.newChoice(rent.multiplier, owner)];			
 			}
 			
 			if (!owner && currentPlayer.money() > price) {
-				return [Choices.buyProperty(square), Choices.finishTurn()];
+				return [BuyPropertyChoice.newChoice(square), FinishTurnChoice.newChoice()];
 			}
 			
-			return [Choices.finishTurn()];
+			return [FinishTurnChoice.newChoice()];
 		};
 	}
 	
@@ -1275,6 +1442,10 @@
 		return this._players;
 	};
 	
+	GameState.prototype.currentPlayer = function () {
+		return this._players[this._currentPlayerIndex];
+	};
+	
 	GameState.prototype.currentPlayerIndex = function () {
 		return this._currentPlayerIndex;
 	};
@@ -1283,17 +1454,71 @@
 		return this._choices;
 	};
 	
+	GameState.prototype.equals = function (other) {
+		precondition(other, 'Testing a game state for equality with something else requires that something else');
+		
+		if (this === other) {
+			return true;
+		}
+		
+		if (!(other instanceof GameState)) {
+			return false;
+		}
+		
+		if (!deepEquals(this._squares, other._squares)) {
+			return false;
+		}
+		
+		if (!deepEquals(this._players, other._players)) {
+			return false;
+		}
+		
+		if (this._currentPlayerIndex !== other._currentPlayerIndex) {
+			return false;
+		}
+		
+		if (!deepEquals(this._choices, other._choices)) {
+			return false;
+		}
+		
+		return true;
+	};
+	
+	function deepEquals(left, right) {
+		if (left.length !== right.length) {
+			return false;
+		}
+		
+		return _.every(left, function (element, index) {
+			return element.equals(right[index]);
+		});
+	}
+	
 	GameState.prototype.changeChoices = function (choices) {
 		precondition(_.isArray(choices), 'Changing a game state choices list requires a list of choices');
 		
-		return new GameState({
+		var state = new GameState({
 			squares: this._squares,
 			players: this._players,
 			currentPlayerIndex: this._currentPlayerIndex
 		}, choices);
+		state._oldChoices = this._choices;
+		
+		return state;
+	};
+	
+	GameState.prototype.restoreChoices = function () {
+		precondition(_.isArray(this._oldChoices),
+			'Restoring the choices of a game state require a list of choices to restore');
+			
+		return new GameState({
+			squares: this._squares,
+			players: this._players,
+			currentPlayerIndex: this._currentPlayerIndex
+		}, this._oldChoices);
 	};
 }());
-},{"./choices":6,"./contract":9}],16:[function(require,module,exports){
+},{"./accept-offer-choice":1,"./buy-property-choice":5,"./calculate-dice-rent-choice":6,"./choices":7,"./choose-tax-type-choice":8,"./contract":10,"./finish-turn-choice":13,"./move-choice":28,"./reject-offer-choice":38,"./trade-choice":42,"./trade-offer":43}],17:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1306,15 +1531,14 @@
 	};
 
 	function GameTask() {
-		this._statusChanged = new Rx.ReplaySubject(1);
-		this._statusChanged.onNext(configuringStatus(this._statusChanged));
+		this._status = new Rx.BehaviorSubject(configuringStatus(this));
 	}
 	
-	function configuringStatus(statusChanged) {
+	function configuringStatus(self) {
 		var task = ConfigureGameTask.start();
 		task.playerSlots().last()
 			.subscribe(function (players) {
-				startGame(players, statusChanged);
+				startGame(players, self);
 			});
 		
 		return {
@@ -1325,11 +1549,11 @@
 		};
 	}
 	
-	function playingStatus(players, statusChanged) {
+	function playingStatus(players, self) {
 		var gameConfiguration = { squares: Board.squares(), players: players, options: { fastDice: false }};
 		var task = PlayGameTask.start(gameConfiguration);
 		task.completed().subscribe(function () {
-			newGame(statusChanged);
+			newGame(self);
 		});
 				
 		return {
@@ -1340,19 +1564,19 @@
 		};
 	}
 	
-	function newGame(statusChanged) {
-		statusChanged.onNext(configuringStatus(statusChanged));
+	function newGame(self) {
+		self._status.onNext(configuringStatus(self));
 	}
 	
-	function startGame(players, statusChanged) {
-		statusChanged.onNext(playingStatus(players, statusChanged));
+	function startGame(players, self) {
+		self._status.onNext(playingStatus(players, self));
 	}
 	
-	GameTask.prototype.statusChanged = function () {
-		return this._statusChanged.asObservable();
+	GameTask.prototype.status = function () {
+		return this._status.asObservable();
 	};
 }());
-},{"./board":2,"./configure-game-task":8,"./play-game-task":29}],17:[function(require,module,exports){
+},{"./board":3,"./configure-game-task":9,"./play-game-task":31}],18:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1365,7 +1589,7 @@
 		precondition(container, 'A Game widget requires a container to render into');
 		precondition(gameTask, 'A Game widget requires a game task');
 		
-		gameTask.statusChanged().subscribe(function (status) {
+		gameTask.status().subscribe(function (status) {
 			d3.select(container[0]).selectAll('*').remove();
 			status.match({
 				'configuring': renderGameConfiguration(container),
@@ -1386,11 +1610,12 @@
 		};
 	}
 }());
-},{"./contract":9,"./game-configuration-widget":14,"./monopoly-game-widget":26}],18:[function(require,module,exports){
+},{"./contract":10,"./game-configuration-widget":15,"./monopoly-game-widget":27}],19:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
 	
 	var GameState = require('./game-state');
 	
@@ -1412,6 +1637,9 @@
 	};
 	
 	GoBankruptChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'GoBankruptChoice requires a game state to compute the next one');
+			
 		return goBankruptNextState(state);
 	};
 	
@@ -1433,7 +1661,7 @@
 		});
 	}
 }());
-},{"./game-state":15,"./i18n":22}],19:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":23}],20:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1443,14 +1671,17 @@
 		precondition(playGameTask, 'HandleChoicesTask requires a PlayGameTask');
 		
 		var humanChoices = new Rx.ReplaySubject(1);
-		choicesForPlayerType(playGameTask, 'human')
+		gameStateForPlayerType(playGameTask, 'human')
+			.map(function (state) {
+				return state.choices();
+			})
 			.subscribe(humanChoices);
 		
-		var task = new HandleChoicesTask(humanChoices);
+		var task = new HandleChoicesTask(humanChoices, playGameTask);
 		
-		choicesForPlayerType(playGameTask, 'computer')
-			.filter(function (choices) {
-				return choices.length > 0;
+		gameStateForPlayerType(playGameTask, 'computer')
+			.filter(function (state) {
+				return state.choices().length > 0;
 			})
 			.map(computerPlayer)
 			.subscribe(applyChoice(task));
@@ -1458,48 +1689,67 @@
 		return task;
 	};
 	
-	function HandleChoicesTask(humanChoices) {
+	function HandleChoicesTask(humanChoices, playGameTask) {
 		this._humanChoices = humanChoices;
 		this._choiceMade = new Rx.Subject();
+		this._playGameTask = playGameTask;
 	}
 	
 	HandleChoicesTask.prototype.choices = function () {
-		return this._humanChoices.asObservable();
+		return this._humanChoices.takeUntil(this._playGameTask.completed());
 	};
 	
 	HandleChoicesTask.prototype.choiceMade = function () {
-		return this._choiceMade.asObservable();
+		return this._choiceMade.takeUntil(this._playGameTask.completed());
 	};
 	
-	HandleChoicesTask.prototype.makeChoice = function (choice) {
+	HandleChoicesTask.prototype.completed = function () {
+		return this._playGameTask.completed();
+	};
+	
+	HandleChoicesTask.prototype.makeChoice = function (choice, arg) {
 		this._humanChoices.onNext([]);
-		this._choiceMade.onNext(choice);
+		this._choiceMade.onNext({choice: choice, arg: arg});
 	};
 	
-	function choicesForPlayerType(playGameTask, type) {
+	function gameStateForPlayerType(playGameTask, type) {
 		return playGameTask.gameState()
+			.takeUntil(playGameTask.completed())
 			.filter(function (state) {
-				return state.players()[state.currentPlayerIndex()].type() === type;
-			})
-			.map(function (state) {
-				return state.choices();
-			})
-			.takeUntil(playGameTask.completed());
+				return state.currentPlayer().type() === type;
+			});
 	}
 	
-	function computerPlayer(choices) {
-		return choices[0];
+	function computerPlayer(state) {
+		if (_.isFunction(state.offer)) {
+			var valueForCurrentPlayer = calculateOfferValueFor(state.offer(), 0);
+			var valueForOtherPlayer = calculateOfferValueFor(state.offer(), 1);
+			
+			if (valueForCurrentPlayer >= valueForOtherPlayer) {
+				return state.choices()[0];
+			}
+			
+			return state.choices()[1];
+		}
+		
+		return state.choices()[0];
+	}
+	
+	function calculateOfferValueFor(offer, playerIndex) {
+		return _.reduce(offer.propertiesFor(playerIndex), function (totalValue, property) {
+			return totalValue + property.price();
+		}, offer.moneyFor(playerIndex));
 	}
 	
 	function applyChoice(task) {
 		return function (choice) {
 			Rx.Observable.timer(0).subscribe(function () {
-				task._choiceMade.onNext(choice);
+				task._choiceMade.onNext({choice: choice});
 			});
 		};
 	}
 }());
-},{"./contract":9}],20:[function(require,module,exports){
+},{"./contract":10}],21:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1520,6 +1770,11 @@
 	exports.CHOOSE_FLAT_TAX = 'Choose a flat {amount} tax';
 	exports.CHOOSE_PERCENTAGE_TAX = 'Choose a {percentage}% tax';
 	exports.CHOICE_CALCULATE_DICE_RENT = 'Roll the dice and pay a rent of {multiplier} times the result';
+	exports.CHOICE_TRADE = "Trade with {player}";
+	exports.TRADE_MAKE_OFFER = "Make this offer";
+	exports.TRADE_CANCEL = "Cancel trade";
+	exports.CHOICE_ACCEPT_OFFER = "Accept offer";
+	exports.CHOICE_REJECT_OFFER = "Reject offer";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
@@ -1528,6 +1783,10 @@
 	exports.LOG_RENT_PAID = '{fromPlayer} paid {amount} to {toPlayer}';
 	exports.LOG_SALARY = "{player} passed GO and received $200";
 	exports.LOG_TAX_PAID = "{player} paid a {amount} tax";
+	exports.LOG_OFFER_MADE = "{player1} offered {player2} : {offer1} for {offer2}";
+	exports.LOG_OFFER_ACCEPTED = "The offer has been accepted";
+	exports.LOG_CONJUNCTION = 'and';
+	exports.LOG_OFFER_REJECTED = "The offer has been rejected";
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -1537,6 +1796,8 @@
 	exports.LUXURY_TAX_DESCRIPTION = "Pay $75";
 	exports.INCOME_TAX_DESCRIPTION = "Pay 10% or $200";
 	exports.START_DESCRIPTION = "Collect $200 salary as you pass";
+	exports.VISITING_JAIL = "Just visiting";
+	exports.FREE_PARKING = "Free parking";
 	
 	exports.COMPANY_WATER = 'Water Works';
 	exports.COMPANY_ELECTRIC = "Electric Company";
@@ -1581,8 +1842,11 @@
 	exports.formatPrice = function (price) {
 		return '$' + price;
 	};
+	
+	// Trade
+	exports.TRADE_TITLE = "Trade";
 }());
-},{}],21:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1603,6 +1867,11 @@
 	exports.CHOOSE_FLAT_TAX = 'Choisir une taxe fixe de {amount}';
 	exports.CHOOSE_PERCENTAGE_TAX = 'Choisir une taxe de {percentage}%';
 	exports.CHOICE_CALCULATE_DICE_RENT = 'Lancer les dés et payer un loyer de {multiplier} fois le résultat';
+	exports.CHOICE_TRADE = "Échanger avec {player}";
+	exports.TRADE_MAKE_OFFER = "Faire cette offre";
+	exports.TRADE_CANCEL = "Annuler l'échange";
+	exports.CHOICE_ACCEPT_OFFER = "Accepter l'offre";
+	exports.CHOICE_REJECT_OFFER = "Rejeter l'offre";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';
@@ -1611,6 +1880,10 @@
 	exports.LOG_RENT_PAID = '{fromPlayer} a payé {amount} à {toPlayer}';
 	exports.LOG_SALARY = "{player} a passé GO et reçu $200";
 	exports.LOG_TAX_PAID = "{player} a payé une taxe de {amount}";
+	exports.LOG_OFFER_MADE = "{player1} a offert à {player2} : {offer1} pour {offer2}";
+	exports.LOG_OFFER_ACCEPTED = "L'offre a été acceptée";
+	exports.LOG_CONJUNCTION = 'et';
+	exports.LOG_OFFER_REJECTED = "L'offre a été rejetée";
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -1620,6 +1893,8 @@
 	exports.LUXURY_TAX_DESCRIPTION = "Payez 75 $";
 	exports.INCOME_TAX_DESCRIPTION = "Payez 10% ou 200 $";
 	exports.START_DESCRIPTION = "Réclamez 200 $ de salaire en passant à";
+	exports.VISITING_JAIL = "En visite";
+	exports.FREE_PARKING = "Stationnement gratuit";
 	
 	exports.COMPANY_WATER = 'Aqueduc';
 	exports.COMPANY_ELECTRIC = "Compagnie d'électricité";
@@ -1664,8 +1939,11 @@
 	exports.formatPrice = function (price) {
 		return price + ' $';
 	};
+	
+	// Trade
+	exports.TRADE_TITLE = "Échange";
 }());
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function () {
     'use strict';
     var frenchString = require('./i18n.fr');
@@ -1704,7 +1982,7 @@
         window.applicationLanguage = applicationLanguage;
     }
 }());
-},{"./i18n.en":20,"./i18n.fr":21}],23:[function(require,module,exports){
+},{"./i18n.en":21,"./i18n.fr":22}],24:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1727,32 +2005,44 @@
 	function watchGame(messages, playGameTask) {
 		onDiceRolled(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function (dice) {
-				messages.onNext(diceMessage(dice));
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 			
 		onPropertyBought(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function (info) {
-				messages.onNext(Messages.logPropertyBought(info.player, info.property));
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 			
 		onRentPaid(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function (info) {
-				messages.onNext(Messages.logRentPaid(info.amount, info.fromPlayer, info.toPlayer));
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 			
 		onSalaryEarned(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function (player) {
-				messages.onNext(Messages.logSalaryReceived(player));
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 			
 		onTaxPaid(playGameTask)
 			.takeUntil(playGameTask.completed())
-			.subscribe(function (info) {
-				messages.onNext(Messages.logTaxPaid(info.amount, info.player));
+			.subscribe(function (message) {
+				messages.onNext(message);
+			});
+			
+		onOfferMade(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (message) {
+				messages.onNext(message);
+			});
+			
+		onOfferAcceptedOrRejected(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (message) {
+				messages.onNext(message);
 			});
 	}
 	
@@ -1770,12 +2060,19 @@
 				return task.diceRolled().last().withLatestFrom(
 					playGameTask.gameState(),
 					combineDiceAndState);
+			})
+			.map(function (dice) {
+				return diceMessage(dice);
 			});
 	}
 	
 	function onPropertyBought(playGameTask) {
 		return combineWithPrevious(playGameTask.gameState())
 			.filter(function (states) {
+				if (_.isFunction(states.previous.offer)) {
+					return false;
+				}
+				
 				return _.some(states.current.players(), function (player, index) {
 					var currentProperties = player.properties();
 					var previousProperties = states.previous.players()[index].properties();
@@ -1787,16 +2084,17 @@
 				var player = states.previous.players()[states.current.currentPlayerIndex()];
 				var newProperty = findNewProperty(states);
 				
-				return {
-					player: player,
-					property: newProperty
-				};
+				return Messages.logPropertyBought(player, newProperty);
 			});
 	}
 	
 	function onRentPaid(playGameTask) {
 		return combineWithPrevious(playGameTask.gameState())
 			.filter(function (states) {
+				if (_.isFunction(states.previous.offer)) {
+					return false;
+				}
+				
 				var fromPlayer = _.find(states.current.players(), function (player, index) {
 					return player.money() < states.previous.players()[index].money();
 				});
@@ -1817,24 +2115,79 @@
 				var amount = states.previous.players()[states.current.currentPlayerIndex()].money() -
 					states.current.players()[states.current.currentPlayerIndex()].money();
 				
-				return {
-					fromPlayer: fromPlayer,
-					toPlayer: toPlayer,
-					amount: amount
-				};
+				return Messages.logRentPaid(amount, fromPlayer, toPlayer);
 			});
 	}
 	
 	function onSalaryEarned(playGameTask) {
 		return combineWithPrevious(playGameTask.gameState())
-		.filter(function (states) {
-			var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
-			var previousPlayer = states.previous.players()[states.current.currentPlayerIndex()];
-			
-			return currentPlayer.money() === (previousPlayer.money() + 200);
-		})
-		.map(function (states) {
-			return states.current.players()[states.current.currentPlayerIndex()];
+			.filter(function (states) {
+				var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
+				var previousPlayer = states.previous.players()[states.current.currentPlayerIndex()];
+				
+				return currentPlayer.money() === (previousPlayer.money() + 200);
+			})
+			.map(function (states) {
+				var player = states.current.players()[states.current.currentPlayerIndex()];
+				
+				return Messages.logSalaryReceived(player);
+			});
+	}
+	
+	function onOfferMade(playGameTask) {
+		return playGameTask.gameState()
+			.filter(function (state) {
+				return _.isFunction(state.offer);
+			})
+			.map(function (state) {
+				var currentPlayerIndex = _.findIndex(state.players(), function (player) {
+					return player.id() === state.offer().currentPlayerId();
+				});
+				var otherPlayerIndex = _.findIndex(state.players(), function (player) {
+					return player.id() === state.offer().otherPlayerId();
+				});
+				
+				var currentPlayerName = state.players()[currentPlayerIndex].name();
+				var otherPlayerName = state.players()[otherPlayerIndex].name();
+				
+				return Messages.logOfferMade(currentPlayerName, otherPlayerName, state.offer());
+			});
+	}
+	
+	function onOfferAcceptedOrRejected(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+			.filter(function (states) {
+				return _.isFunction(states.previous.offer) && !states.current.offer;
+			})
+			.map(function (states) {
+				var somePlayerHasChanged =_.some(states.previous.players(), function (player, index) {
+					if (player.money() !== states.current.players()[index].money()) {
+						return true;
+					}
+					
+					if (!sameProperties(player.properties(), states.current.players()[index].properties())) {
+						return true;
+					}
+					
+					
+					return false;
+				});
+				
+				if (somePlayerHasChanged) {
+					return Messages.logOfferAccepted();
+				}
+				
+				return Messages.logOfferRejected();
+			});
+	}
+	
+	function sameProperties(left, right) {
+		if (left.length !== right.length) {
+			return false;
+		}
+		
+		return _.every(left, function (property, index) {
+			return property.id() === right[index].id();
 		});
 	}
 	
@@ -1871,10 +2224,7 @@
 				var amount = states.previous.players()[states.current.currentPlayerIndex()].money() -
 					playerWhoPaid.money();
 				
-				return {
-					player: playerWhoPaid,
-					amount: amount
-				};
+				return Messages.logTaxPaid(amount, playerWhoPaid);
 			});
 	}
 	
@@ -1916,7 +2266,7 @@
 		return this._messages.asObservable();
 	};
 }());
-},{"./contract":9,"./messages":25}],24:[function(require,module,exports){
+},{"./contract":10,"./messages":26}],25:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1931,7 +2281,7 @@
 			.classed('game-log-console', true);
 			
 		messages.subscribe(function (log) {
-			console.insert('span', '.game-log-message')
+			console.insert('p', '.game-log-message')
 				.classed('game-log-message', true)
 				.text(log.message())
 				.style('opacity', 0)
@@ -1939,7 +2289,7 @@
 		});
 	};
 }());
-},{"./contract":9}],25:[function(require,module,exports){
+},{"./contract":10}],26:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1948,6 +2298,7 @@
 	
 	var Player = require('./player');
 	var Property = require('./property');
+	var TradeOffer = require('./trade-offer');
 	
 	exports.logDiceRoll = function (player, die1, die2) {
 		precondition(player && Player.isPlayer(player),
@@ -2030,6 +2381,46 @@
 		return new Log('tax-paid', message);
 	};
 	
+	exports.logOfferMade = function (player1, player2, offer) {
+		precondition(_.isString(player1),
+			'A log about an offer being made requires the first player name');
+		precondition(_.isString(player2),
+			'A log about an offer being made requires the second player name');
+		precondition(TradeOffer.isOffer(offer) && !offer.isEmpty(),
+			'A log about an offer being made requires that offer');
+			
+		var message = i18n.LOG_OFFER_MADE
+						.replace('{player1}', player1)
+						.replace('{player2}', player2)
+						.replace('{offer1}', enumerateOfferFor(offer, 0))
+						.replace('{offer2}', enumerateOfferFor(offer, 1));
+		
+		return new Log('offer-made', message);
+	};
+	
+	function enumerateOfferFor(offer, playerIndex) {
+		var propertiesOffer = _.map(offer.propertiesFor(playerIndex), function (property) {
+			return property.name();
+		})
+		.join(', ');
+		
+		var priceOffer = i18n.formatPrice(offer.moneyFor(playerIndex));
+		
+		if (propertiesOffer === '') {
+			return priceOffer;
+		}
+		
+		return propertiesOffer + ' ' + i18n.LOG_CONJUNCTION + ' ' + priceOffer;
+	}
+	
+	exports.logOfferAccepted = function () {
+		return new Log('offer-accepted', i18n.LOG_OFFER_ACCEPTED);
+	};
+	
+	exports.logOfferRejected = function () {
+		return new Log('offer-rejected', i18n.LOG_OFFER_REJECTED);
+	};
+	
 	exports.simpleLog = function () {
 		return new Log('simple', 'A message');
 	};
@@ -2051,7 +2442,7 @@
 		return other instanceof Log && this._id === other._id && this._message === other._message;
 	};
 }());
-},{"./contract":9,"./i18n":22,"./player":31,"./property":35}],26:[function(require,module,exports){
+},{"./contract":10,"./i18n":23,"./player":33,"./property":37,"./trade-offer":43}],27:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2060,6 +2451,8 @@
 	var GameChoicesWidget = require('./game-choices-widget');
 	var PlayersWidget = require('./players-widget');
 	var LogGameWidget = require('./log-game-widget');
+	var TradeWidget = require('./trade-widget');
+	var Popup = require('./popup');
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
@@ -2077,6 +2470,10 @@
 			
 		centralComponentsContainer.append('button')
 			.attr('id', 'new-game-button')
+			.classed({
+				'btn': true,
+				'btn-default': true
+			})
 			.text(i18n.BUTTON_NEW_GAME)
 			.on('click', function() {
 				playGameTask.stop();
@@ -2084,16 +2481,78 @@
 		
 		GameChoicesWidget.render($(centralComponentsContainer[0]), playGameTask.handleChoicesTask());
 		LogGameWidget.render($(centralComponentsContainer[0]), playGameTask.messages());
-		BoardWidget.render($(panel[0]), playGameTask.gameState());
-		PlayersWidget.render($(panel[0]), playGameTask.gameState());
+		BoardWidget.render($(panel[0]), playGameTask.gameState().takeUntil(playGameTask.completed()));
+		PlayersWidget.render($(panel[0]), playGameTask.gameState().takeUntil(playGameTask.completed()));
 		
 		playGameTask.rollDiceTaskCreated().subscribe(function (task) {
 			DiceWidget.render($(centralComponentsContainer[0]), task);
 		});
+		
+		playGameTask.tradeTaskCreated().subscribe(function (task) {
+			var positionning = {
+				top: "180px",
+				left: "200px",
+				width: "900px",
+				height: "400px"
+			};
+			
+			var popup = Popup.render($(document.body), positionning, { closeBtn: false });
+			TradeWidget.render($(popup.contentContainer()[0]), task);
+			
+			task.offer().subscribeOnCompleted(function () {
+				popup.close();
+			});
+		});
 	};
 }());
 
-},{"./board-widget":1,"./contract":9,"./dice-widget":10,"./game-choices-widget":13,"./i18n":22,"./log-game-widget":24,"./players-widget":32}],27:[function(require,module,exports){
+},{"./board-widget":2,"./contract":10,"./dice-widget":11,"./game-choices-widget":14,"./i18n":23,"./log-game-widget":25,"./players-widget":34,"./popup":35,"./trade-widget":45}],28:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
+	
+	var GameState = require('./game-state');
+	
+	exports.newChoice = function() {
+		return new RollDiceChoice();
+	};
+	
+	function RollDiceChoice() {
+		this.id = 'roll-dice';
+		this.name = i18n.CHOICE_ROLL_DICE;
+	}
+	
+	RollDiceChoice.prototype.equals = function (other) {
+		return (other instanceof RollDiceChoice);
+	};
+	
+	RollDiceChoice.prototype.requiresDice = function () {
+		return true;
+	};
+	
+	RollDiceChoice.prototype.computeNextState = function (state, dice) {
+		precondition(GameState.isGameState(state),
+			'To compute next state, a roll-dice choice requires the actual state');
+		precondition(dice, 'To compute next state, a roll-dice choice requires the result of a dice roll');
+		
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.move(dice);
+			}
+			
+			return player;
+		});
+		
+		return GameState.turnEndState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex()
+		});
+	};
+}());
+},{"./contract":10,"./game-state":16,"./i18n":23}],29:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2132,6 +2591,9 @@
 	};
 	
 	PayRentChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'PayRentChoice requires a game state to compute the next one');
+			
 		var rent = this._rent;
 		var toPlayerId = this._toPlayerId;
 		
@@ -2154,7 +2616,7 @@
 		}, true);
 	};
 }());
-},{"./contract":9,"./game-state":15,"./i18n":22,"./player":31}],28:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":23,"./player":33}],30:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2189,6 +2651,9 @@
 	};
 	
 	PayTaxChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'PayTaxChoice requires a game state to compute the next one');
+			
 		var amount = this._amount;
 		
 		var newPlayers = _.map(state.players(), function (player, index) {
@@ -2206,15 +2671,17 @@
 		}, true);
 	};
 }());
-},{"./contract":9,"./game-state":15,"./i18n":22}],29:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":23}],31:[function(require,module,exports){
 (function() {
 	"use strict";
 	
 	var RollDiceTask = require('./roll-dice-task');
+	var TradeTask = require('./trade-task');
 	var LogGameTask = require('./log-game-task');
 	var HandleChoicesTask = require('./handle-choices-task');
 	var Player = require('./player');
 	var GameState = require('./game-state');
+	var TradeOffer = require('./trade-offer');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -2226,26 +2693,40 @@
 		precondition(gameConfiguration.options,
 			'PlayGameTask requires a configuration with an options object');
 		
-		return new PlayGameTask(gameConfiguration);
+		var task = new PlayGameTask(gameConfiguration);
+		
+		listenForChoices(task);	
+		
+		return task;
 	};
 	
-	function PlayGameTask(gameConfiguration) {
-		this._gameState = new Rx.ReplaySubject(1);
+	function PlayGameTask(gameConfiguration) {		
 		this._options = gameConfiguration.options;
 		this._completed = new Rx.AsyncSubject();
 		this._rollDiceTaskCreated = new Rx.Subject();
+		this._tradeTaskCreated = new Rx.Subject();
+		
+		var initialState = initialGameState(gameConfiguration.squares, gameConfiguration.players);
+		
+		this._gameState = new Rx.BehaviorSubject(initialState);
+		
 		this._logGameTask = LogGameTask.start(this);
-		
-		this._handleChoicesTask = HandleChoicesTask.start(this);
-		listenForChoices(this);
-		
-		startTurn(this, initialGameState(gameConfiguration.squares, gameConfiguration.players));
+		this._handleChoicesTask = HandleChoicesTask.start(this);	
 	}
 	
 	function listenForChoices(self) {
 		self._handleChoicesTask.choiceMade()
-			.takeUntil(self._completed)
-			.subscribe(makeChoice(self));
+			.withLatestFrom(self._gameState, function (action, state) {
+				return {
+					choice: action.choice,
+					arg: action.arg,
+					state: state
+				};
+			})
+			.flatMap(computeNextState(self))
+			.subscribe(function (state) {
+				self._gameState.onNext(state);
+			});
 	}
 	
 	function initialGameState(squares, players) {
@@ -2256,16 +2737,12 @@
 		});
 	}
 	
-	function startTurn(self, state) {
-		self._gameState.onNext(state);
-	}
-	
 	PlayGameTask.prototype.handleChoicesTask = function () {
 		return this._handleChoicesTask;
 	};
 	
 	PlayGameTask.prototype.messages = function () {
-		return this._logGameTask.messages();
+		return this._logGameTask.messages().takeUntil(this._completed);
 	};
 	
 	PlayGameTask.prototype.gameState = function () {
@@ -2273,7 +2750,11 @@
 	};
 	
 	PlayGameTask.prototype.rollDiceTaskCreated = function () {
-		return this._rollDiceTaskCreated.asObservable();
+		return this._rollDiceTaskCreated.takeUntil(this._completed);
+	};
+	
+	PlayGameTask.prototype.tradeTaskCreated = function () {
+		return this._tradeTaskCreated.takeUntil(this._completed);
 	};
 	
 	PlayGameTask.prototype.completed = function () {
@@ -2285,37 +2766,52 @@
 		this._completed.onCompleted();
 	};
 	
-	function makeChoice(self) {
-		return function (choice) {
-			self._gameState.take(1)
-				.flatMap(computeNextState(self, choice))
-				.subscribe(function (state) {
-					self._gameState.onNext(state);
-				});			
-		};
-	}
-	
-	function computeNextState(self, choice) {
-		return function (state) {
-			if (choice.requiresDice()) {
-				var task = RollDiceTask.start({
-					fast: self._options.fastDice,
-					dieFunction: self._options.dieFunction
-				});
-				
-				self._rollDiceTaskCreated.onNext(task);
-				return task.diceRolled().last()
-					.map(function (dice) {
-						return choice.computeNextState(state, dice);
-					});
+	function computeNextState(self) {
+		return function (action) {
+			if (action.choice.requiresDice()) {
+				return computeNextStateWithDice(self, action.state, action.choice);
 			}
 			
-			var nextState = choice.computeNextState(state);
+			if (_.isFunction(action.choice.requiresTrade)) {
+				return computeNextStateWithTrade(self, action.state, action.choice, action.arg);
+			}
+			
+			var nextState = action.choice.computeNextState(action.state);
 			return Rx.Observable.return(nextState);
 		};
 	}
+	
+	function computeNextStateWithDice(self, state, choice) {
+		var task = RollDiceTask.start({
+			fast: self._options.fastDice,
+			dieFunction: self._options.dieFunction
+		});
+		
+		self._rollDiceTaskCreated.onNext(task);
+		return task.diceRolled().last()
+			.map(function (dice) {
+				return choice.computeNextState(state, dice);
+			});
+	}
+	
+	function computeNextStateWithTrade(self, state, choice, arg) {
+		if (TradeOffer.isOffer(arg) && !arg.isEmpty()) {
+			var nextState = choice.computeNextState(state, arg);
+			return Rx.Observable.return(nextState);
+		}
+				
+		var currentPlayer = state.players()[state.currentPlayerIndex()];
+		var otherPlayer = choice.otherPlayer();
+		var task = TradeTask.start(currentPlayer, otherPlayer);
+		
+		self._tradeTaskCreated.onNext(task);
+		return task.offer().last()
+			.map(function (offer) {
+				return choice.computeNextState(state, offer);
+			});
+	}
 }());
-},{"./contract":9,"./game-state":15,"./handle-choices-task":19,"./log-game-task":23,"./player":31,"./roll-dice-task":37}],30:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./handle-choices-task":20,"./log-game-task":24,"./player":33,"./roll-dice-task":39,"./trade-offer":43,"./trade-task":44}],32:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2325,7 +2821,7 @@
 		];
 	};
 }());
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2410,6 +2906,54 @@
 		return this._properties.slice();
 	};
 	
+	Player.prototype.equals = function (other) {
+		precondition(other, 'Testing a player for equality with something else requires that something else');
+		
+		if (this === other) {
+			return true;
+		}
+		
+		if (!(other instanceof Player)) {
+			return false;
+		}
+		
+		if (this._id !== other._id) {
+			return false;
+		}
+		
+		if (this._name !== other._name) {
+			return false;
+		}
+		
+		if (this._money !== other._money) {
+			return false;
+		}
+		
+		if (this._position !== other._position) {
+			return false;
+		}
+		
+		if (this._color !== other._color) {
+			return false;
+		}
+		
+		if (this._type !== other._type) {
+			return false;
+		}
+		
+		return sameProperties(this._properties, other._properties);
+	};
+	
+	function sameProperties(left, right) {
+		if (left.length !== right.length) {
+			return false;
+		}
+		
+		return _.every(left, function (property, index) {
+			return property.id() === right[index].id();
+		});
+	}
+	
 	/**
 	 * Calculates the net worth of the player (i.e. money + owned properties values).
 	 */
@@ -2441,6 +2985,12 @@
 	
 	Player.prototype.buyProperty = function (property) {
 		precondition(property && Property.isProperty(property), 'Player buying property requires a property');
+		
+		var alreadyOwned = !!_.find(this.properties(), function (ownedProperty) {
+			return ownedProperty.id() === property.id();
+		});
+		
+		precondition(!alreadyOwned, 'Player cannot buy a property he already owns');
 		
 		return newPlayer({
 			id: this.id(),
@@ -2475,9 +3025,51 @@
 		return insertPropertyAt(property, index + 1, properties);
 	}
 	
+	Player.prototype.gainProperty = function (property) {
+		precondition(property && Property.isProperty(property), 'Player gaining property requires a property');
+		
+		var alreadyOwned = !!_.find(this.properties(), function (ownedProperty) {
+			return ownedProperty.id() === property.id();
+		});
+		
+		precondition(!alreadyOwned, 'Player cannot gain a property he already owns');
+		
+		return newPlayer({
+			id: this.id(),
+			name: this.name(),
+			money: this.money(),
+			position: this.position(),
+			color: this.color(),
+			type: this.type(),
+			properties: insertProperty(property, this.properties())
+		});
+	};
+	
+	Player.prototype.loseProperty = function (property) {
+		precondition(property && Property.isProperty(property), 'Player losing property requires a property');
+		
+		var alreadyOwned = !!_.find(this.properties(), function (ownedProperty) {
+			return ownedProperty.id() === property.id();
+		});
+		
+		precondition(alreadyOwned, 'Player cannot lose a property he does not already owns');
+		
+		return newPlayer({
+			id: this.id(),
+			name: this.name(),
+			money: this.money(),
+			position: this.position(),
+			color: this.color(),
+			type: this.type(),
+			properties: _.filter(this.properties(), function (ownedProperty) {
+				return ownedProperty.id() !== property.id();
+			})
+		});
+	};
+	
 	Player.prototype.pay = function (amount) {
-		precondition(_.isNumber(amount) && amount > 0,
-			'Player requires an amount to pay, that is greater than 0');
+		precondition(_.isNumber(amount) && amount >= 0,
+			'Player requires an amount to pay, that is greater than or equal to 0');
 			
 		precondition(this.money() > amount, 'Player does not have enough money to pay ' + amount);
 		
@@ -2485,8 +3077,8 @@
 	};
 	
 	Player.prototype.earn = function (amount) {
-		precondition(_.isNumber(amount) && amount > 0,
-			'Player requires an amount to earn, that is greater than 0');
+		precondition(_.isNumber(amount) && amount >= 0,
+			'Player requires an amount to earn, that is greater than or equal to 0');
 		
 		return playerWithAdditionalMoney(this, amount);
 	};
@@ -2503,7 +3095,7 @@
 		});
 	}
 }());
-},{"./contract":9,"./i18n":22,"./player-colors":30,"./property":35}],32:[function(require,module,exports){
+},{"./contract":10,"./i18n":23,"./player-colors":32,"./property":37}],34:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2628,24 +3220,33 @@
 			});
 			
 		selection.order();
+		
+		selection.exit().remove();
 	}
 }());
-},{"./contract":9,"./i18n":22}],33:[function(require,module,exports){
+},{"./contract":10,"./i18n":23}],35:[function(require,module,exports){
 (function () {
     'use strict';
 
     var precondition = require('./contract').precondition;
 
-    exports.render = function (container, positioning) {
+    exports.render = function (container, positioning, options) {
         precondition(container, "A popup require a positionned container to render into");
         // Example : top + height + left + width, OR top + bottom + left + width, and so forth
         precondition(isFullyPositioned(positioning), "The popup must be fully positioned vertically and horizontally");
 
+		options = options || defaultOptions();
         var htmlElements = renderDom(container, positioning);
-        var closedSubject = bindEvents(htmlElements);
+        var closedSubject = bindEvents(htmlElements.popupElement, options);
 
         return externalInterface(htmlElements, closedSubject);
     };
+	
+	function defaultOptions() {
+		return {
+			closeBtn : true
+		};
+	}
 
     function isFullyPositioned(positioning) {
         var cssAttributes = _.keys(positioning);
@@ -2665,34 +3266,34 @@
             .style('position', 'absolute')
             .style(positioning);
 
-        var closeButton = popupElement.append('button')
-            .classed('popup-close-btn', true)
-            .attr('data-ui', 'popup-close');
-			
-		closeButton.append('span')
-			.classed({
-				'glyphicon': true,
-				'glyphicon-remove': true
-			});
-
         var contentContainer = popupElement.append('div')
             .classed('popup-content', true);
 
         return {
             popupElement: popupElement,
-            closeButton: closeButton,
             contentContainer: contentContainer
         };
     }
 
-    function bindEvents(htmlElements) {
-        var closedSubject = new Rx.AsyncSubject();
-
-        htmlElements.closeButton.on('click', function () {
-            closePopup(htmlElements, closedSubject);
-        });
-
-        return closedSubject;
+    function bindEvents(popupElement, options) {
+		var closedSubject = new Rx.AsyncSubject();
+		
+		if (options.closeBtn) {
+			var closeButton = popupElement.append('button')
+				.classed('popup-close-btn', true)
+				.attr('data-ui', 'popup-close')
+				.on('click', function () {
+					closePopup(popupElement, closedSubject);
+				});
+				
+			closeButton.append('span')
+				.classed({
+					'glyphicon': true,
+					'glyphicon-remove': true
+				});
+		}
+        
+		return closedSubject;
     }
 
     function externalInterface(htmlElements, closedSubject) {
@@ -2706,19 +3307,19 @@
             },
 
             close: function () {
-                closePopup(htmlElements, closedSubject);
+                closePopup(htmlElements.popupElement, closedSubject);
             }
         };
     }
 
-    function closePopup(htmlElement, closedSubject) {
-        htmlElement.popupElement.classed('.popup-closing', true);
-        htmlElement.popupElement.remove();
+    function closePopup(popupElement, closedSubject) {
+        popupElement.classed('.popup-closing', true);
+        popupElement.remove();
         closedSubject.onNext(true);
         closedSubject.onCompleted();
     }
 }());
-},{"./contract":9}],34:[function(require,module,exports){
+},{"./contract":10}],36:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2765,7 +3366,7 @@
 		return (this._index < other._index ? 1 : -1);
 	};
 }());
-},{"./contract":9}],35:[function(require,module,exports){
+},{"./contract":10}],37:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2955,7 +3556,7 @@
 		return other instanceof Property && this._id === other._id;
 	};
 }());
-},{"./contract":9,"./property-group":34}],36:[function(require,module,exports){
+},{"./contract":10,"./property-group":36}],38:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2964,43 +3565,53 @@
 	
 	var GameState = require('./game-state');
 	
-	exports.newChoice = function() {
-		return new RollDiceChoice();
+	exports.newChoice = function (offerCurrentPlayerId) {
+		precondition(_.isString(offerCurrentPlayerId), 'A RejectOfferChoice requires an offer current player id');
+		
+		return new RejectOfferChoice(offerCurrentPlayerId);
 	};
 	
-	function RollDiceChoice() {
-		this.id = 'roll-dice';
-		this.name = i18n.CHOICE_ROLL_DICE;
+	function RejectOfferChoice(offerCurrentPlayerId) {
+		this.id = 'reject-offer';
+		this.name = i18n.CHOICE_REJECT_OFFER;
+		this._offerCurrentPlayerId = offerCurrentPlayerId;
 	}
 	
-	RollDiceChoice.prototype.equals = function (other) {
-		return (other instanceof RollDiceChoice);
-	};
-	
-	RollDiceChoice.prototype.requiresDice = function () {
+	RejectOfferChoice.prototype.equals = function (other) {
+		if (!(other instanceof RejectOfferChoice)) {
+			return false;
+		}
+		
+		if (this._offerCurrentPlayerId !== other._offerCurrentPlayerId) {
+			return false;
+		}
+		
 		return true;
 	};
 	
-	RollDiceChoice.prototype.computeNextState = function (state, dice) {
-		precondition(state, 'To compute next state, a roll-dice choice requires the actual state');
-		precondition(dice, 'To compute next state, a roll-dice choice requires the result of a dice roll');
-		
-		var newPlayers = _.map(state.players(), function (player, index) {
-			if (index === state.currentPlayerIndex()) {
-				return player.move(dice);
-			}
+	RejectOfferChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	RejectOfferChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'RejectOfferChoice requires a game state to compute the next one');
 			
-			return player;
+		var self = this;
+		var playerIndex = _.findIndex(state.players(), function (player) {
+			return player.id() === self._offerCurrentPlayerId;
 		});
 		
-		return GameState.turnEndState({
+		precondition(playerIndex >= 0, 'Offer rejected must have been made by a valid player');
+		
+		return GameState.turnStartState({
 			squares: state.squares(),
-			players: newPlayers,
-			currentPlayerIndex: state.currentPlayerIndex()
+			players: state.players(),
+			currentPlayerIndex: playerIndex
 		});
 	};
 }());
-},{"./contract":9,"./game-state":15,"./i18n":22}],37:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":23}],39:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -3025,7 +3636,6 @@
 				diceRolled.onCompleted();
 			});
 	}
-
 	
 	function rollDie() {
 		return Math.floor((Math.random() * 6) + 1);
@@ -3035,7 +3645,7 @@
 		return this._diceRolled.asObservable();
 	};
 }());
-},{}],38:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -3073,7 +3683,7 @@
 			'L 32 4 Z">';
 	};
 }());
-},{}],39:[function(require,module,exports){
+},{}],41:[function(require,module,exports){
 (function () {
     'use strict';
 	
@@ -3130,4 +3740,467 @@
 		}
     };
 }());
-},{"./contract":9}]},{},[3]);
+},{"./contract":10}],42:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
+	
+	var GameState = require('./game-state');
+	var TradeOffer = require('./trade-offer');
+	var Player = require('./player');
+	
+	exports.newChoice = function (player) {
+		precondition(Player.isPlayer(player), 'A TradeChoice requires a player to trade with');
+		
+		return new TradeChoice(player);
+	};
+	
+	function TradeChoice(player) {
+		this.id = 'trade-with-' + player.id();
+		this.name = i18n.CHOICE_TRADE.replace('{player}', player.name());
+		this._player = player;
+	}
+	
+	TradeChoice.prototype.equals = function (other) {
+		if (!(other instanceof TradeChoice)) {
+			return false;
+		}
+		
+		return this._player.equals(other._player);
+	};
+	
+	TradeChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	TradeChoice.prototype.requiresTrade = function () {
+		return true;
+	};
+	
+	TradeChoice.prototype.otherPlayer = function () {
+		return this._player;
+	};
+	
+	TradeChoice.prototype.computeNextState = function (state, offer) {
+		precondition(GameState.isGameState(state),
+			'TradeChoice requires a game state to compute the next one');
+		precondition(TradeOffer.isOffer(offer), 'TradeChoice requires a game offer');
+		
+		if (offer.isEmpty()) {
+			return state;
+		}
+		
+		return GameState.gameInTradeState(state.squares(), state.players(), offer);
+	};
+}());
+},{"./contract":10,"./game-state":16,"./i18n":23,"./player":33,"./trade-offer":43}],43:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var precondition = require('./contract').precondition;
+	
+	var Player = require('./player');
+	
+	exports.isOffer = function (candidate) {
+		return candidate instanceof TradeOffer;
+	};
+	
+	exports.emptyOffer = function () {
+		return new TradeOffer([
+			{
+				properties: [],
+				money: 0
+			},
+			{
+				properties: [],
+				money: 0
+			}
+		]);
+	};
+	
+	exports.newOffer = function (info) {
+		precondition(Player.isPlayer(info[0].player),
+			'A TradeOffer requires the current player');
+		precondition(_.isArray(info[0].properties),
+			'A TradeOffer requires a list of properties for the current player');
+		precondition(_.isNumber(info[0].money),
+			'A TradeOffer requires an amount of money for the current player');
+		precondition(propertiesOwnedBy(info[0].properties, info[0].player),
+			'Properties offered by current player must be owned by current player');
+			
+		info[0].properties = realProperties(info[0].properties, info[0].player);
+			
+		precondition(Player.isPlayer(info[1].player),
+			'A TradeOffer requires the other player');
+		precondition(_.isArray(info[1].properties),
+			'A TradeOffer requires a list of properties for the other player');
+		precondition(_.isNumber(info[1].money),
+			'A TradeOffer requires an amount of money for the other player');
+		precondition(propertiesOwnedBy(info[1].properties, info[1].player),
+			'Properties offered by other player must be owned by other player');
+			
+		info[1].properties = realProperties(info[1].properties, info[1].player);
+		
+		return new TradeOffer(info);
+	};
+	
+	function propertiesOwnedBy(propertyIds, player) {
+		return _.every(propertyIds, function (propertyId) {
+			return !!_.find(player.properties(), function (property) {
+				return property.id() === propertyId;
+			});
+		});
+	}
+	
+	function realProperties(propertyIds, player) {
+		return _.map(propertyIds, function (propertyId) {
+			return _.find(player.properties(), function (property) {
+				return property.id() === propertyId;
+			});
+		});
+	}
+	
+	function TradeOffer(info) {
+		this._currentPlayer = info[0].player;
+		this._currentPlayerProperties = info[0].properties;
+		this._currentPlayerMoney = info[0].money;
+		this._otherPlayer = info[1].player;
+		this._otherPlayerProperties = info[1].properties;
+		this._otherPlayerMoney = info[1].money;
+	}
+	
+	TradeOffer.prototype.isEmpty = function () {
+		return this._currentPlayerProperties.length === 0 && this._currentPlayerMoney === 0 &&
+			this._otherPlayerProperties.length === 0 && this._otherPlayerMoney === 0;
+	};
+	
+	TradeOffer.prototype.isValid = function () {
+		var currentPlayerOfferValid = (this._currentPlayerProperties.length > 0 || this._currentPlayerMoney > 0);
+		var otherPlayerOfferValid = (this._otherPlayerProperties.length > 0 || this._otherPlayerMoney > 0);
+		
+		return currentPlayerOfferValid && otherPlayerOfferValid;
+	};
+	
+	TradeOffer.prototype.currentPlayerId = function () {
+		return this._currentPlayer.id();
+	};
+	
+	TradeOffer.prototype.otherPlayerId = function () {
+		return this._otherPlayer.id();
+	};
+	
+	TradeOffer.prototype.propertiesFor = function (playerIndex) {
+		return (playerIndex === 0) ? this._currentPlayerProperties.slice() : this._otherPlayerProperties.slice();
+	};
+	
+	TradeOffer.prototype.moneyFor = function (playerIndex) {
+		return (playerIndex === 0) ? this._currentPlayerMoney : this._otherPlayerMoney;
+	};
+	
+	TradeOffer.prototype.equals = function (other) {
+		if (!(other instanceof TradeOffer)) {
+			return false;
+		}
+		
+		if (this._currentPlayer.id() !== other._currentPlayer.id()) {
+			return false;
+		}
+		
+		if (this._otherPlayer.id() !== other._otherPlayer.id()) {
+			return false;
+		}
+		
+		if (this._currentPlayerMoney !== other._currentPlayerMoney) {
+			return false;
+		}
+		
+		if (this._otherPlayerMoney !== other._otherPlayerMoney) {
+			return false;
+		}
+		
+		if (!sameProperties(this._currentPlayerProperties, other._currentPlayerProperties)) {
+			return false;
+		}
+		
+		if (!sameProperties(this._otherPlayerProperties, other._otherPlayerProperties)) {
+			return false;
+		}
+		
+		return true;
+	};
+	
+	function sameProperties(left, right) {
+		if (left.length !== right.length) {
+			return false;
+		}
+		
+		return _.every(left, function (property, index) {
+			return property.id() === right[index].id();
+		});
+	}
+}());
+},{"./contract":10,"./player":33}],44:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var Player = require('./player');
+	var TradeOffer = require('./trade-offer');
+	
+	var precondition = require('./contract').precondition;
+	
+	exports.start = function (currentPlayer, otherPlayer) {
+		precondition(Player.isPlayer(currentPlayer), 'A TradeTask requires a current player');
+		precondition(Player.isPlayer(otherPlayer), 'A TradeTask requires another player');
+		
+		return new TradeTask(currentPlayer, otherPlayer);
+	};
+	
+	function TradeTask(currentPlayer, otherPlayer) {
+		this._currentPlayer = currentPlayer;
+		this._otherPlayer = otherPlayer;
+		this._currentPlayerPropertiesOffer = [];
+		this._otherPlayerPropertiesOffer = [];
+		this._currentPlayerMoneyOffer = 0;
+		this._otherPlayerMoneyOffer = 0;
+		
+		this._offer = new Rx.BehaviorSubject(currentOffer(this));
+	}
+	
+	TradeTask.prototype.currentPlayer = function () {
+		return this._currentPlayer;
+	};
+	
+	TradeTask.prototype.otherPlayer = function () {
+		return this._otherPlayer;
+	};
+	
+	TradeTask.prototype.togglePropertyOfferedByPlayer = function (propertyId, playerIndex) {
+		precondition(_.isString(propertyId), 'Requires a property id');
+		precondition(_.isNumber(playerIndex) && (playerIndex === 0 || playerIndex === 1),
+			'Only the player with index 0 or 1 can offer something');
+			
+		var properties = (playerIndex === 0) ?
+			this._currentPlayerPropertiesOffer :
+			this._otherPlayerPropertiesOffer;
+		
+		if (_.contains(properties, propertyId)) {
+			properties = _.without(properties, propertyId);
+		} else {
+			properties = properties.concat([propertyId]);
+		}
+		
+		setPropertiesOfferFor(playerIndex, properties, this);
+		
+		this._offer.onNext(currentOffer(this));
+	};
+	
+	function setPropertiesOfferFor(playerIndex, properties, self) {
+		if (playerIndex === 0) {
+			self._currentPlayerPropertiesOffer = properties;
+		} else {
+			self._otherPlayerPropertiesOffer = properties;
+		}
+	}
+	
+	TradeTask.prototype.setMoneyOfferedByPlayer = function (money, playerIndex) {
+		precondition(_.isNumber(money) && money >= 0,
+			'A player can only offer an amount of money greater than or equal to 0');
+		precondition(_.isNumber(playerIndex) && (playerIndex === 0 || playerIndex === 1),
+			'Only the player with index 0 or 1 can offer something');
+			
+		if (playerIndex === 0) {
+			precondition(money <= this._currentPlayer.money(),
+				'A player cannot offer more money than he has');
+			
+			this._currentPlayerMoneyOffer = money;
+		} else {
+			precondition(money <= this._otherPlayer.money(),
+				'A player cannot offer more money than he has');
+				
+			this._otherPlayerMoneyOffer = money;
+		}
+		
+		this._offer.onNext(currentOffer(this));
+	};
+	
+	TradeTask.prototype.makeOffer = function () {
+		this._offer.onCompleted();
+	};
+	
+	TradeTask.prototype.cancel = function () {
+		this._offer.onNext(TradeOffer.emptyOffer());
+		this._offer.onCompleted();
+	};
+	
+	TradeTask.prototype.offer = function () {
+		return this._offer.asObservable();
+	};
+	
+	function currentOffer(self) {
+		return TradeOffer.newOffer([
+			{
+				player: self._currentPlayer,
+				properties: self._currentPlayerPropertiesOffer,
+				money: self._currentPlayerMoneyOffer
+			},
+			{
+				player: self._otherPlayer,
+				properties: self._otherPlayerPropertiesOffer,
+				money: self._otherPlayerMoneyOffer
+			}
+		]);
+	}
+}());
+},{"./contract":10,"./player":33,"./trade-offer":43}],45:[function(require,module,exports){
+(function() {
+	"use strict";
+
+	var i18n = require('./i18n').i18n();
+	var precondition = require('./contract').precondition;
+	
+	exports.render = function (container, tradeTask) {
+		precondition(container, 'A TradeWidget requires a container to render into');
+		precondition(tradeTask, 'A Tradewidget requires a TradeTask');
+		
+		var panel = d3.select(container[0])
+			.append('div')
+			.classed('monopoly-trade-panel', true);
+			
+		panel.append('span')
+			.classed('monopoly-trade-title', true)
+			.text(i18n.TRADE_TITLE);
+			
+		var panelContainer = panel.append('div')
+			.classed('monopoly-trade-player-panels', true);
+		
+		renderPlayerPanel(panelContainer, tradeTask.currentPlayer(), tradeTask, 0);
+		renderPlayerPanel(panelContainer, tradeTask.otherPlayer(), tradeTask, 1);
+		
+		var makeOfferBtn = panel.append('button')
+			.classed({
+				'monopoly-trade-make-offer-btn': true,
+				'btn': true,
+				'btn-default': true
+			})
+			.text(i18n.TRADE_MAKE_OFFER)
+			.on('click', function () {
+				tradeTask.makeOffer();
+			});
+			
+		panel.append('button')
+			.classed({
+				'monopoly-trade-cancel-btn': true,
+				'btn': true,
+				'btn-default': true
+			})
+			.text(i18n.TRADE_CANCEL)
+			.on('click', function () {
+				tradeTask.cancel();
+			});
+			
+			tradeTask.offer()
+				.map(function (offer) {
+					return offer.isValid();
+				})
+				.subscribe(function (valid) {
+					makeOfferBtn.attr('disabled', valid ? null : 'disabled');
+				});
+			
+		tradeTask.offer().subscribeOnCompleted(function () {
+			panel.remove();
+		});
+	};
+	
+	function renderPlayerPanel(container, player, tradeTask, playerIndex) {
+		var panel = container.append('div')
+			.classed('monopoly-trade-player-panel', true)
+			.attr('data-ui', player.id());
+			
+		panel.append('span')
+			.classed('monopoly-trade-player-name', true)
+			.text(player.name());
+			
+		var list = panel.append('div')
+			.classed('monopoly-trade-player-properties', true);
+			
+		tradeTask.offer()
+			.map(function (offer) {
+				return offer.propertiesFor(playerIndex);
+			})
+			.distinctUntilChanged()
+			.subscribe(function (selectedProperties) {
+				var items = list.selectAll('.monopoly-trade-player-property')
+					.data(player.properties());
+					
+				items.enter()
+					.append('button')
+					.classed('monopoly-trade-player-property', true)
+					.text(function (property) {
+						return property.name();
+					})
+					.style('background-color', function (property) {
+						return property.group().color();
+					})
+					.on('click', function (property) {
+						tradeTask.togglePropertyOfferedByPlayer(property.id(), playerIndex);
+					});
+					
+				items.classed('monopoly-trade-player-property-selected', function (property) {
+					var propertyIds = _.map(selectedProperties, function (property) {
+						return property.id();
+					});
+					
+					return _.contains(propertyIds, property.id());
+				});
+			});
+		
+		panel.append('input')
+			.attr('type', 'text')
+			.classed('monopoly-trade-player-money-spinner', true)
+			.each(function () {
+				$(this).spinner({
+					min: 0, max: player.money(), step: 1,
+					change: onMoneySpinnerChange(tradeTask, playerIndex),
+					stop: onMoneySpinnerChange(tradeTask, playerIndex)
+				})
+				.val(0)
+				.on('input', function () {
+					if ($(this).data('onInputPrevented')) {
+						return;
+					}
+					var val = this.value;
+					var $this = $(this);
+					var max = $this.spinner('option', 'max');
+					var min = $this.spinner('option', 'min');
+					// We want only number, no alpha. 
+					// We set it to previous default value.         
+					if (!val.match(/^[+-]?[\d]{0,}$/)) {
+						val = $(this).data('defaultValue');
+					}
+					this.value = val > max ? max : val < min ? min : val;
+				}).on('keydown', function (e) {
+					// we set default value for spinner.
+					if (!$(this).data('defaultValue')) {
+						$(this).data('defaultValue', this.value);
+					}
+					// To handle backspace
+					$(this).data('onInputPrevented', e.which === 8 ? true : false);
+				});
+			});
+			
+		panel.append('span')
+			.classed('monopoly-trade-player-money-total', true)
+			.text('/ ' + i18n.formatPrice(player.money()));
+	}
+	
+	function onMoneySpinnerChange(task, playerIndex) {
+		return function (event, ui) {
+			console.log('spinner change, value : ' + $(event.target).spinner('value'));
+			task.setMoneyOfferedByPlayer($(event.target).spinner('value'), playerIndex);
+		};
+	}
+}());
+
+},{"./contract":10,"./i18n":23}]},{},[4]);
