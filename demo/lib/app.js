@@ -2147,10 +2147,10 @@
 					return player.id() === state.offer().otherPlayerId();
 				});
 				
-				var currentPlayerName = state.players()[currentPlayerIndex].name();
-				var otherPlayerName = state.players()[otherPlayerIndex].name();
+				var currentPlayer = state.players()[currentPlayerIndex];
+				var otherPlayer = state.players()[otherPlayerIndex];
 				
-				return Messages.logOfferMade(currentPlayerName, otherPlayerName, state.offer());
+				return Messages.logOfferMade(currentPlayer, otherPlayer, state.offer());
 			});
 	}
 	
@@ -2283,7 +2283,7 @@
 		messages.subscribe(function (log) {
 			console.insert('p', '.game-log-message')
 				.classed('game-log-message', true)
-				.text(log.message())
+				.html(log.message())
 				.style('opacity', 0)
 				.transition().duration(600).style("opacity", 1);
 		});
@@ -2301,7 +2301,7 @@
 	var TradeOffer = require('./trade-offer');
 	
 	exports.logDiceRoll = function (player, die1, die2) {
-		precondition(player && Player.isPlayer(player),
+		precondition(Player.isPlayer(player),
 			'A log about dice roll requires the name of the player who rolled the dice');
 		precondition(_.isNumber(die1) && die1 >= 1 && die1 <= 6,
 			'A log about dice roll requires a first die between 1 and 6');
@@ -2309,7 +2309,7 @@
 			'A log about dice roll requires a first die between 1 and 6');
 		
 		var message = i18n.LOG_DICE_ROLL
-					.replace('{player}', player.name())
+					.replace('{player}', coloredPlayer(player))
 					.replace('{die1}', die1)
 					.replace('{die2}', die2);
 						
@@ -2317,26 +2317,26 @@
 	};
 	
 	exports.logDoubleDiceRoll = function (player, dice) {
-		precondition(player && Player.isPlayer(player),
+		precondition(Player.isPlayer(player),
 			'A log about double dice roll requires the player who rolled the dice');
 		precondition(_.isNumber(dice) && dice,
 			'A log about double dice roll requires dice to be greater than 1');
 		
 		var message = i18n.LOG_DOUBLE_DICE_ROLL
-						.replace('{player}', player.name())
+						.replace('{player}', coloredPlayer(player))
 						.replace('{dice}', dice);
 						
 		return new Log('double-dice-roll', message);
 	};
 	
 	exports.logPropertyBought = function (player, property) {
-		precondition(player && Player.isPlayer(player),
+		precondition(Player.isPlayer(player),
 			'A log about property bought requires the player who bought');
-		precondition(property && Property.isProperty(property),
+		precondition(Property.isProperty(property),
 			'A log about property bought requires the property that was bought');
 		
 		var message = i18n.LOG_PROPERTY_BOUGHT
-						.replace('{player}', player.name())
+						.replace('{player}', coloredPlayer(player))
 						.replace('{property}', property.name());
 						
 		return new Log('property-bought', message);
@@ -2345,21 +2345,21 @@
 	exports.logRentPaid = function (amount, fromPlayer, toPlayer) {
 		precondition(_.isNumber(amount) && amount > 0,
 			'A log about rent paid requires an amount greater than 0');
-		precondition(fromPlayer && Player.isPlayer(fromPlayer),
+		precondition(Player.isPlayer(fromPlayer),
 			'A log about rent paid requires of the player who paid');
-		precondition(toPlayer && Player.isPlayer(toPlayer),
+		precondition(Player.isPlayer(toPlayer),
 			'A log about rent paid requires of the player who received the payment');
 		
 		var message = i18n.LOG_RENT_PAID
 						.replace('{amount}', i18n.formatPrice(amount))
-						.replace('{fromPlayer}', fromPlayer.name())
-						.replace('{toPlayer}', toPlayer.name());
+						.replace('{fromPlayer}', coloredPlayer(fromPlayer))
+						.replace('{toPlayer}', coloredPlayer(toPlayer));
 		
 		return new Log('rent-paid', message);
 	};
 	
 	exports.logSalaryReceived = function (player) {
-		precondition(player && Player.isPlayer(player),
+		precondition(Player.isPlayer(player),
 			'A log about player salary requires the player');
 			
 		var message = i18n.LOG_SALARY
@@ -2371,27 +2371,27 @@
 	exports.logTaxPaid = function (amount, player) {
 		precondition(_.isNumber(amount) && amount > 0,
 			'A log about tax paid requires an amount greater than 0');
-		precondition(player && Player.isPlayer(player),
+		precondition(Player.isPlayer(player),
 			'A log about tax paid requires of the player who paid');
 			
 		var message = i18n.LOG_TAX_PAID
 						.replace('{amount}', i18n.formatPrice(amount))
-						.replace('{player}', player.name());
+						.replace('{player}', coloredPlayer(player));
 						
 		return new Log('tax-paid', message);
 	};
 	
 	exports.logOfferMade = function (player1, player2, offer) {
-		precondition(_.isString(player1),
-			'A log about an offer being made requires the first player name');
-		precondition(_.isString(player2),
-			'A log about an offer being made requires the second player name');
+		precondition(Player.isPlayer(player1),
+			'A log about an offer being made requires the first player');
+		precondition(Player.isPlayer(player2),
+			'A log about an offer being made requires the second player');
 		precondition(TradeOffer.isOffer(offer) && !offer.isEmpty(),
 			'A log about an offer being made requires that offer');
 			
 		var message = i18n.LOG_OFFER_MADE
-						.replace('{player1}', player1)
-						.replace('{player2}', player2)
+						.replace('{player1}', coloredPlayer(player1))
+						.replace('{player2}', coloredPlayer(player2))
 						.replace('{offer1}', enumerateOfferFor(offer, 0))
 						.replace('{offer2}', enumerateOfferFor(offer, 1));
 		
@@ -2441,6 +2441,10 @@
 	Log.prototype.equals = function (other) {
 		return other instanceof Log && this._id === other._id && this._message === other._message;
 	};
+	
+	function coloredPlayer(player) {
+		return '<span style="color: ' + player.color() + '; font-weight: bold;">' + player.name() + '</span>';
+	}
 }());
 },{"./contract":10,"./i18n":23,"./player":33,"./property":37,"./trade-offer":43}],27:[function(require,module,exports){
 (function() {
@@ -4197,7 +4201,6 @@
 	
 	function onMoneySpinnerChange(task, playerIndex) {
 		return function (event, ui) {
-			console.log('spinner change, value : ' + $(event.target).spinner('value'));
 			task.setMoneyOfferedByPlayer($(event.target).spinner('value'), playerIndex);
 		};
 	}
