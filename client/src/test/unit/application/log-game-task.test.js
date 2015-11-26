@@ -114,7 +114,7 @@
 			
 			it('sends a message describing the offer', function () {
 				var message = Messages.logOfferMade(
-					testData.players()[0].name(), testData.players()[1].name(), offer);
+					testData.players()[0], testData.players()[1], offer);
 					
 				expect(logs.length).to.eql(1);
 				expect(logs[0].equals(message)).to.be(true);

@@ -162,10 +162,10 @@
 					return player.id() === state.offer().otherPlayerId();
 				});
 				
-				var currentPlayerName = state.players()[currentPlayerIndex].name();
-				var otherPlayerName = state.players()[otherPlayerIndex].name();
+				var currentPlayer = state.players()[currentPlayerIndex];
+				var otherPlayer = state.players()[otherPlayerIndex];
 				
-				return Messages.logOfferMade(currentPlayerName, otherPlayerName, state.offer());
+				return Messages.logOfferMade(currentPlayer, otherPlayer, state.offer());
 			});
 	}
 	

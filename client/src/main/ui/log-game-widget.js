@@ -14,7 +14,7 @@
 		messages.subscribe(function (log) {
 			console.insert('p', '.game-log-message')
 				.classed('game-log-message', true)
-				.text(log.message())
+				.html(log.message())
 				.style('opacity', 0)
 				.transition().duration(600).style("opacity", 1);
 		});
