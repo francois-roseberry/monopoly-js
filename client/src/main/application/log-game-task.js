@@ -137,10 +137,20 @@
 	function onSalaryEarned(playGameTask) {
 		return combineWithPrevious(playGameTask.gameState())
 			.filter(function (states) {
-				var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
+				return _.reduce(states.current.players(), function (memo, player, index) {
+					var previousPlayer = states.previous.players()[index];
+					
+					if (index === states.current.currentPlayerIndex()) {
+						return memo && (player.money() === previousPlayer.money() + 200);
+					}
+					
+					return memo && (player.money() === previousPlayer.money());					
+				}, true);
+				
+				/*var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
 				var previousPlayer = states.previous.players()[states.current.currentPlayerIndex()];
 				
-				return currentPlayer.money() === (previousPlayer.money() + 200);
+				return currentPlayer.money() === (previousPlayer.money() + 200);*/
 			})
 			.map(function (states) {
 				var player = states.current.players()[states.current.currentPlayerIndex()];
