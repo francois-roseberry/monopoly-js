@@ -104,7 +104,9 @@
 			'company': renderCompany(container),
 			'go': renderStart(container),
 			'jail': renderJail(container),
-			'go-to-jail': _.noop,
+			'go-to-jail': function () {
+				writeAngledText(container, i18n.GO_TO_JAIL, {x: -8, y: 100}, 12, SQUARE_WIDTH * 2);
+			},
 			'parking': function () {
 				writeAngledText(container, i18n.FREE_PARKING,  {x: -8, y: 100}, 12, SQUARE_WIDTH * 2);
 			}

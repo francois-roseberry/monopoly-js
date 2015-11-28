@@ -47,6 +47,7 @@
 	exports.START_DESCRIPTION = "Réclamez 200 $ de salaire en passant à";
 	exports.VISITING_JAIL = "En visite";
 	exports.FREE_PARKING = "Stationnement gratuit";
+	exports.GO_TO_JAIL = "Allez en prison";
 	
 	exports.COMPANY_WATER = 'Aqueduc';
 	exports.COMPANY_ELECTRIC = "Compagnie d'électricité";

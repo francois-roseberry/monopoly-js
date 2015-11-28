@@ -47,6 +47,7 @@
 	exports.START_DESCRIPTION = "Collect $200 salary as you pass";
 	exports.VISITING_JAIL = "Just visiting";
 	exports.FREE_PARKING = "Free parking";
+	exports.GO_TO_JAIL = "Go to jail";
 	
 	exports.COMPANY_WATER = 'Water Works';
 	exports.COMPANY_ELECTRIC = "Electric Company";
