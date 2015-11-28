@@ -36,6 +36,7 @@
 	exports.LOG_OFFER_ACCEPTED = "L'offre a été acceptée";
 	exports.LOG_CONJUNCTION = 'et';
 	exports.LOG_OFFER_REJECTED = "L'offre a été rejetée";
+	exports.LOG_GONE_TO_JAIL = "{player} vient d'aller en prison";
 	
 	// Squares
 	exports.CHANCE = 'Chance';

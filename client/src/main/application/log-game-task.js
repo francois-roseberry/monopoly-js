@@ -59,6 +59,12 @@
 			.subscribe(function (message) {
 				messages.onNext(message);
 			});
+			
+		onPlayerJailed(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (message) {
+				messages.onNext(message);
+			});
 	}
 	
 	function diceMessage(dice) {
@@ -146,11 +152,6 @@
 					
 					return memo && (player.money() === previousPlayer.money());					
 				}, true);
-				
-				/*var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
-				var previousPlayer = states.previous.players()[states.current.currentPlayerIndex()];
-				
-				return currentPlayer.money() === (previousPlayer.money() + 200);*/
 			})
 			.map(function (states) {
 				var player = states.current.players()[states.current.currentPlayerIndex()];
@@ -250,6 +251,19 @@
 					playerWhoPaid.money();
 				
 				return Messages.logTaxPaid(amount, playerWhoPaid);
+			});
+	}
+	
+	function onPlayerJailed(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+			.filter(function (states) {
+				return !states.previous.players()[states.current.currentPlayerIndex()].jailed() &&
+					states.current.players()[states.current.currentPlayerIndex()].jailed();
+			})
+			.map(function (states) {
+				var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
+				
+				return Messages.logGoneToJail(currentPlayer);
 			});
 	}
 	

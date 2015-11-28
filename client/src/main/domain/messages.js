@@ -129,6 +129,16 @@
 		return new Log('offer-rejected', i18n.LOG_OFFER_REJECTED);
 	};
 	
+	exports.logGoneToJail = function (player) {
+		precondition(Player.isPlayer(player),
+			'A log about a player going to jail requires that player');
+		
+		var message = i18n.LOG_GONE_TO_JAIL
+						.replace('{player}', coloredPlayer(player));
+		
+		return new Log('gone-to-jail', message);
+	};
+	
 	exports.simpleLog = function () {
 		return new Log('simple', 'A message');
 	};

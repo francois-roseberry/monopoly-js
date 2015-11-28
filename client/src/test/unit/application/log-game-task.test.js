@@ -12,6 +12,7 @@
 	var AcceptOfferChoice = require('./accept-offer-choice');
 	var RejectOfferChoice = require('./reject-offer-choice');
 	var TradeChoice = require('./trade-choice');
+	var GoToJailChoice = require('./go-to-jail-choice');
 	
 	var testData = require('./test-data');
 	
@@ -90,6 +91,15 @@
 			}, done, done);
 			
 			gameTask.handleChoicesTask().makeChoice(MoveChoice.newChoice());
+		});
+		
+		it('when player gets jailed, sends a message', function () {
+			var choice = GoToJailChoice.newChoice();
+			gameTask.handleChoicesTask().makeChoice(choice);
+			
+			var message = Messages.logGoneToJail(firstPlayer);
+			expect(logs.length).to.eql(1);
+			expect(logs[0].equals(message)).to.be(true);
 		});
 		
 		describe('when player makes an offer', function () {
