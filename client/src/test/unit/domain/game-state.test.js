@@ -12,6 +12,7 @@
 	var FinishTurnChoice = require('./finish-turn-choice');
 	var BuyPropertyChoice = require('./buy-property-choice');
 	var TradeChoice = require('./trade-choice');
+	var GoToJailChoice = require('./go-to-jail-choice');
 	
 	var games = require('./sample-games');
 	var testData = require('./test-data');
@@ -145,6 +146,14 @@
 			it('if he already paid, does not offer to pay the tax again', function () {
 				assertNoPayTaxChoiceWhenAlreadyPaidIncomeTax();
 			});
+		});
+		
+		it('if current player is on GoToJail, offers the only choice of going to jail', function () {
+			var state = games.playerOnGoToJail();
+			
+			assertChoices(state, [
+				GoToJailChoice.newChoice()
+			]);
 		});
 	});
 	

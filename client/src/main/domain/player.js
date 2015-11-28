@@ -52,6 +52,7 @@
 		this._color = info.color;
 		this._type = info.type;
 		this._properties = info.properties;
+		this._jailed = false;
 	}
 	
 	Player.prototype.id = function () {
@@ -80,6 +81,10 @@
 	
 	Player.prototype.properties = function () {
 		return this._properties.slice();
+	};
+	
+	Player.prototype.jailed = function () {
+		return this._jailed;
 	};
 	
 	Player.prototype.equals = function (other) {
@@ -114,6 +119,10 @@
 		}
 		
 		if (this._type !== other._type) {
+			return false;
+		}
+		
+		if (this._jailed !== other._jailed) {
 			return false;
 		}
 		
@@ -157,6 +166,22 @@
 			type: this.type(),
 			properties: this.properties()
 		});
+	};
+	
+	Player.prototype.jail = function () {
+		var player = newPlayer({
+			id: this.id(),
+			name: this.name(),
+			money: this.money(),
+			position: 10,
+			color: this.color(),
+			type: this.type(),
+			properties: this.properties()
+		});
+		
+		player._jailed = true;
+		
+		return player;
 	};
 	
 	Player.prototype.buyProperty = function (property) {

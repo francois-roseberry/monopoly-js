@@ -23,6 +23,7 @@
 	exports.TRADE_CANCEL = "Cancel trade";
 	exports.CHOICE_ACCEPT_OFFER = "Accept offer";
 	exports.CHOICE_REJECT_OFFER = "Reject offer";
+	exports.CHOICE_GO_TO_JAIL = "Go to jail";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';

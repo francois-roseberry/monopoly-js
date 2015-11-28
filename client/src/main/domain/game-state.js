@@ -11,6 +11,7 @@
 	var AcceptOfferChoice = require('./accept-offer-choice');
 	var RejectOfferChoice = require('./reject-offer-choice');
 	var TradeOffer = require('./trade-offer');
+	var GoToJailChoice = require('./go-to-jail-choice');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -105,8 +106,13 @@
 			'company': choicesForProperty(square, players, currentPlayer, paid),
 			'luxury-tax': payLuxuryTax(currentPlayer, paid),
 			'income-tax': payIncomeTax(currentPlayer, paid),
+			'go-to-jail': goToJail,
 			_: onlyFinishTurn
 		});
+	}
+	
+	function goToJail() {
+		return [GoToJailChoice.newChoice()];
 	}
 	
 	function payLuxuryTax(currentPlayer, paid) {

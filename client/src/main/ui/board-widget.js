@@ -129,9 +129,13 @@
 				return player.id();
 			})
 			.attr({
-				cx: function (_, index) {
+				cx: function (player, index) {
 					return square.match({
 						'jail': function () {
+							if (player.jailed()) {
+								return (SQUARE_WIDTH / 5) * (index % 4 + 1) + SQUARE_WIDTH / 5;
+							}
+							
 							if (index < 4) {
 								return SQUARE_HEIGHT - ((SQUARE_HEIGHT / 4 - tokenRadius) / 2 + tokenRadius);
 							}
@@ -143,9 +147,13 @@
 						}
 					});
 				},
-				cy: function (_, index) {
+				cy: function (player, index) {
 					return square.match({
 						'jail': function () {
+							if (player.jailed) {
+								return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
+							}
+							
 							if (index < 4) {
 								return (SQUARE_HEIGHT / 5) * (index % 4 + 1);
 							}

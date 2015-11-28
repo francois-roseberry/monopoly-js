@@ -285,4 +285,18 @@
 			currentPlayerIndex: 0
 		}, false);
 	};
+	
+	exports.playerOnGoToJail = function () {
+		var players = testData.players();
+		
+		return GameState.turnEndState({
+			squares: Board.squares(),
+			players: [
+				players[0].move([0, 30]),
+				players[1],
+				players[2]
+			],
+			currentPlayerIndex: 0
+		}, false);
+	};
 }());
