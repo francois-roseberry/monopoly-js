@@ -5,7 +5,7 @@
 	
 	var games = require('./sample-games');
 	
-	describe('A CalculateDiceRent Choice', function () {
+	describe('A Move Choice', function () {
 		var choice;
 		
 		beforeEach(function () {

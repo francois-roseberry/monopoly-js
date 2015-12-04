@@ -299,4 +299,18 @@
 			currentPlayerIndex: 0
 		}, false);
 	};
+	
+	exports.firstPlayerInJail = function () {
+		var players = testData.players();
+		
+		return GameState.turnStartState({
+			squares: Board.squares(),
+			players: [
+				players[0].jail(),
+				players[1],
+				players[2]
+			],
+			currentPlayerIndex: 0
+		}, false);
+	};
 }());

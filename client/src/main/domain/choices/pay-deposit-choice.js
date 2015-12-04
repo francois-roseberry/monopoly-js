@@ -27,9 +27,17 @@
 		precondition(GameState.isGameState(state),
 			'PayDepositChoice requires a game state to compute the next one');
 			
-		return GameState.turnStartState({
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.unjail().pay(50);
+			}
+			
+			return player;
+		});
+			
+		return GameState.turnEndState({
 			squares: state.squares(),
-			players: state.players(),
+			players: newPlayers,
 			currentPlayerIndex: state.currentPlayerIndex()
 		});
 	};

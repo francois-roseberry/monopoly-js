@@ -20,16 +20,30 @@
 	};
 	
 	TryDoubleRollChoice.prototype.requiresDice = function () {
-		return false;
+		return true;
 	};
 	
-	TryDoubleRollChoice.prototype.computeNextState = function (state) {
+	TryDoubleRollChoice.prototype.computeNextState = function (state, dice) {
 		precondition(GameState.isGameState(state),
 			'TryDoubleRollChoice requires a game state to compute the next one');
+		precondition(dice,
+			'TryDoubleRollChoice requires the result of a dice roll to compute the next state');
 			
-		return GameState.turnStartState({
+		if (dice[0] !== dice[1]) {
+			return state;
+		}
+		
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.unjail();
+			}
+			
+			return player;
+		});
+			
+		return GameState.turnEndState({
 			squares: state.squares(),
-			players: state.players(),
+			players: newPlayers,
 			currentPlayerIndex: state.currentPlayerIndex()
 		});
 	};

@@ -184,6 +184,22 @@
 		return player;
 	};
 	
+	Player.prototype.unjail = function () {
+		var player = newPlayer({
+			id: this.id(),
+			name: this.name(),
+			money: this.money(),
+			position: this.position(),
+			color: this.color(),
+			type: this.type(),
+			properties: this.properties()
+		});
+		
+		player._jailed = false;
+		
+		return player;
+	};
+	
 	Player.prototype.buyProperty = function (property) {
 		precondition(property && Property.isProperty(property), 'Player buying property requires a property');
 		
