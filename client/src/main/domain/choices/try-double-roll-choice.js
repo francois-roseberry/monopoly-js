@@ -30,7 +30,11 @@
 			'TryDoubleRollChoice requires the result of a dice roll to compute the next state');
 			
 		if (dice[0] !== dice[1]) {
-			return state;
+			return GameState.turnEndState({
+				squares: state.squares(),
+				players: state.players(),
+				currentPlayerIndex: state.currentPlayerIndex()
+			});
 		}
 		
 		var newPlayers = _.map(state.players(), function (player, index) {

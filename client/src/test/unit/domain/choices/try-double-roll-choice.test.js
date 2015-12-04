@@ -1,6 +1,7 @@
 (function() {
 	"use strict";
 	
+	var FinishTurnChoice = require('./finish-turn-choice');
 	var TryDoubleRollChoice = require('./try-double-roll-choice');
 	
 	var games = require('./sample-games');
@@ -36,10 +37,16 @@
 				});
 			});
 			
-			it('if roll is not a double, state stays the same', function () {
+			it('if roll is not a double, all players are the same as before and the FinishTurnChoice is offered',
+				function () {
 				var nextState = choice.computeNextState(state, [1, 2]);
 				
-				expect(nextState.equals(state)).to.be(true);
+				_.each(state.players(), function (player, index) {
+					expect(player.equals(nextState.players()[index])).to.be(true);					
+				});
+				
+				expect(nextState.choices().length).to.eql(1);
+				expect(nextState.choices()[0].equals(FinishTurnChoice.newChoice()));
 			});
 		});
 	});
