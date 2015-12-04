@@ -13,12 +13,21 @@
 	var BuyPropertyChoice = require('./buy-property-choice');
 	var TradeChoice = require('./trade-choice');
 	var GoToJailChoice = require('./go-to-jail-choice');
+	var PayDepositChoice = require('./pay-deposit-choice');
+	var TryDoubleRollChoice = require('./try-double-roll-choice');
 	
 	var games = require('./sample-games');
 	var testData = require('./test-data');
 	
 	describe('A turnStart state', function () {
-		it('offers the roll-dice choice and a choice to trade with each of the other players', function () {
+		it('if player is in jail, offers the choices to get out of jail', function () {
+			var state = games.firstPlayerInJail();
+			
+			assertChoices(state, [PayDepositChoice.newChoice(), TryDoubleRollChoice.newChoice()]);
+		});
+		
+		it('if player is not in jail, offers the roll-dice choice and a choice to trade with each of the other players',
+			function () {
 			var state = games.turnStart();
 			var tradeChoices = _.filter(state.players(), function (player, index) {
 				return index !== state.currentPlayerIndex();

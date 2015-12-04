@@ -75,6 +75,10 @@
 	};
 	
 	function newTurnChoices(info) {
+		if (info.players[info.currentPlayerIndex].jailed()) {
+			return [PayDepositChoice.newChoice(), TryDoubleRollChoice.newChoice()];
+		}
+			
 		var tradeChoices = _.filter(info.players, function (player, index) {
 				return index !== info.currentPlayerIndex;
 			})
@@ -109,7 +113,7 @@
 			'luxury-tax': payLuxuryTax(currentPlayer, paid),
 			'income-tax': payIncomeTax(currentPlayer, paid),
 			'go-to-jail': goToJail,
-			_: jailChoicesOrOnlyFinishTurn(currentPlayer)
+			_: onlyFinishTurn
 		});
 	}
 	
@@ -140,14 +144,8 @@
 		};
 	}
 	
-	function jailChoicesOrOnlyFinishTurn(currentPlayer) {
-		return function () {
-			if (currentPlayer.jailed()) {
-				return [PayDepositChoice.newChoice(), TryDoubleRollChoice.newChoice()];
-			}
-			
-			return [FinishTurnChoice.newChoice()];
-		};
+	function onlyFinishTurn() {
+		return [FinishTurnChoice.newChoice()];
 	}
 	
 	function choicesForProperty(square, players, currentPlayer, paid) {

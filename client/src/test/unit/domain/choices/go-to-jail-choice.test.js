@@ -2,8 +2,7 @@
 	"use strict";
 	
 	var GoToJailChoice = require('./go-to-jail-choice');
-	var PayDepositChoice = require('./pay-deposit-choice');
-	var TryDoubleRollChoice = require('./try-double-roll-choice');
+	var FinishTurnChoice = require('./finish-turn-choice');
 	
 	var games = require('./sample-games');
 	
@@ -37,10 +36,9 @@
 				});
 			});
 			
-			it('offers the PayDepositChoice and the TryDoubleRollChoice', function () {
-				expect(nextState.choices().length).to.eql(2);
-				expect(nextState.choices()[0].equals(PayDepositChoice.newChoice())).to.be(true);
-				expect(nextState.choices()[1].equals(TryDoubleRollChoice.newChoice())).to.be(true);
+			it('offers the FinishTurnChoice', function () {
+				expect(nextState.choices().length).to.eql(1);
+				expect(nextState.choices()[0].equals(FinishTurnChoice.newChoice())).to.be(true);
 			});
 		});
 	});
