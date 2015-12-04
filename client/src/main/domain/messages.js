@@ -71,7 +71,7 @@
 			'A log about player salary requires the player');
 			
 		var message = i18n.LOG_SALARY
-						.replace('{player}', player.name());
+						.replace('{player}', coloredPlayer(player));
 						
 		return new Log('salary-earned', message);
 	};
@@ -80,7 +80,7 @@
 		precondition(_.isNumber(amount) && amount > 0,
 			'A log about tax paid requires an amount greater than 0');
 		precondition(Player.isPlayer(player),
-			'A log about tax paid requires of the player who paid');
+			'A log about tax paid requires the player who paid');
 			
 		var message = i18n.LOG_TAX_PAID
 						.replace('{amount}', i18n.formatPrice(amount))

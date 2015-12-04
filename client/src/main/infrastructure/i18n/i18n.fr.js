@@ -24,6 +24,8 @@
 	exports.CHOICE_ACCEPT_OFFER = "Accepter l'offre";
 	exports.CHOICE_REJECT_OFFER = "Rejeter l'offre";
 	exports.CHOICE_GO_TO_JAIL = "Aller en prison";
+	exports.CHOICE_PAY_DEPOSIT = "Payer une caution de {money} pour sortir de prison";
+	exports.CHOICE_TRY_DOUBLE_ROLL = "Tenter d'obtenir un doublé pour sortir de prison";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';

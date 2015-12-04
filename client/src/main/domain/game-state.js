@@ -12,6 +12,8 @@
 	var RejectOfferChoice = require('./reject-offer-choice');
 	var TradeOffer = require('./trade-offer');
 	var GoToJailChoice = require('./go-to-jail-choice');
+	var PayDepositChoice = require('./pay-deposit-choice');
+	var TryDoubleRollChoice = require('./try-double-roll-choice');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -107,7 +109,7 @@
 			'luxury-tax': payLuxuryTax(currentPlayer, paid),
 			'income-tax': payIncomeTax(currentPlayer, paid),
 			'go-to-jail': goToJail,
-			_: onlyFinishTurn
+			_: jailChoicesOrOnlyFinishTurn(currentPlayer)
 		});
 	}
 	
@@ -138,8 +140,14 @@
 		};
 	}
 	
-	function onlyFinishTurn() {
-		return [FinishTurnChoice.newChoice()];
+	function jailChoicesOrOnlyFinishTurn(currentPlayer) {
+		return function () {
+			if (currentPlayer.jailed()) {
+				return [PayDepositChoice.newChoice(), TryDoubleRollChoice.newChoice()];
+			}
+			
+			return [FinishTurnChoice.newChoice()];
+		};
 	}
 	
 	function choicesForProperty(square, players, currentPlayer, paid) {
