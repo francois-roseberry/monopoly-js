@@ -313,4 +313,18 @@
 			currentPlayerIndex: 0
 		}, false);
 	};
+	
+	exports.firstPlayerBrokeInJail = function () {
+		var players = testData.players();
+		
+		return GameState.turnStartState({
+			squares: Board.squares(),
+			players: [
+				players[0].pay(players[0].money() - 1).jail(),
+				players[1],
+				players[2]
+			],
+			currentPlayerIndex: 0
+		}, false);
+	};
 }());

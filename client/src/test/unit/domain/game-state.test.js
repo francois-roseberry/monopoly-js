@@ -20,14 +20,22 @@
 	var testData = require('./test-data');
 	
 	describe('A turnStart state', function () {
-		it('if player is in jail, offers the choices to get out of jail', function () {
-			var state = games.firstPlayerInJail();
+		describe('when player is in jail', function () {
+			it('if player is broke, offers only the choice to try a double', function () {
+				var state = games.firstPlayerBrokeInJail();
 			
-			assertChoices(state, [PayDepositChoice.newChoice(), TryDoubleRollChoice.newChoice()]);
+				assertChoices(state, [TryDoubleRollChoice.newChoice()]);
+			});
+			
+			it('if player is not broke, offers both choices', function () {
+				var state = games.firstPlayerInJail();
+			
+				assertChoices(state, [PayDepositChoice.newChoice(), TryDoubleRollChoice.newChoice()]);
+			});
 		});
 		
-		it('if player is not in jail, offers the roll-dice choice and a choice to trade with each of the other players',
-			function () {
+		it('when player is not in jail, offers the roll-dice choice' +
+			'and a choice to trade with each of the other players', function () {
 			var state = games.turnStart();
 			var tradeChoices = _.filter(state.players(), function (player, index) {
 				return index !== state.currentPlayerIndex();

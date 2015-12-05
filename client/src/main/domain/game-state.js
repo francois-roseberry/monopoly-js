@@ -76,7 +76,11 @@
 	
 	function newTurnChoices(info) {
 		if (info.players[info.currentPlayerIndex].jailed()) {
-			return [PayDepositChoice.newChoice(), TryDoubleRollChoice.newChoice()];
+			if (info.players[info.currentPlayerIndex].money() > 50) {
+				return [PayDepositChoice.newChoice(), TryDoubleRollChoice.newChoice()];
+			}
+			
+			return [TryDoubleRollChoice.newChoice()];
 		}
 			
 		var tradeChoices = _.filter(info.players, function (player, index) {
