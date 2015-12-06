@@ -65,6 +65,12 @@
 			.subscribe(function (message) {
 				messages.onNext(message);
 			});
+			
+		onPlayerGoneBankrupt(playGameTask)
+			.takeUntil(playGameTask.completed())
+			.subscribe(function (message) {
+				messages.onNext(message);
+			});
 	}
 	
 	function diceMessage(dice) {
@@ -264,6 +270,21 @@
 				var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
 				
 				return Messages.logGoneToJail(currentPlayer);
+			});
+	}
+	
+	function onPlayerGoneBankrupt(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+			.filter(function (states) {
+				return states.previous.players().length !== states.current.players().length;
+			})
+			.map(function (states) {
+				var playerGoneBankrupt = _.find(states.previous.players(), function (player, index) {
+					return player.id() !== states.current.players()[index].id();
+				});
+				
+				
+				return Messages.logGoneBankrupt(playerGoneBankrupt);
 			});
 	}
 	

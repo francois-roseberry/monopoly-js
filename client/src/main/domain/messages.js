@@ -139,6 +139,16 @@
 		return new Log('gone-to-jail', message);
 	};
 	
+	exports.logGoneBankrupt = function (player) {
+		precondition(Player.isPlayer(player),
+			'A log about player going bankrupt requires that player');
+			
+		var message = i18n.LOG_GONE_BANKRUPT
+						.replace('{player}', coloredPlayer(player));
+						
+		return new Log('gone-bankrupt', message);
+	};
+	
 	exports.simpleLog = function () {
 		return new Log('simple', 'A message');
 	};

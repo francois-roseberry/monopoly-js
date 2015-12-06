@@ -13,6 +13,7 @@
 	var RejectOfferChoice = require('./reject-offer-choice');
 	var TradeChoice = require('./trade-choice');
 	var GoToJailChoice = require('./go-to-jail-choice');
+	var GoBankruptChoice = require('./go-bankrupt-choice');
 	
 	var testData = require('./test-data');
 	
@@ -147,6 +148,15 @@
 				expect(logs.length).to.eql(2);
 				expect(logs[1].equals(message)).to.be(true);
 			});
+		});
+		
+		it('when a player goes bankrupt, sends a message', function () {
+			var choice = GoBankruptChoice.newChoice();
+			gameTask.handleChoicesTask().makeChoice(choice);
+			
+			var message = Messages.logGoneBankrupt(firstPlayer);
+			expect(logs.length).to.eql(1);
+			expect(logs[0].equals(message)).to.be(true);
 		});
 		
 		function gameTaskWithCheatedDice(dieValue) {
