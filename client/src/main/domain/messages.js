@@ -149,6 +149,16 @@
 		return new Log('gone-bankrupt', message);
 	};
 	
+	exports.logGameWon = function (player) {
+		precondition(Player.isPlayer(player),
+			'A log about game won requires the winner');
+			
+		var message = i18n.LOG_GAME_WON
+						.replace('{player}', coloredPlayer(player));
+						
+		return new Log('game-won', message);
+	};
+	
 	exports.simpleLog = function () {
 		return new Log('simple', 'A message');
 	};

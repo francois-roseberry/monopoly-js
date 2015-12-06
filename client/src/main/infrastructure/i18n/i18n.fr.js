@@ -40,6 +40,7 @@
 	exports.LOG_OFFER_REJECTED = "L'offre a été rejetée";
 	exports.LOG_GONE_TO_JAIL = "{player} vient d'aller en prison";
 	exports.LOG_GONE_BANKRUPT = "{player} a fait faillite";
+	exports.LOG_GAME_WON = "{player} a gagné la partie";
 	
 	// Squares
 	exports.CHANCE = 'Chance';

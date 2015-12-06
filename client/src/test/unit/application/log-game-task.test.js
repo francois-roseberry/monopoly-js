@@ -14,6 +14,7 @@
 	var TradeChoice = require('./trade-choice');
 	var GoToJailChoice = require('./go-to-jail-choice');
 	var GoBankruptChoice = require('./go-bankrupt-choice');
+	var FinishTurnChoice = require('./finish-turn-choice');
 	
 	var testData = require('./test-data');
 	
@@ -158,6 +159,23 @@
 			expect(logs.length).to.eql(1);
 			expect(logs[0].equals(message)).to.be(true);
 		});
+		
+		it('when game finishes, sends a message', function () {
+			finishGame();
+			
+			var message = Messages.logGameWon(firstPlayer);
+			expect(logs.length).to.eql(3);
+			expect(logs[2].equals(message)).to.be(true);
+		});
+		
+		function finishGame() {
+			var choice = FinishTurnChoice.newChoice();
+			gameTask.handleChoicesTask().makeChoice(choice);
+			
+			choice = GoBankruptChoice.newChoice();
+			gameTask.handleChoicesTask().makeChoice(choice);
+			gameTask.handleChoicesTask().makeChoice(choice);
+		}
 		
 		function gameTaskWithCheatedDice(dieValue) {
 			return PlayGameTask.start({ squares: Board.squares(), players: testData.playersConfiguration(), options: { 
