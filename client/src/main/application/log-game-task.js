@@ -18,65 +18,20 @@
 	}
 	
 	function watchGame(messages, playGameTask) {
-		onDiceRolled(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onPropertyBought(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onRentPaid(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onSalaryEarned(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onTaxPaid(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onOfferMade(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onOfferAcceptedOrRejected(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onPlayerJailed(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onPlayerGoneBankrupt(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onGameWon(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
+		Rx.Observable.merge(
+			onDiceRolled(playGameTask),
+			onPropertyBought(playGameTask),
+			onRentPaid(playGameTask),
+			onSalaryEarned(playGameTask),
+			onTaxPaid(playGameTask),
+			onOfferMade(playGameTask),
+			onOfferAcceptedOrRejected(playGameTask),
+			onPlayerJailed(playGameTask),
+			onPlayerGoneBankrupt(playGameTask),
+			onGameWon(playGameTask)
+		)
+		.takeUntil(playGameTask.completed())
+		.subscribe(messages);
 	}
 	
 	function diceMessage(dice) {
