@@ -39,7 +39,7 @@
 		
 		var newPlayers = _.map(state.players(), function (player, index) {
 			if (index === state.currentPlayerIndex()) {
-				return player.unjail();
+				return player.unjail().move(dice);
 			}
 			
 			return player;

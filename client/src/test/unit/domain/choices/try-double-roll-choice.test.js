@@ -24,13 +24,14 @@
 				state = games.firstPlayerInJail();
 			});
 			
-			it('if roll is a double, current player becomes un-jailed and other players are the same as before',
-				function () {
+			it('if roll is a double, current player becomes un-jailed, ' +
+				'move with the result of the dice and other players are the same as before', function () {
 				var nextState = choice.computeNextState(state, [1, 1]);
 				
 				_.each(state.players(), function (player, index) {
 					if (index === state.currentPlayerIndex()) {
 						expect(nextState.players()[index].jailed()).to.be(false);
+						expect(nextState.players()[index].position()).to.eql(12);
 					} else {
 						expect(player.equals(nextState.players()[index])).to.be(true);
 					}
