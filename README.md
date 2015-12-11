@@ -1,15 +1,14 @@
 # Monopoly-js
-Update November 21, 2015 : A first version of trade is available. In this version, the computer player will only accept the offer if it is neutral for him or to his advantage. In other words, he won't make concessions.
 
 Implementation of the Monopoly game in javascript, rendering done with D3
 
 Not quite yet a complete Monopoly game, right now players alternate, roll the dice, buy and trade properties and pay rents (and eventually go bankrupt). The main game flow is operational, from the beginning to the end.
 
 Features missing to be a complete game of Monopoly :
-* Building houses and hotels
+* Building houses and hotels, mortgage
 * When rent is too high, offer to mortgage and/or unbuild instead of going straight to bankruptcy
 * Double rolls roll again, and 3 in a row bring you to jail
-* Adding square effects for "Go to jail"
+* Players are forced out of jail after 3 turns
 * Differentiating between bankruptcy because of the bank or because of an opponent (to transfer possessions)
 * Chance and community cards
 * Bidding
