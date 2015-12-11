@@ -106,18 +106,18 @@
 				assertChoices(state, [PayRentChoice.newChoice(200, secondPlayer)]);
 			});
 			
-			it('2 times the dice if that property is a company and owner possess only one company', function () {
+			it('4 times the dice if that property is a company and owner possess only one company', function () {
 				var state = games.playerOnCompanyOwnedByOther();
 				var secondPlayer = state.players()[1];
 				
-				assertChoices(state, [CalculateDiceRentChoice.newChoice(2, secondPlayer)]);
+				assertChoices(state, [CalculateDiceRentChoice.newChoice(4, secondPlayer)]);
 			});
 			
-			it('4 times the dice if that property is a company and owner, possess all companies', function () {
+			it('10 times the dice if that property is a company and owner, possess all companies', function () {
 				var state = games.playerOnCompanyOwnedByOtherWithAllCompanies();
 				var secondPlayer = state.players()[1];
 				
-				assertChoices(state, [CalculateDiceRentChoice.newChoice(4, secondPlayer)]);
+				assertChoices(state, [CalculateDiceRentChoice.newChoice(10, secondPlayer)]);
 			});
 		});
 		

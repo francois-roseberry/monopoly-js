@@ -59,7 +59,7 @@
 	
 	function companyRent(group) {
 		return function (ownerProperties) {
-			return { multiplier: (allCompanies(group, ownerProperties) ? 4 : 2) };
+			return { multiplier: (allCompanies(group, ownerProperties) ? 10 : 4) };
 		};
 	}
 	
