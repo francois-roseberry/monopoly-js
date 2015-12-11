@@ -65,4 +65,4 @@ play -> config [label="New game"];
 ![Game flowchart]
 (http://francois-roseberry.github.io/monopoly-js/doc/game-flowchart.png)
 
-As you can see, it still misses many features to make it a standard game of monopoly. They will be implemented later.
+As you can see, it still misses a couple of features to make it a standard game of monopoly. They will be implemented later.
