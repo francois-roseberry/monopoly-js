@@ -81,7 +81,7 @@
 		return newPlayer;
 	}
 }());
-},{"./contract":10,"./game-state":16,"./i18n":23,"./trade-offer":43}],2:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":24,"./trade-offer":45}],2:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -188,7 +188,9 @@
 			'company': renderCompany(container),
 			'go': renderStart(container),
 			'jail': renderJail(container),
-			'go-to-jail': _.noop,
+			'go-to-jail': function () {
+				writeAngledText(container, i18n.GO_TO_JAIL, {x: -8, y: 100}, 12, SQUARE_WIDTH * 2);
+			},
 			'parking': function () {
 				writeAngledText(container, i18n.FREE_PARKING,  {x: -8, y: 100}, 12, SQUARE_WIDTH * 2);
 			}
@@ -213,9 +215,13 @@
 				return player.id();
 			})
 			.attr({
-				cx: function (_, index) {
+				cx: function (player, index) {
 					return square.match({
 						'jail': function () {
+							if (player.jailed()) {
+								return (SQUARE_WIDTH / 5) * (index % 4 + 1) + SQUARE_WIDTH / 5;
+							}
+							
 							if (index < 4) {
 								return SQUARE_HEIGHT - ((SQUARE_HEIGHT / 4 - tokenRadius) / 2 + tokenRadius);
 							}
@@ -227,9 +233,13 @@
 						}
 					});
 				},
-				cy: function (_, index) {
+				cy: function (player, index) {
 					return square.match({
 						'jail': function () {
+							if (player.jailed) {
+								return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
+							}
+							
 							if (index < 4) {
 								return (SQUARE_HEIGHT / 5) * (index % 4 + 1);
 							}
@@ -363,7 +373,7 @@
 		return transforms[rowIndex];
 	}
 }());
-},{"./contract":10,"./i18n":23,"./symbols":40,"./text-wrapper":41}],3:[function(require,module,exports){
+},{"./contract":10,"./i18n":24,"./symbols":42,"./text-wrapper":43}],3:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -561,7 +571,7 @@
 		};
 	}
 }());
-},{"./contract":10,"./i18n":23,"./property":37,"./property-group":36}],4:[function(require,module,exports){
+},{"./contract":10,"./i18n":24,"./property":39,"./property-group":38}],4:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -642,7 +652,7 @@
 		});
 	}
 }());
-},{"./contract":10,"./game-state":16,"./i18n":23,"./property":37}],6:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":24,"./property":39}],6:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -692,7 +702,7 @@
 		return state.changeChoices(Choices.rentChoices(rent, currentPlayer, this._toPlayer));
 	};
 }());
-},{"./choices":7,"./contract":10,"./game-state":16,"./i18n":23,"./player":33}],7:[function(require,module,exports){
+},{"./choices":7,"./contract":10,"./game-state":16,"./i18n":24,"./player":35}],7:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -729,7 +739,7 @@
 		return [PayTaxChoice.newChoice(tax)];
 	};
 }());
-},{"./contract":10,"./go-bankrupt-choice":19,"./pay-rent-choice":29,"./pay-tax-choice":30,"./player":33}],8:[function(require,module,exports){
+},{"./contract":10,"./go-bankrupt-choice":19,"./pay-rent-choice":31,"./pay-tax-choice":32,"./player":35}],8:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -783,7 +793,7 @@
 		return state.changeChoices(Choices.taxChoices(this._amount, currentPlayer));
 	};
 }());
-},{"./choices":7,"./contract":10,"./game-state":16,"./i18n":23}],9:[function(require,module,exports){
+},{"./choices":7,"./contract":10,"./game-state":16,"./i18n":24}],9:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1032,7 +1042,7 @@
 		});
 	};
 }());
-},{"./contract":10,"./game-state":16,"./i18n":23}],14:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":24}],14:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1246,7 +1256,7 @@
 		selection.exit().remove();
 	}
 }());
-},{"./contract":10,"./i18n":23,"./popup":35}],16:[function(require,module,exports){
+},{"./contract":10,"./i18n":24,"./popup":37}],16:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1260,6 +1270,9 @@
 	var AcceptOfferChoice = require('./accept-offer-choice');
 	var RejectOfferChoice = require('./reject-offer-choice');
 	var TradeOffer = require('./trade-offer');
+	var GoToJailChoice = require('./go-to-jail-choice');
+	var PayDepositChoice = require('./pay-deposit-choice');
+	var TryDoubleRollChoice = require('./try-double-roll-choice');
 	
 	var precondition = require('./contract').precondition;
 	
@@ -1321,6 +1334,14 @@
 	};
 	
 	function newTurnChoices(info) {
+		if (info.players[info.currentPlayerIndex].jailed()) {
+			if (info.players[info.currentPlayerIndex].money() > 50) {
+				return [PayDepositChoice.newChoice(), TryDoubleRollChoice.newChoice()];
+			}
+			
+			return [TryDoubleRollChoice.newChoice()];
+		}
+			
 		var tradeChoices = _.filter(info.players, function (player, index) {
 				return index !== info.currentPlayerIndex;
 			})
@@ -1354,8 +1375,13 @@
 			'company': choicesForProperty(square, players, currentPlayer, paid),
 			'luxury-tax': payLuxuryTax(currentPlayer, paid),
 			'income-tax': payIncomeTax(currentPlayer, paid),
+			'go-to-jail': goToJail,
 			_: onlyFinishTurn
 		});
+	}
+	
+	function goToJail() {
+		return [GoToJailChoice.newChoice()];
 	}
 	
 	function payLuxuryTax(currentPlayer, paid) {
@@ -1518,7 +1544,7 @@
 		}, this._oldChoices);
 	};
 }());
-},{"./accept-offer-choice":1,"./buy-property-choice":5,"./calculate-dice-rent-choice":6,"./choices":7,"./choose-tax-type-choice":8,"./contract":10,"./finish-turn-choice":13,"./move-choice":28,"./reject-offer-choice":38,"./trade-choice":42,"./trade-offer":43}],17:[function(require,module,exports){
+},{"./accept-offer-choice":1,"./buy-property-choice":5,"./calculate-dice-rent-choice":6,"./choices":7,"./choose-tax-type-choice":8,"./contract":10,"./finish-turn-choice":13,"./go-to-jail-choice":20,"./move-choice":29,"./pay-deposit-choice":30,"./reject-offer-choice":40,"./trade-choice":44,"./trade-offer":45,"./try-double-roll-choice":48}],17:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1576,7 +1602,7 @@
 		return this._status.asObservable();
 	};
 }());
-},{"./board":3,"./configure-game-task":9,"./play-game-task":31}],18:[function(require,module,exports){
+},{"./board":3,"./configure-game-task":9,"./play-game-task":33}],18:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1610,7 +1636,7 @@
 		};
 	}
 }());
-},{"./contract":10,"./game-configuration-widget":15,"./monopoly-game-widget":27}],19:[function(require,module,exports){
+},{"./contract":10,"./game-configuration-widget":15,"./monopoly-game-widget":28}],19:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1661,7 +1687,52 @@
 		});
 	}
 }());
-},{"./contract":10,"./game-state":16,"./i18n":23}],20:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":24}],20:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var i18n = require('./i18n').i18n();
+	var GameState = require('./game-state');
+	
+	var precondition = require('./contract').precondition;
+	
+	exports.newChoice = function() {
+		return new GoToJailChoice();
+	};
+	
+	function GoToJailChoice() {
+		this.id = 'finish-turn';
+		this.name = i18n.CHOICE_GO_TO_JAIL;
+	}
+	
+	GoToJailChoice.prototype.equals = function (other) {
+		return (other instanceof GoToJailChoice);
+	};
+	
+	GoToJailChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	GoToJailChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'GoToJailChoice requires a game state to compute the next one');
+			
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.jail();
+			}
+			
+			return player;
+		});
+		
+		return GameState.turnEndState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex()
+		}, true);
+	};
+}());
+},{"./contract":10,"./game-state":16,"./i18n":24}],21:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1749,7 +1820,7 @@
 		};
 	}
 }());
-},{"./contract":10}],21:[function(require,module,exports){
+},{"./contract":10}],22:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1775,6 +1846,9 @@
 	exports.TRADE_CANCEL = "Cancel trade";
 	exports.CHOICE_ACCEPT_OFFER = "Accept offer";
 	exports.CHOICE_REJECT_OFFER = "Reject offer";
+	exports.CHOICE_GO_TO_JAIL = "Go to jail";
+	exports.CHOICE_PAY_DEPOSIT = "Pay a {money} deposit to get out of jail";
+	exports.CHOICE_TRY_DOUBLE_ROLL = "Try to roll a double to get out of jail";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} rolled a {die1} and a {die2}';
@@ -1787,6 +1861,9 @@
 	exports.LOG_OFFER_ACCEPTED = "The offer has been accepted";
 	exports.LOG_CONJUNCTION = 'and';
 	exports.LOG_OFFER_REJECTED = "The offer has been rejected";
+	exports.LOG_GONE_TO_JAIL = "{player} went to jail";
+	exports.LOG_GONE_BANKRUPT = "{player} has gone bankrupt";
+	exports.LOG_GAME_WON = "{player} has won the game";
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -1798,6 +1875,7 @@
 	exports.START_DESCRIPTION = "Collect $200 salary as you pass";
 	exports.VISITING_JAIL = "Just visiting";
 	exports.FREE_PARKING = "Free parking";
+	exports.GO_TO_JAIL = "Go to jail";
 	
 	exports.COMPANY_WATER = 'Water Works';
 	exports.COMPANY_ELECTRIC = "Electric Company";
@@ -1846,7 +1924,7 @@
 	// Trade
 	exports.TRADE_TITLE = "Trade";
 }());
-},{}],22:[function(require,module,exports){
+},{}],23:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -1872,6 +1950,9 @@
 	exports.TRADE_CANCEL = "Annuler l'échange";
 	exports.CHOICE_ACCEPT_OFFER = "Accepter l'offre";
 	exports.CHOICE_REJECT_OFFER = "Rejeter l'offre";
+	exports.CHOICE_GO_TO_JAIL = "Aller en prison";
+	exports.CHOICE_PAY_DEPOSIT = "Payer une caution de {money} pour sortir de prison";
+	exports.CHOICE_TRY_DOUBLE_ROLL = "Tenter d'obtenir un doublé pour sortir de prison";
 	
 	// Log messages
 	exports.LOG_DICE_ROLL = '{player} a obtenu un {die1} et un {die2}';
@@ -1884,6 +1965,9 @@
 	exports.LOG_OFFER_ACCEPTED = "L'offre a été acceptée";
 	exports.LOG_CONJUNCTION = 'et';
 	exports.LOG_OFFER_REJECTED = "L'offre a été rejetée";
+	exports.LOG_GONE_TO_JAIL = "{player} vient d'aller en prison";
+	exports.LOG_GONE_BANKRUPT = "{player} a fait faillite";
+	exports.LOG_GAME_WON = "{player} a gagné la partie";
 	
 	// Squares
 	exports.CHANCE = 'Chance';
@@ -1895,6 +1979,7 @@
 	exports.START_DESCRIPTION = "Réclamez 200 $ de salaire en passant à";
 	exports.VISITING_JAIL = "En visite";
 	exports.FREE_PARKING = "Stationnement gratuit";
+	exports.GO_TO_JAIL = "Allez en prison";
 	
 	exports.COMPANY_WATER = 'Aqueduc';
 	exports.COMPANY_ELECTRIC = "Compagnie d'électricité";
@@ -1943,7 +2028,7 @@
 	// Trade
 	exports.TRADE_TITLE = "Échange";
 }());
-},{}],23:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 (function () {
     'use strict';
     var frenchString = require('./i18n.fr');
@@ -1982,7 +2067,7 @@
         window.applicationLanguage = applicationLanguage;
     }
 }());
-},{"./i18n.en":21,"./i18n.fr":22}],24:[function(require,module,exports){
+},{"./i18n.en":22,"./i18n.fr":23}],25:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2003,47 +2088,20 @@
 	}
 	
 	function watchGame(messages, playGameTask) {
-		onDiceRolled(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onPropertyBought(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onRentPaid(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onSalaryEarned(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onTaxPaid(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onOfferMade(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
-			
-		onOfferAcceptedOrRejected(playGameTask)
-			.takeUntil(playGameTask.completed())
-			.subscribe(function (message) {
-				messages.onNext(message);
-			});
+		Rx.Observable.merge(
+			onDiceRolled(playGameTask),
+			onPropertyBought(playGameTask),
+			onRentPaid(playGameTask),
+			onSalaryEarned(playGameTask),
+			onTaxPaid(playGameTask),
+			onOfferMade(playGameTask),
+			onOfferAcceptedOrRejected(playGameTask),
+			onPlayerJailed(playGameTask),
+			onPlayerGoneBankrupt(playGameTask),
+			onGameWon(playGameTask)
+		)
+		.takeUntil(playGameTask.completed())
+		.subscribe(messages);
 	}
 	
 	function diceMessage(dice) {
@@ -2122,10 +2180,15 @@
 	function onSalaryEarned(playGameTask) {
 		return combineWithPrevious(playGameTask.gameState())
 			.filter(function (states) {
-				var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
-				var previousPlayer = states.previous.players()[states.current.currentPlayerIndex()];
-				
-				return currentPlayer.money() === (previousPlayer.money() + 200);
+				return _.reduce(states.current.players(), function (memo, player, index) {
+					var previousPlayer = states.previous.players()[index];
+					
+					if (index === states.current.currentPlayerIndex()) {
+						return memo && (player.money() === previousPlayer.money() + 200);
+					}
+					
+					return memo && (player.money() === previousPlayer.money());					
+				}, true);
 			})
 			.map(function (states) {
 				var player = states.current.players()[states.current.currentPlayerIndex()];
@@ -2228,6 +2291,47 @@
 			});
 	}
 	
+	function onPlayerJailed(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+			.filter(function (states) {
+				return !states.previous.players()[states.current.currentPlayerIndex()].jailed() &&
+					states.current.players()[states.current.currentPlayerIndex()].jailed();
+			})
+			.map(function (states) {
+				var currentPlayer = states.current.players()[states.current.currentPlayerIndex()];
+				
+				return Messages.logGoneToJail(currentPlayer);
+			});
+	}
+	
+	function onPlayerGoneBankrupt(playGameTask) {
+		return combineWithPrevious(playGameTask.gameState())
+			.filter(function (states) {
+				return states.previous.players().length !== states.current.players().length;
+			})
+			.map(function (states) {
+				var playerGoneBankrupt = _.find(states.previous.players(), function (player, index) {
+					return states.current.players().length <= index ||
+						player.id() !== states.current.players()[index].id();
+				});
+				
+				
+				return Messages.logGoneBankrupt(playerGoneBankrupt);
+			});
+	}
+	
+	function onGameWon(playGameTask) {
+		return playGameTask.gameState()
+			.filter(function (state) {
+				return state.players().length === 1;
+			})
+			.map(function (state) {
+				var player = state.players()[0];
+				
+				return Messages.logGameWon(player);
+			});
+	}
+	
 	function findNewProperty(states) {
 		var previousProperties = states.previous.players()[states.current.currentPlayerIndex()].properties();
 		var currentProperties = states.current.players()[states.current.currentPlayerIndex()].properties();
@@ -2266,7 +2370,7 @@
 		return this._messages.asObservable();
 	};
 }());
-},{"./contract":10,"./messages":26}],25:[function(require,module,exports){
+},{"./contract":10,"./messages":27}],26:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2289,7 +2393,7 @@
 		});
 	};
 }());
-},{"./contract":10}],26:[function(require,module,exports){
+},{"./contract":10}],27:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2363,7 +2467,7 @@
 			'A log about player salary requires the player');
 			
 		var message = i18n.LOG_SALARY
-						.replace('{player}', player.name());
+						.replace('{player}', coloredPlayer(player));
 						
 		return new Log('salary-earned', message);
 	};
@@ -2372,7 +2476,7 @@
 		precondition(_.isNumber(amount) && amount > 0,
 			'A log about tax paid requires an amount greater than 0');
 		precondition(Player.isPlayer(player),
-			'A log about tax paid requires of the player who paid');
+			'A log about tax paid requires the player who paid');
 			
 		var message = i18n.LOG_TAX_PAID
 						.replace('{amount}', i18n.formatPrice(amount))
@@ -2421,6 +2525,36 @@
 		return new Log('offer-rejected', i18n.LOG_OFFER_REJECTED);
 	};
 	
+	exports.logGoneToJail = function (player) {
+		precondition(Player.isPlayer(player),
+			'A log about a player going to jail requires that player');
+		
+		var message = i18n.LOG_GONE_TO_JAIL
+						.replace('{player}', coloredPlayer(player));
+		
+		return new Log('gone-to-jail', message);
+	};
+	
+	exports.logGoneBankrupt = function (player) {
+		precondition(Player.isPlayer(player),
+			'A log about player going bankrupt requires that player');
+			
+		var message = i18n.LOG_GONE_BANKRUPT
+						.replace('{player}', coloredPlayer(player));
+						
+		return new Log('gone-bankrupt', message);
+	};
+	
+	exports.logGameWon = function (player) {
+		precondition(Player.isPlayer(player),
+			'A log about game won requires the winner');
+			
+		var message = i18n.LOG_GAME_WON
+						.replace('{player}', coloredPlayer(player));
+						
+		return new Log('game-won', message);
+	};
+	
 	exports.simpleLog = function () {
 		return new Log('simple', 'A message');
 	};
@@ -2446,7 +2580,7 @@
 		return '<span style="color: ' + player.color() + '; font-weight: bold;">' + player.name() + '</span>';
 	}
 }());
-},{"./contract":10,"./i18n":23,"./player":33,"./property":37,"./trade-offer":43}],27:[function(require,module,exports){
+},{"./contract":10,"./i18n":24,"./player":35,"./property":39,"./trade-offer":45}],28:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2510,7 +2644,7 @@
 	};
 }());
 
-},{"./board-widget":2,"./contract":10,"./dice-widget":11,"./game-choices-widget":14,"./i18n":23,"./log-game-widget":25,"./players-widget":34,"./popup":35,"./trade-widget":45}],28:[function(require,module,exports){
+},{"./board-widget":2,"./contract":10,"./dice-widget":11,"./game-choices-widget":14,"./i18n":24,"./log-game-widget":26,"./players-widget":36,"./popup":37,"./trade-widget":47}],29:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2556,7 +2690,52 @@
 		});
 	};
 }());
-},{"./contract":10,"./game-state":16,"./i18n":23}],29:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":24}],30:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var i18n = require('./i18n').i18n();
+	var GameState = require('./game-state');
+	
+	var precondition = require('./contract').precondition;
+	
+	exports.newChoice = function() {
+		return new PayDepositChoice();
+	};
+	
+	function PayDepositChoice() {
+		this.id = 'pay-deposit';
+		this.name = i18n.CHOICE_PAY_DEPOSIT.replace('{money}', i18n.formatPrice(50));
+	}
+	
+	PayDepositChoice.prototype.equals = function (other) {
+		return (other instanceof PayDepositChoice);
+	};
+	
+	PayDepositChoice.prototype.requiresDice = function () {
+		return false;
+	};
+	
+	PayDepositChoice.prototype.computeNextState = function (state) {
+		precondition(GameState.isGameState(state),
+			'PayDepositChoice requires a game state to compute the next one');
+			
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.unjail().pay(50);
+			}
+			
+			return player;
+		});
+			
+		return GameState.turnEndState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex()
+		});
+	};
+}());
+},{"./contract":10,"./game-state":16,"./i18n":24}],31:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2620,7 +2799,7 @@
 		}, true);
 	};
 }());
-},{"./contract":10,"./game-state":16,"./i18n":23,"./player":33}],30:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":24,"./player":35}],32:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2675,7 +2854,7 @@
 		}, true);
 	};
 }());
-},{"./contract":10,"./game-state":16,"./i18n":23}],31:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":24}],33:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2815,7 +2994,7 @@
 			});
 	}
 }());
-},{"./contract":10,"./game-state":16,"./handle-choices-task":20,"./log-game-task":24,"./player":33,"./roll-dice-task":39,"./trade-offer":43,"./trade-task":44}],32:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./handle-choices-task":21,"./log-game-task":25,"./player":35,"./roll-dice-task":41,"./trade-offer":45,"./trade-task":46}],34:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2825,7 +3004,7 @@
 		];
 	};
 }());
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -2880,6 +3059,7 @@
 		this._color = info.color;
 		this._type = info.type;
 		this._properties = info.properties;
+		this._jailed = false;
 	}
 	
 	Player.prototype.id = function () {
@@ -2908,6 +3088,10 @@
 	
 	Player.prototype.properties = function () {
 		return this._properties.slice();
+	};
+	
+	Player.prototype.jailed = function () {
+		return this._jailed;
 	};
 	
 	Player.prototype.equals = function (other) {
@@ -2942,6 +3126,10 @@
 		}
 		
 		if (this._type !== other._type) {
+			return false;
+		}
+		
+		if (this._jailed !== other._jailed) {
 			return false;
 		}
 		
@@ -2985,6 +3173,38 @@
 			type: this.type(),
 			properties: this.properties()
 		});
+	};
+	
+	Player.prototype.jail = function () {
+		var player = newPlayer({
+			id: this.id(),
+			name: this.name(),
+			money: this.money(),
+			position: 10,
+			color: this.color(),
+			type: this.type(),
+			properties: this.properties()
+		});
+		
+		player._jailed = true;
+		
+		return player;
+	};
+	
+	Player.prototype.unjail = function () {
+		var player = newPlayer({
+			id: this.id(),
+			name: this.name(),
+			money: this.money(),
+			position: this.position(),
+			color: this.color(),
+			type: this.type(),
+			properties: this.properties()
+		});
+		
+		player._jailed = false;
+		
+		return player;
 	};
 	
 	Player.prototype.buyProperty = function (property) {
@@ -3099,7 +3319,7 @@
 		});
 	}
 }());
-},{"./contract":10,"./i18n":23,"./player-colors":32,"./property":37}],34:[function(require,module,exports){
+},{"./contract":10,"./i18n":24,"./player-colors":34,"./property":39}],36:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -3228,7 +3448,7 @@
 		selection.exit().remove();
 	}
 }());
-},{"./contract":10,"./i18n":23}],35:[function(require,module,exports){
+},{"./contract":10,"./i18n":24}],37:[function(require,module,exports){
 (function () {
     'use strict';
 
@@ -3323,7 +3543,7 @@
         closedSubject.onCompleted();
     }
 }());
-},{"./contract":10}],36:[function(require,module,exports){
+},{"./contract":10}],38:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -3370,7 +3590,7 @@
 		return (this._index < other._index ? 1 : -1);
 	};
 }());
-},{"./contract":10}],37:[function(require,module,exports){
+},{"./contract":10}],39:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -3432,7 +3652,7 @@
 	
 	function companyRent(group) {
 		return function (ownerProperties) {
-			return { multiplier: (allCompanies(group, ownerProperties) ? 4 : 2) };
+			return { multiplier: (allCompanies(group, ownerProperties) ? 10 : 4) };
 		};
 	}
 	
@@ -3560,7 +3780,7 @@
 		return other instanceof Property && this._id === other._id;
 	};
 }());
-},{"./contract":10,"./property-group":36}],38:[function(require,module,exports){
+},{"./contract":10,"./property-group":38}],40:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -3615,7 +3835,7 @@
 		});
 	};
 }());
-},{"./contract":10,"./game-state":16,"./i18n":23}],39:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":24}],41:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -3649,7 +3869,7 @@
 		return this._diceRolled.asObservable();
 	};
 }());
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -3687,7 +3907,7 @@
 			'L 32 4 Z">';
 	};
 }());
-},{}],41:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 (function () {
     'use strict';
 	
@@ -3744,7 +3964,7 @@
 		}
     };
 }());
-},{"./contract":10}],42:[function(require,module,exports){
+},{"./contract":10}],44:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -3799,7 +4019,7 @@
 		return GameState.gameInTradeState(state.squares(), state.players(), offer);
 	};
 }());
-},{"./contract":10,"./game-state":16,"./i18n":23,"./player":33,"./trade-offer":43}],43:[function(require,module,exports){
+},{"./contract":10,"./game-state":16,"./i18n":24,"./player":35,"./trade-offer":45}],45:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -3945,7 +4165,7 @@
 		});
 	}
 }());
-},{"./contract":10,"./player":33}],44:[function(require,module,exports){
+},{"./contract":10,"./player":35}],46:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -4057,7 +4277,7 @@
 		]);
 	}
 }());
-},{"./contract":10,"./player":33,"./trade-offer":43}],45:[function(require,module,exports){
+},{"./contract":10,"./player":35,"./trade-offer":45}],47:[function(require,module,exports){
 (function() {
 	"use strict";
 
@@ -4206,4 +4426,59 @@
 	}
 }());
 
-},{"./contract":10,"./i18n":23}]},{},[4]);
+},{"./contract":10,"./i18n":24}],48:[function(require,module,exports){
+(function() {
+	"use strict";
+	
+	var i18n = require('./i18n').i18n();
+	var GameState = require('./game-state');
+	
+	var precondition = require('./contract').precondition;
+	
+	exports.newChoice = function() {
+		return new TryDoubleRollChoice();
+	};
+	
+	function TryDoubleRollChoice() {
+		this.id = 'try-double-roll';
+		this.name = i18n.CHOICE_TRY_DOUBLE_ROLL;
+	}
+	
+	TryDoubleRollChoice.prototype.equals = function (other) {
+		return (other instanceof TryDoubleRollChoice);
+	};
+	
+	TryDoubleRollChoice.prototype.requiresDice = function () {
+		return true;
+	};
+	
+	TryDoubleRollChoice.prototype.computeNextState = function (state, dice) {
+		precondition(GameState.isGameState(state),
+			'TryDoubleRollChoice requires a game state to compute the next one');
+		precondition(dice,
+			'TryDoubleRollChoice requires the result of a dice roll to compute the next state');
+			
+		if (dice[0] !== dice[1]) {
+			return GameState.turnEndState({
+				squares: state.squares(),
+				players: state.players(),
+				currentPlayerIndex: state.currentPlayerIndex()
+			});
+		}
+		
+		var newPlayers = _.map(state.players(), function (player, index) {
+			if (index === state.currentPlayerIndex()) {
+				return player.unjail().move(dice);
+			}
+			
+			return player;
+		});
+			
+		return GameState.turnEndState({
+			squares: state.squares(),
+			players: newPlayers,
+			currentPlayerIndex: state.currentPlayerIndex()
+		});
+	};
+}());
+},{"./contract":10,"./game-state":16,"./i18n":24}]},{},[4]);

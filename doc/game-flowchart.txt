@@ -3,22 +3,35 @@
 scale 1.2
 title Game flowchart
 
-(*) -->[set first player as current] if "Want to trade?" as turn_start then
+(*) -->[set first player as current] if "In jail?" as turn_start then
+		-->[yes] if "Want to pay $50 deposit?" then
+			-->[yes] "<b>GTFO !</b>
+						get out of jail" as jail_out
+			--> "<b>Move</b>
+						advance current player dy dice" as move
+		else
+			-->[no] if "Rolled a double?" then
+				-->[yes] jail_out
+			else
+				-->[no] "<b>Finish turn</b>
+									set next player as current" as finish_turn
+			endif
+		endif
+	else
+	-->[no] if "Want to trade?" then
 	-->[yes] "<b>Make offer</b>
 				set player being offered to as current"
 	--> if "Accepts offer?" then
 		-->[yes] "<b>Apply offer</b>
 			transfer stuff
 			set original current player back"
-		--> "<b>Move</b>
-					advance current player dy dice" as move
+		--> move
 		--> if "Passed GO?" then
 			-->[yes] "<b>Collect $200 salary</b>"
 			--> if "On property?" as on_property then
 				-->[yes] if "Owned?" then
 					-right->[no] if "Enough money?" then
-						-up->[no] "<b>Finish turn</b>
-								set next player as current" as finish_turn
+						-up->[no] finish_turn
 					else
 						-right->[yes] if "Want to buy?" then
 							-right->[yes] "<b>Buy property</b>
@@ -65,6 +78,7 @@ title Game flowchart
 	endif
 else
 	-->[no] move
+endif
 endif
 
 @enduml
