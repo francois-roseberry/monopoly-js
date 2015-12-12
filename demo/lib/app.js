@@ -2590,7 +2590,6 @@
 	var PlayersWidget = require('./players-widget');
 	var LogGameWidget = require('./log-game-widget');
 	var TradeWidget = require('./trade-widget');
-	var Popup = require('./popup');
 	
 	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
@@ -2627,24 +2626,12 @@
 		});
 		
 		playGameTask.tradeTaskCreated().subscribe(function (task) {
-			var positionning = {
-				top: "180px",
-				left: "200px",
-				width: "900px",
-				height: "400px"
-			};
-			
-			var popup = Popup.render($(document.body), positionning, { closeBtn: false });
-			TradeWidget.render($(popup.contentContainer()[0]), task);
-			
-			task.offer().subscribeOnCompleted(function () {
-				popup.close();
-			});
+			TradeWidget.render($(centralComponentsContainer[0]), task);
 		});
 	};
 }());
 
-},{"./board-widget":2,"./contract":10,"./dice-widget":11,"./game-choices-widget":14,"./i18n":24,"./log-game-widget":26,"./players-widget":36,"./popup":37,"./trade-widget":47}],29:[function(require,module,exports){
+},{"./board-widget":2,"./contract":10,"./dice-widget":11,"./game-choices-widget":14,"./i18n":24,"./log-game-widget":26,"./players-widget":36,"./trade-widget":47}],29:[function(require,module,exports){
 (function() {
 	"use strict";
 	
@@ -4292,30 +4279,48 @@
 			.append('div')
 			.classed('monopoly-trade-panel', true);
 			
-		panel.append('span')
-			.classed('monopoly-trade-title', true)
+		var dialogContent = panel.append('div')
+			.attr({
+				'id': 'trade-modal',
+				'tabindex': '-1',
+				'role': 'dialog'
+			})
+			.classed({
+				'modal': true,
+				'fade': true
+			})
+			.append('div')
+			.attr('role', 'document')
+			.classed('modal-dialog', true)
+			.append('div')
+			.classed('modal-content', true);
+			
+		dialogContent.append('div')
+			.classed('modal-header', true)
+			.append('h4')
+			.attr('id', 'trade-title')
+			.classed('modal-title', true)
 			.text(i18n.TRADE_TITLE);
 			
-		var panelContainer = panel.append('div')
-			.classed('monopoly-trade-player-panels', true);
+		var modalBody = dialogContent.append('div')
+			.classed('modal-body', true);
 		
-		renderPlayerPanel(panelContainer, tradeTask.currentPlayer(), tradeTask, 0);
-		renderPlayerPanel(panelContainer, tradeTask.otherPlayer(), tradeTask, 1);
+		renderPlayerPanel(modalBody, tradeTask.currentPlayer(), tradeTask, 0);
+		renderPlayerPanel(modalBody, tradeTask.otherPlayer(), tradeTask, 1);
 		
-		var makeOfferBtn = panel.append('button')
-			.classed({
-				'monopoly-trade-make-offer-btn': true,
-				'btn': true,
-				'btn-default': true
-			})
-			.text(i18n.TRADE_MAKE_OFFER)
-			.on('click', function () {
-				tradeTask.makeOffer();
-			});
+		modalBody.append('div')
+			.classed('clearfix', true);
+		
+		var modalFooter = dialogContent.append('div')
+			.classed('modal-footer', true);
 			
-		panel.append('button')
+		modalFooter.append('button')
+			.attr({
+				'type': 'button',
+				'data-dismiss': 'modal',
+				'data-ui': 'cancel-trade-btn'
+			})
 			.classed({
-				'monopoly-trade-cancel-btn': true,
 				'btn': true,
 				'btn-default': true
 			})
@@ -4324,17 +4329,34 @@
 				tradeTask.cancel();
 			});
 			
-			tradeTask.offer()
-				.map(function (offer) {
-					return offer.isValid();
-				})
-				.subscribe(function (valid) {
-					makeOfferBtn.attr('disabled', valid ? null : 'disabled');
-				});
+		var makeOfferBtn = modalFooter.append('button')
+			.attr({
+				'type': 'button',
+				'data-dismiss': 'modal',
+				'data-ui': 'make-offer-btn'
+			})
+			.classed({
+				'btn': true,
+				'btn-primary': true
+			})
+			.text(i18n.TRADE_MAKE_OFFER)
+			.on('click', function () {
+				tradeTask.makeOffer();
+			});
+			
+		tradeTask.offer()
+			.map(function (offer) {
+				return offer.isValid();
+			})
+			.subscribe(function (valid) {
+				makeOfferBtn.attr('disabled', valid ? null : 'disabled');
+			});
 			
 		tradeTask.offer().subscribeOnCompleted(function () {
 			panel.remove();
 		});
+			
+		$('#trade-modal').modal('show');
 	};
 	
 	function renderPlayerPanel(container, player, tradeTask, playerIndex) {
