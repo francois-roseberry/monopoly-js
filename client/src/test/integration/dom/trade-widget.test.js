@@ -30,7 +30,7 @@
 		});
 		
 		it('renders the title', function () {
-			domContext.assertOneOf('.monopoly-trade-title');
+			domContext.assertOneOf('#trade-title');
 		});
 		
 		it('renders a panel for both trade players', function () {
@@ -88,15 +88,15 @@
 		});
 		
 		it('renders a button to make the offer', function () {
-			domContext.assertOneOf('.monopoly-trade-make-offer-btn');
+			domContext.assertOneOf('[data-ui=make-offer-btn]');
 		});
 		
 		it('renders a button to cancel the trade', function () {
-			domContext.assertOneOf('.monopoly-trade-cancel-btn');
+			domContext.assertOneOf('[data-ui=cancel-trade-btn]');
 		});
 		
 		it('when offer is invalid, the make offer button is disabled', function () {
-			domContext.assertDisabled('.monopoly-trade-make-offer-btn');
+			domContext.assertDisabled('[data-ui=make-offer-btn]');
 		});
 		
 		describe('when offer is valid', function () {
@@ -105,18 +105,18 @@
 			});
 			
 			it('the make offer button is enabled', function () {
-				domContext.assertEnabled('.monopoly-trade-make-offer-btn');
+				domContext.assertEnabled('[data-ui=make-offer-btn]');
 			});
 			
-			it('clicking on the make offer button closes the widget', function () {
-				domContext.clickOn('.monopoly-trade-make-offer-btn');
+			it('clicking on the make offer button removes the widget', function () {
+				domContext.d3.clickOn('[data-ui=make-offer-btn]');
 			
 				domContext.assertNothingOf('.monopoly-trade-panel');
 			});
 		});
 		
-		it('clicking on the cancel trade button erases the widget', function () {
-			domContext.clickOn('.monopoly-trade-cancel-btn');
+		it('clicking on the cancel trade button removes the widget', function () {
+			domContext.d3.clickOn('[data-ui=cancel-trade-btn]');
 			
 			domContext.assertNothingOf('.monopoly-trade-panel');
 		});

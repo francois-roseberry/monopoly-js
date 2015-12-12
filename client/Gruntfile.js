@@ -86,9 +86,9 @@ module.exports = function(grunt) {
 					'node_modules/underscore/underscore.js',
 					'node_modules/d3/d3.min.js',
 					'node_modules/rx/dist/rx.all.min.js',
-					'node_modules/bootstrap/dist/bootstrap.min.js',
 					'node_modules/jquery/dist/jquery.min.js',
-					'node_modules/jquery-ui/jquery-ui.js'
+					'node_modules/jquery-ui/jquery-ui.js',
+					'node_modules/bootstrap/dist/js/bootstrap.min.js'
 				],
 				dest: 'target/dist/lib/dependencies.js'
 			}

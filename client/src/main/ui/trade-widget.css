@@ -2,11 +2,6 @@
 	text-align: center;
 }
 
-.monopoly-trade-title {
-	font-size: 22px;
-	margin-top: 0;
-}
-
 .monopoly-trade-player-panels {
 	overflow: auto;
 	margin-bottom: 20px;
@@ -29,7 +24,7 @@
 	color: #fff;
 	text-shadow: 1px 1px #000;
 	margin-bottom: 2px;
-	width: 50%;
+	width: 240px;
 }
 
 .monopoly-trade-player-property-selected {
@@ -43,8 +38,4 @@
 
 .monopoly-trade-player-money-total {
 	padding-left: 6px;
-}
-
-.monopoly-trade-make-offer-btn {
-	margin-right: 10px;
 }

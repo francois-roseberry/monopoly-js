@@ -12,30 +12,48 @@
 			.append('div')
 			.classed('monopoly-trade-panel', true);
 			
-		panel.append('span')
-			.classed('monopoly-trade-title', true)
+		var dialogContent = panel.append('div')
+			.attr({
+				'id': 'trade-modal',
+				'tabindex': '-1',
+				'role': 'dialog'
+			})
+			.classed({
+				'modal': true,
+				'fade': true
+			})
+			.append('div')
+			.attr('role', 'document')
+			.classed('modal-dialog', true)
+			.append('div')
+			.classed('modal-content', true);
+			
+		dialogContent.append('div')
+			.classed('modal-header', true)
+			.append('h4')
+			.attr('id', 'trade-title')
+			.classed('modal-title', true)
 			.text(i18n.TRADE_TITLE);
 			
-		var panelContainer = panel.append('div')
-			.classed('monopoly-trade-player-panels', true);
+		var modalBody = dialogContent.append('div')
+			.classed('modal-body', true);
 		
-		renderPlayerPanel(panelContainer, tradeTask.currentPlayer(), tradeTask, 0);
-		renderPlayerPanel(panelContainer, tradeTask.otherPlayer(), tradeTask, 1);
+		renderPlayerPanel(modalBody, tradeTask.currentPlayer(), tradeTask, 0);
+		renderPlayerPanel(modalBody, tradeTask.otherPlayer(), tradeTask, 1);
 		
-		var makeOfferBtn = panel.append('button')
-			.classed({
-				'monopoly-trade-make-offer-btn': true,
-				'btn': true,
-				'btn-default': true
-			})
-			.text(i18n.TRADE_MAKE_OFFER)
-			.on('click', function () {
-				tradeTask.makeOffer();
-			});
+		modalBody.append('div')
+			.classed('clearfix', true);
+		
+		var modalFooter = dialogContent.append('div')
+			.classed('modal-footer', true);
 			
-		panel.append('button')
+		modalFooter.append('button')
+			.attr({
+				'type': 'button',
+				'data-dismiss': 'modal',
+				'data-ui': 'cancel-trade-btn'
+			})
 			.classed({
-				'monopoly-trade-cancel-btn': true,
 				'btn': true,
 				'btn-default': true
 			})
@@ -44,17 +62,34 @@
 				tradeTask.cancel();
 			});
 			
-			tradeTask.offer()
-				.map(function (offer) {
-					return offer.isValid();
-				})
-				.subscribe(function (valid) {
-					makeOfferBtn.attr('disabled', valid ? null : 'disabled');
-				});
+		var makeOfferBtn = modalFooter.append('button')
+			.attr({
+				'type': 'button',
+				'data-dismiss': 'modal',
+				'data-ui': 'make-offer-btn'
+			})
+			.classed({
+				'btn': true,
+				'btn-primary': true
+			})
+			.text(i18n.TRADE_MAKE_OFFER)
+			.on('click', function () {
+				tradeTask.makeOffer();
+			});
+			
+		tradeTask.offer()
+			.map(function (offer) {
+				return offer.isValid();
+			})
+			.subscribe(function (valid) {
+				makeOfferBtn.attr('disabled', valid ? null : 'disabled');
+			});
 			
 		tradeTask.offer().subscribeOnCompleted(function () {
 			panel.remove();
 		});
+			
+		$('#trade-modal').modal('show');
 	};
 	
 	function renderPlayerPanel(container, player, tradeTask, playerIndex) {
