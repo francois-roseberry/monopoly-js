@@ -13,7 +13,11 @@
 		tradeTask.offer().subscribeOnCompleted(function () {
 			dialog.remove();
 		});
-			
+		
+		$(dialog[0]).modal({
+			'backdrop': 'static',
+			'keyboard': false
+		});		
 		$(dialog[0]).modal('show');
 	};
 	
