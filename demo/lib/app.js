@@ -4274,21 +4274,33 @@
 	exports.render = function (container, tradeTask) {
 		precondition(container, 'A TradeWidget requires a container to render into');
 		precondition(tradeTask, 'A Tradewidget requires a TradeTask');
-		
-		var panel = d3.select(container[0])
-			.append('div')
-			.classed('monopoly-trade-panel', true);
 			
-		var dialogContent = panel.append('div')
+		var dialog = renderDialog(container[0], tradeTask);
+			
+		tradeTask.offer().subscribeOnCompleted(function () {
+			dialog.remove();
+		});
+		
+		$(dialog[0]).modal({
+			'backdrop': 'static',
+			'keyboard': false
+		});		
+		$(dialog[0]).modal('show');
+	};
+	
+	function renderDialog(container, tradeTask) {
+		var dialog = d3.select(container).append('div')
 			.attr({
-				'id': 'trade-modal',
 				'tabindex': '-1',
 				'role': 'dialog'
 			})
 			.classed({
 				'modal': true,
-				'fade': true
-			})
+				'fade': true,
+				'monopoly-trade-panel': true
+			});
+			
+		var dialogContent = dialog
 			.append('div')
 			.attr('role', 'document')
 			.classed('modal-dialog', true)
@@ -4313,8 +4325,15 @@
 		
 		var modalFooter = dialogContent.append('div')
 			.classed('modal-footer', true);
-			
-		modalFooter.append('button')
+		
+		renderCancelTradeButton(modalFooter, tradeTask);
+		renderMakeOfferButton(modalFooter, tradeTask);
+		
+		return dialog;
+	}
+	
+	function renderCancelTradeButton(container, tradeTask) {
+		container.append('button')
 			.attr({
 				'type': 'button',
 				'data-dismiss': 'modal',
@@ -4328,8 +4347,10 @@
 			.on('click', function () {
 				tradeTask.cancel();
 			});
-			
-		var makeOfferBtn = modalFooter.append('button')
+	}
+	
+	function renderMakeOfferButton(container, tradeTask) {
+		var makeOfferBtn = container.append('button')
 			.attr({
 				'type': 'button',
 				'data-dismiss': 'modal',
@@ -4351,13 +4372,7 @@
 			.subscribe(function (valid) {
 				makeOfferBtn.attr('disabled', valid ? null : 'disabled');
 			});
-			
-		tradeTask.offer().subscribeOnCompleted(function () {
-			panel.remove();
-		});
-			
-		$('#trade-modal').modal('show');
-	};
+	}
 	
 	function renderPlayerPanel(container, player, tradeTask, playerIndex) {
 		var panel = container.append('div')
