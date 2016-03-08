@@ -7,7 +7,7 @@
 	var failFast = require('./fail-fast');
 	
 	failFast.crashOnUnhandledException();
-    failFast.crashOnResourceLoadingError();
+    	failFast.crashOnResourceLoadingError();
 
 	$(document).ready(startApplication());
 
