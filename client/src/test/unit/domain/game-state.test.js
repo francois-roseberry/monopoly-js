@@ -30,7 +30,7 @@
 			it('if player is not broke, offers both choices', function () {
 				var state = games.firstPlayerInJail();
 			
-				assertChoices(state, [PayDepositChoice.newChoice(), TryDoubleRollChoice.newChoice()]);
+				assertChoices(state, [PayDepositChoice.newChoice(Board.JAIL_BAILOUT), TryDoubleRollChoice.newChoice()]);
 			});
 		});
 		

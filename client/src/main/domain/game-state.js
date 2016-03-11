@@ -1,6 +1,7 @@
 (function() {
 	"use strict";
 	
+	var Board = require('./board');
 	var Choices = require('./choices');
 	var MoveChoice = require('./move-choice');
 	var FinishTurnChoice = require('./finish-turn-choice');
@@ -76,8 +77,8 @@
 	
 	function newTurnChoices(info) {
 		if (info.players[info.currentPlayerIndex].jailed()) {
-			if (info.players[info.currentPlayerIndex].money() > 50) {
-				return [PayDepositChoice.newChoice(), TryDoubleRollChoice.newChoice()];
+			if (info.players[info.currentPlayerIndex].money() > Board.JAIL_BAILOUT) {
+				return [PayDepositChoice.newChoice(Board.JAIL_BAILOUT), TryDoubleRollChoice.newChoice()];
 			}
 			
 			return [TryDoubleRollChoice.newChoice()];

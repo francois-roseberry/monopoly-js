@@ -7,6 +7,8 @@
 	var Property = require('./property');
 	var PropertyGroup = require('./property-group');
 	
+	exports.JAIL_BAILOUT = 50;
+	
 	exports.properties = function () {
 		var groups = [
 			PropertyGroup.newGroup(0, 'midnightblue', groupMembers),

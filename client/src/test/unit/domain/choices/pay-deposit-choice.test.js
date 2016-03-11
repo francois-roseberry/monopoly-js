@@ -8,9 +8,10 @@
 	
 	describe('A PayDeposit Choice', function () {
 		var choice;
+		var AMOUNT = 50;
 		
 		beforeEach(function () {
-			choice = PayDepositChoice.newChoice();
+			choice = PayDepositChoice.newChoice(AMOUNT);
 		});
 		
 		it('does not require dice', function () {
@@ -36,9 +37,9 @@
 				});
 			});
 			
-			it('current player loses 50$', function () {
+			it('current player loses the deposit amount', function () {
 				expect(nextState.players()[state.currentPlayerIndex()].money()).to.eql(
-					state.players()[state.currentPlayerIndex()].money() - 50);
+					state.players()[state.currentPlayerIndex()].money() - AMOUNT);
 			});
 			
 			it('offers only the FinishTurnChoice', function () {

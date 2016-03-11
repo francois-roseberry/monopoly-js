@@ -6,13 +6,17 @@
 	
 	var precondition = require('./contract').precondition;
 	
-	exports.newChoice = function() {
-		return new PayDepositChoice();
+	exports.newChoice = function (amount) {
+		precondition(_.isNumber(amount) && amount > 0,
+			'A Pay Deposit Choice requires an amount greater than 0');
+			
+		return new PayDepositChoice(amount);
 	};
 	
-	function PayDepositChoice() {
+	function PayDepositChoice(amount) {
 		this.id = 'pay-deposit';
-		this.name = i18n.CHOICE_PAY_DEPOSIT.replace('{money}', i18n.formatPrice(50));
+		this._amount = amount;
+		this.name = i18n.CHOICE_PAY_DEPOSIT.replace('{money}', i18n.formatPrice(amount));
 	}
 	
 	PayDepositChoice.prototype.equals = function (other) {
@@ -27,9 +31,11 @@
 		precondition(GameState.isGameState(state),
 			'PayDepositChoice requires a game state to compute the next one');
 			
+		var amount = this._amount;
+			
 		var newPlayers = _.map(state.players(), function (player, index) {
 			if (index === state.currentPlayerIndex()) {
-				return player.unjail().pay(50);
+				return player.unjail().pay(amount);
 			}
 			
 			return player;
