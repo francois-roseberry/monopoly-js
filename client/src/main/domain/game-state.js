@@ -136,11 +136,11 @@
 	}
 	
 	function payIncomeTax(currentPlayer, paid) {
-		return function () {
+		return function (_, percentageTax, flatTax) {
 			if (!paid) {
 				return [
-					ChooseTaxTypeChoice.newPercentageTax(10, currentPlayer.netWorth()),
-					ChooseTaxTypeChoice.newFlatTax(200)
+					ChooseTaxTypeChoice.newPercentageTax(percentageTax, currentPlayer.netWorth()),
+					ChooseTaxTypeChoice.newFlatTax(flatTax)
 				];
 			}
 			

@@ -64,7 +64,7 @@
 			properties.mediterranean,
 			communityChest(),
 			properties.baltic,
-			incomeTax(),
+			incomeTax(10, 200),
 			properties.readingRailroad,
 			properties.east,
 			chance(),
@@ -157,9 +157,9 @@
 		};
 	}
 	
-	function incomeTax() {
+	function incomeTax(percentageTax, flatTax) {
 		return {
-			match: match('income-tax', [i18n.INCOME_TAX]),
+			match: match('income-tax', [i18n.INCOME_TAX, percentageTax, flatTax]),
 			equals: hasId('income-tax')
 		};
 	}
