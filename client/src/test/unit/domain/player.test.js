@@ -12,7 +12,7 @@
 		
 		beforeEach(function () {
 			board = Board.standard();
-			var players = Player.newPlayers(testData.playersConfiguration());
+			var players = Player.newPlayers(testData.playersConfiguration(), board.startMoney());
 			player = players[0];
 		});
 		
@@ -21,16 +21,16 @@
 				expect(player.position()).to.eql(0);
 			});
 			
-			it('has 1500$', function () {
-				expect(player.money()).to.eql(1500);
+			it('has the money specified in the board to start with', function () {
+				expect(player.money()).to.eql(board.startMoney());
 			});
 			
 			it('starts with an empty list of properties', function () {
 				expect(player.properties()).to.eql([]);
 			});
 			
-			it('has a net worth of 1500$ (since no properties)', function () {
-				expect(player.netWorth()).to.eql(1500);
+			it('has a net worth of [startMoney] (since no properties)', function () {
+				expect(player.netWorth()).to.eql(board.startMoney());
 			});
 		});
 		

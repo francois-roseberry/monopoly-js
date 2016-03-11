@@ -13,14 +13,24 @@
 	
 	exports.standard = function () {
 		var properties = standardProperties();
-		return new Board(squares(properties), properties, 50);
+		return new Board({
+			squares: standardSquares(properties),
+			properties: properties,
+			jailBailout: 50,
+			startMoney: 1500
+		});
 	};
 	
-	function Board(squares, properties, jailBailout) {
-		this._squares = squares;
-		this._properties = properties;
-		this._jailBailout = jailBailout;
+	function Board(info) {
+		this._squares = info.squares;
+		this._properties = info.properties;
+		this._jailBailout = info.jailBailout;
+		this._startMoney = info.startMoney;
 	}
+	
+	Board.prototype.startMoney = function () {
+		return this._startMoney;
+	};
 	
 	Board.prototype.jailBailout = function () {
 		return this._jailBailout;
@@ -105,7 +115,7 @@
 		};
 	}
 	
-	function squares(properties) {
+	function standardSquares(properties) {
 		return [
 			go(),
 			properties.mediterranean,

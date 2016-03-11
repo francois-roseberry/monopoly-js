@@ -59,7 +59,7 @@
 	function initialGameState(board, players) {
 		return GameState.turnStartState({
 			board: board,
-			players: Player.newPlayers(players),
+			players: Player.newPlayers(players, board.startMoney()),
 			currentPlayerIndex: 0
 		});
 	}

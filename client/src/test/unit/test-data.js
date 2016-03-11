@@ -13,7 +13,7 @@
 	};
 	
 	exports.players = function () {
-		return Player.newPlayers(exports.playersConfiguration());
+		return Player.newPlayers(exports.playersConfiguration(), Board.standard().startMoney());
 	};
 	
 	exports.gameConfiguration = function () {

@@ -11,15 +11,17 @@
 		return candidate instanceof Player;
 	};
 	
-	exports.newPlayers = function (playerConfigurations) {
+	exports.newPlayers = function (playerConfigurations, startMoney) {
 		precondition(_.isArray(playerConfigurations) && playerConfigurations.length >= 3,
 			'Creating players require at least 3 player configurations');
+		precondition(_.isNumber(startMoney),
+			'Creating players require an amount of money each player starts with');
 		
 		return _.map(playerConfigurations, function (playerConfiguration, index) {
 			return newPlayer({
 				id: 'player' + index,
 				name: i18n.DEFAULT_PLAYER_NAME.replace('{index}', index + 1),
-				money: 1500,
+				money: startMoney,
 				position: 0,
 				color: PlayerColors[index],
 				type: playerConfiguration.type,
