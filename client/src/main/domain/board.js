@@ -101,7 +101,7 @@
 			properties.shortRailroad,
 			chance(),
 			properties.park,
-			luxuryTax(),
+			luxuryTax(75),
 			properties.broadwalk
 		];
 	};
@@ -164,9 +164,9 @@
 		};
 	}
 	
-	function luxuryTax() {
+	function luxuryTax(amount) {
 		return {
-			match: match('luxury-tax', [i18n.LUXURY_TAX]),
+			match: match('luxury-tax', [i18n.LUXURY_TAX, amount]),
 			equals: hasId('luxury-tax')
 		};
 	}

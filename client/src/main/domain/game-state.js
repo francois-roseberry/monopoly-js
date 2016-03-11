@@ -126,9 +126,9 @@
 	}
 	
 	function payLuxuryTax(currentPlayer, paid) {
-		return function () {
+		return function (_, amount) {
 			if (!paid) {
-				return Choices.taxChoices(75, currentPlayer);
+				return Choices.taxChoices(amount, currentPlayer);
 			}
 			
 			return [FinishTurnChoice.newChoice()];
