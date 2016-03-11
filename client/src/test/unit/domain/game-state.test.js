@@ -30,7 +30,9 @@
 			it('if player is not broke, offers both choices', function () {
 				var state = games.firstPlayerInJail();
 			
-				assertChoices(state, [PayDepositChoice.newChoice(Board.JAIL_BAILOUT), TryDoubleRollChoice.newChoice()]);
+				assertChoices(state, [
+					PayDepositChoice.newChoice(state.board().jailBailout()), TryDoubleRollChoice.newChoice()
+				]);
 			});
 		});
 		
@@ -193,7 +195,7 @@
 	function assertBuyPropertyChoiceWhenOnEstateWithoutOwner() {
 		var state = games.playerOnEstate();
 		assertChoices(state, [
-			BuyPropertyChoice.newChoice(Board.properties().mediterranean),
+			BuyPropertyChoice.newChoice(Board.standard().properties().mediterranean),
 			FinishTurnChoice.newChoice()
 		]);
 	}
@@ -201,7 +203,7 @@
 	function assertBuyPropertyChoiceWhenOnRailroadWithoutOwner() {
 		var state = games.playerOnRailroad();
 		assertChoices(state, [
-			BuyPropertyChoice.newChoice(Board.properties().readingRailroad),
+			BuyPropertyChoice.newChoice(Board.standard().properties().readingRailroad),
 			FinishTurnChoice.newChoice()
 		]);
 	}
@@ -209,7 +211,7 @@
 	function assertBuyPropertyChoiceWhenOnCompanyWithoutOwner() {
 		var state = games.playerOnCompany();
 		assertChoices(state, [
-			BuyPropertyChoice.newChoice(Board.properties().electricCompany),
+			BuyPropertyChoice.newChoice(Board.standard().properties().electricCompany),
 			FinishTurnChoice.newChoice()
 		]);
 	}
@@ -266,14 +268,14 @@
 	}
 	
 	function assertRentIsMediterraneanAvenueRent() {
-		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther(Board.properties().mediterranean));
+		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther(Board.standard().properties().mediterranean));
 		var secondPlayer = testData.players()[1];
 				
 		assertChoices(state, [PayRentChoice.newChoice(2, secondPlayer)]);
 	}
 	
 	function assertRentIsBroadwalkRent() {
-		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther(Board.properties().broadwalk, 39));
+		var state = turnEndStateWithPlayers(playerOnEstateOwnedByOther(Board.standard().properties().broadwalk, 39));
 		var secondPlayer = testData.players()[1];
 				
 		assertChoices(state, [PayRentChoice.newChoice(50, secondPlayer)]);
@@ -307,7 +309,7 @@
 	
 	function turnEndStateWithPlayers(players, paid) {
 		return GameState.turnEndState({
-			squares: Board.squares(),
+			board: Board.standard(),
 			players: players,
 			currentPlayerIndex: 0
 		}, paid);
@@ -317,7 +319,7 @@
 		var players = testData.players();
 		return [
 			players[0].move([0, squareIndex || 1]),
-			players[1].buyProperty(property || Board.properties().mediterranean),
+			players[1].buyProperty(property || Board.standard().properties().mediterranean),
 			players[2]
 		];
 	}

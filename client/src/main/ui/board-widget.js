@@ -31,7 +31,7 @@
 	
 	function renderSquares(container) {
 		return function (state) {
-			var rows = squaresToRows(state.squares());
+			var rows = squaresToRows(state.board().squares());
 			
 			var squares = container.selectAll('.monopoly-row')
 				.data(rows)
@@ -65,7 +65,7 @@
 				});
 				
 			container.selectAll('.monopoly-square')
-				.data(state.squares())
+				.data(state.board().squares())
 				.each(function (square, index) {
 					var graphicalSquare = d3.select(this);
 					graphicalSquare.attr('data-ui', index);

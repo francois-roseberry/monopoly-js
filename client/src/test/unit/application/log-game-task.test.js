@@ -23,6 +23,7 @@
 		var logs;
 		var firstPlayer;
 		var secondPlayer;
+		var board;
 		
 		beforeEach(function () {
 			gameTask = PlayGameTask.start(testData.gameConfiguration());
@@ -33,6 +34,7 @@
 			
 			gameTask.gameState().take(1)
 				.subscribe(function (state) {
+					board = state.board();
 					firstPlayer = state.players()[0];
 					secondPlayer = state.players()[1];
 				});
@@ -56,10 +58,10 @@
 		});
 		
 		it('when player buys property, sends a message', function () {
-			var choice = BuyPropertyChoice.newChoice(Board.properties().readingRailroad);
+			var choice = BuyPropertyChoice.newChoice(board.properties().readingRailroad);
 			gameTask.handleChoicesTask().makeChoice(choice);
 			
-			var message = Messages.logPropertyBought(firstPlayer, Board.properties().readingRailroad);
+			var message = Messages.logPropertyBought(firstPlayer, board.properties().readingRailroad);
 			expect(logs.length).to.eql(1);
 			expect(logs[0].equals(message)).to.be(true);
 		});
@@ -178,7 +180,7 @@
 		}
 		
 		function gameTaskWithCheatedDice(dieValue) {
-			return PlayGameTask.start({ squares: Board.squares(), players: testData.playersConfiguration(), options: { 
+			return PlayGameTask.start({ board: Board.standard(), players: testData.playersConfiguration(), options: { 
 				fastDice: true,
 				dieFunction: function () {
 					return dieValue;

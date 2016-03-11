@@ -11,7 +11,7 @@
 		var property;
 		
 		beforeEach(function () {
-			property = Board.properties().readingRailroad;
+			property = Board.standard().properties().readingRailroad;
 			choice = BuyPropertyChoice.newChoice(property);
 		});
 		

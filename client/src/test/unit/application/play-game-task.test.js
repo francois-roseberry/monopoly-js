@@ -83,7 +83,7 @@
 		}
 		
 		function gameTaskWithCheatedDice(dieValue) {
-			return PlayGameTask.start({ squares: Board.squares(), players: testData.playersConfiguration(), options: { 
+			return PlayGameTask.start({ board: Board.standard(), players: testData.playersConfiguration(), options: { 
 				fastDice: true,
 				dieFunction: function () {
 					return dieValue;
@@ -98,7 +98,7 @@
 		}
 		
 		function assertInitialGameState(state) {
-			expect(state.squares().length).to.eql(Board.squares().length);
+			expect(state.board().equals(testData.gameConfiguration().board)).to.be(true);
 			expect(state.players().length).to.eql(testData.playersConfiguration().length);
 			_.each(state.players(), function (player, index) {
 				expect(player.name()).to.eql('Joueur ' + (index + 1));

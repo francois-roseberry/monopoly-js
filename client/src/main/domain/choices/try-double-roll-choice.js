@@ -31,7 +31,7 @@
 			
 		if (dice[0] !== dice[1]) {
 			return GameState.turnEndState({
-				squares: state.squares(),
+				board: state.board(),
 				players: state.players(),
 				currentPlayerIndex: state.currentPlayerIndex()
 			});
@@ -46,7 +46,7 @@
 		});
 			
 		return GameState.turnEndState({
-			squares: state.squares(),
+			board: state.board(),
 			players: newPlayers,
 			currentPlayerIndex: state.currentPlayerIndex()
 		});

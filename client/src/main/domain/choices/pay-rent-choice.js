@@ -55,7 +55,7 @@
 		});
 		
 		return GameState.turnEndState({
-			squares: state.squares(),
+			board: state.board(),
 			players: newPlayers,
 			currentPlayerIndex: state.currentPlayerIndex()
 		}, true);

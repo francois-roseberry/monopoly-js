@@ -36,13 +36,13 @@
 		});
 		
 		if (newPlayers.length === 1) {
-			return GameState.gameFinishedState(state.squares(), newPlayers[0]);
+			return GameState.gameFinishedState(state.board(), newPlayers[0]);
 		}
 		
 		var newPlayerIndex = state.currentPlayerIndex() % newPlayers.length;
 		
 		return GameState.turnStartState({
-			squares: state.squares(),
+			board: state.board(),
 			players: newPlayers,
 			currentPlayerIndex: newPlayerIndex
 		});

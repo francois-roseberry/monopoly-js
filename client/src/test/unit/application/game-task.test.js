@@ -36,7 +36,7 @@
 			currentStatus.match({
 				'playing': function (playGameTask) {
 					playGameTask.gameState().take(1).subscribe(function (state) {
-						expect(state.squares().length).to.eql(Board.squares().length);
+						expect(state.board().equals(Board.standard())).to.be(true);
 						expect(state.players().length).to.eql(playerCount);
 					}, done, done);
 				}

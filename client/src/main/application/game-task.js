@@ -29,7 +29,7 @@
 	}
 	
 	function playingStatus(players, self) {
-		var gameConfiguration = { squares: Board.squares(), players: players, options: { fastDice: false }};
+		var gameConfiguration = { board: Board.standard(), players: players, options: { fastDice: false }};
 		var task = PlayGameTask.start(gameConfiguration);
 		task.completed().subscribe(function () {
 			newGame(self);

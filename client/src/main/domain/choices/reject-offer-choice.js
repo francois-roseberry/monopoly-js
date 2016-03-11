@@ -46,7 +46,7 @@
 		precondition(playerIndex >= 0, 'Offer rejected must have been made by a valid player');
 		
 		return GameState.turnStartState({
-			squares: state.squares(),
+			board: state.board(),
 			players: state.players(),
 			currentPlayerIndex: playerIndex
 		});

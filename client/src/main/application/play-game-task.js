@@ -8,12 +8,13 @@
 	var Player = require('./player');
 	var GameState = require('./game-state');
 	var TradeOffer = require('./trade-offer');
+	var Board = require('./board');
 	
 	var precondition = require('./contract').precondition;
 	
 	exports.start = function (gameConfiguration) {
-		precondition(_.isArray(gameConfiguration.squares),
-			'PlayGameTask requires a configuration with a list of squares');
+		precondition(Board.isBoard(gameConfiguration.board),
+			'PlayGameTask requires a configuration with a board');
 		precondition(_.isArray(gameConfiguration.players),
 			'PlayGameTask requires a configuration with a list of players');
 		precondition(gameConfiguration.options,
@@ -32,7 +33,7 @@
 		this._rollDiceTaskCreated = new Rx.Subject();
 		this._tradeTaskCreated = new Rx.Subject();
 		
-		var initialState = initialGameState(gameConfiguration.squares, gameConfiguration.players);
+		var initialState = initialGameState(gameConfiguration.board, gameConfiguration.players);
 		
 		this._gameState = new Rx.BehaviorSubject(initialState);
 		
@@ -55,9 +56,9 @@
 			});
 	}
 	
-	function initialGameState(squares, players) {
+	function initialGameState(board, players) {
 		return GameState.turnStartState({
-			squares: squares,
+			board: board,
 			players: Player.newPlayers(players),
 			currentPlayerIndex: 0
 		});

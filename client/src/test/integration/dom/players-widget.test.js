@@ -5,7 +5,6 @@
 	var PlayGameTask = require('./play-game-task');
 	var GoBankruptChoice = require('./go-bankrupt-choice');
 	var BuyPropertyChoice = require('./buy-property-choice');
-	var Board = require('./board');
 	
 	var testData = require('./test-data');
 	var describeInDom = require('./dom-fixture').describeInDom;
@@ -115,7 +114,8 @@
 		}
 		
 		function buyPropertyWithFirstPlayer() {
-			task.handleChoicesTask().makeChoice(BuyPropertyChoice.newChoice(Board.properties().readingRailroad));
+			var choice = BuyPropertyChoice.newChoice(currentState.board().properties().readingRailroad);
+			task.handleChoicesTask().makeChoice(choice);
 		}
 	});
 }());

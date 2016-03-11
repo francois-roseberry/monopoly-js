@@ -59,7 +59,7 @@
 		});
 		
 		return GameState.turnStartState({
-			squares: state.squares(),
+			board: state.board(),
 			players: newPlayers,
 			currentPlayerIndex: playerIndex
 		});

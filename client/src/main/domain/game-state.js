@@ -22,9 +22,9 @@
 		return candidate instanceof GameState;
 	};
 	
-	exports.gameInTradeState = function (squares, players, offer) {
-		precondition(_.isArray(squares) && squares.length === 40,
-			'GameInTradeState requires an array of 40 squares');
+	exports.gameInTradeState = function (board, players, offer) {
+		precondition(Board.isBoard(board),
+			'GameInTradeState requires a board');
 		precondition(_.isArray(players),
 			'GameInTradeState requires an array of players');
 		precondition(TradeOffer.isOffer(offer),
@@ -43,7 +43,7 @@
 		];
 		
 		var state = new GameState({
-			squares: squares,
+			board: board,
 			players: players,
 			currentPlayerIndex: otherPlayerIndex
 		}, choices);
@@ -55,13 +55,13 @@
 		return state;
 	};
 	
-	exports.gameFinishedState = function (squares, winner) {
-		precondition(_.isArray(squares) && squares.length === 40,
-			'GameFinishedState requires an array of 40 squares');
+	exports.gameFinishedState = function (board, winner) {
+		precondition(Board.isBoard(board),
+			'GameFinishedState requires a board');
 		precondition(winner, 'GameFinishedState requires a winner');
 		
 		return new GameState({
-			squares: squares,
+			board: board,
 			players: [winner],
 			currentPlayerIndex: 0
 		}, []);
@@ -77,8 +77,8 @@
 	
 	function newTurnChoices(info) {
 		if (info.players[info.currentPlayerIndex].jailed()) {
-			if (info.players[info.currentPlayerIndex].money() > Board.JAIL_BAILOUT) {
-				return [PayDepositChoice.newChoice(Board.JAIL_BAILOUT), TryDoubleRollChoice.newChoice()];
+			if (info.players[info.currentPlayerIndex].money() > info.board.jailBailout()) {
+				return [PayDepositChoice.newChoice(info.board.jailBailout()), TryDoubleRollChoice.newChoice()];
 			}
 			
 			return [TryDoubleRollChoice.newChoice()];
@@ -104,7 +104,7 @@
 	
 	function turnEndChoices(info, paid) {
 		var currentPlayer = info.players[info.currentPlayerIndex];
-		var currentSquare = info.squares[currentPlayer.position()];
+		var currentSquare = info.board.squares()[currentPlayer.position()];
 		var choices = choicesForSquare(currentSquare, info.players, currentPlayer, paid);
 			
 		return choices;
@@ -183,8 +183,8 @@
 	}
 	
 	function validateInfo(info) {
-		precondition(_.isArray(info.squares) && info.squares.length === 40,
-			'GameState requires an array of 40 squares');
+		precondition(Board.isBoard(info.board),
+			'GameState requires a board');
 		precondition(_.isArray(info.players) && info.players.length >= 2,
 			'GameState requires an array of at least 2 players');
 		precondition(_.isNumber(info.currentPlayerIndex) && validIndex(info.players, info.currentPlayerIndex),
@@ -196,14 +196,14 @@
 	}
 	
 	function GameState(info, choices) {
-		this._squares = info.squares;
+		this._board = info.board;
 		this._players = info.players;
 		this._currentPlayerIndex = info.currentPlayerIndex;
 		this._choices = choices;
 	}
 	
-	GameState.prototype.squares = function () {
-		return this._squares;
+	GameState.prototype.board = function () {
+		return this._board;
 	};
 	
 	GameState.prototype.players = function () {
@@ -233,7 +233,7 @@
 			return false;
 		}
 		
-		if (!deepEquals(this._squares, other._squares)) {
+		if (!(this._board.equals(other._board))) {
 			return false;
 		}
 		
@@ -266,7 +266,7 @@
 		precondition(_.isArray(choices), 'Changing a game state choices list requires a list of choices');
 		
 		var state = new GameState({
-			squares: this._squares,
+			board: this._board,
 			players: this._players,
 			currentPlayerIndex: this._currentPlayerIndex
 		}, choices);
@@ -280,7 +280,7 @@
 			'Restoring the choices of a game state require a list of choices to restore');
 			
 		return new GameState({
-			squares: this._squares,
+			board: this._board,
 			players: this._players,
 			currentPlayerIndex: this._currentPlayerIndex
 		}, this._oldChoices);

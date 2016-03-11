@@ -7,9 +7,56 @@
 	var Property = require('./property');
 	var PropertyGroup = require('./property-group');
 	
-	exports.JAIL_BAILOUT = 50;
+	exports.isBoard = function (candidate) {
+		return candidate instanceof Board;
+	};
 	
-	exports.properties = function () {
+	exports.standard = function () {
+		var properties = standardProperties();
+		return new Board(squares(properties), properties, 50);
+	};
+	
+	function Board(squares, properties, jailBailout) {
+		this._squares = squares;
+		this._properties = properties;
+		this._jailBailout = jailBailout;
+	}
+	
+	Board.prototype.jailBailout = function () {
+		return this._jailBailout;
+	};
+	
+	Board.prototype.properties = function () {
+		return this._properties;
+	};
+	
+	Board.prototype.squares = function () {
+		return this._squares;
+	};
+	
+	Board.prototype.equals = function (other) {
+		precondition(other, 'Testing a board for equality with something else requires that something else');
+		
+		if (this === other) {
+			return true;
+		}
+		
+		if (!(other instanceof Board)) {
+			return false;
+		}
+		
+		if (!deepEquals(this._squares, other._squares)) {
+			return false;
+		}
+		
+		if (this._jailBailout !== other._jailBailout) {
+			return false;
+		}
+		
+		return true;
+	};
+	
+	function standardProperties() {
 		var groups = [
 			PropertyGroup.newGroup(0, 'midnightblue', groupMembers),
 			PropertyGroup.newGroup(1, 'lightskyblue', groupMembers),
@@ -56,11 +103,9 @@
 			electricCompany:	Property.newCompany('electric', i18n.COMPANY_ELECTRIC, companyGroup),
 			waterWorks:			Property.newCompany('water', i18n.COMPANY_WATER, companyGroup)
 		};
-	};
+	}
 	
-	exports.squares = function () {
-		var properties = exports.properties();
-		
+	function squares(properties) {
 		return [
 			go(),
 			properties.mediterranean,
@@ -106,13 +151,23 @@
 			luxuryTax(75),
 			properties.broadwalk
 		];
-	};
+	}
+	
+	function deepEquals(left, right) {
+		if (left.length !== right.length) {
+			return false;
+		}
+		
+		return _.every(left, function (element, index) {
+			return element.equals(right[index]);
+		});
+	}
 	
 	function groupMembers(groupIndex) {
 		precondition(_.isNumber(groupIndex) && groupIndex >= 0 && groupIndex < 10,
 			'Listing members of a group in board requires the group index');
 		
-		return _.filter(exports.properties(), function (square) {
+		return _.filter(standardProperties(), function (square) {
 			return square.group().index() === groupIndex;
 		});
 	}

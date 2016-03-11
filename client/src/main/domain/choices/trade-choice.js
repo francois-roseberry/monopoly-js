@@ -49,6 +49,6 @@
 			return state;
 		}
 		
-		return GameState.gameInTradeState(state.squares(), state.players(), offer);
+		return GameState.gameInTradeState(state.board(), state.players(), offer);
 	};
 }());

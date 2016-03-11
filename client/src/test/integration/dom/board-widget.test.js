@@ -1,7 +1,6 @@
 (function() {
 	"use strict";
 	
-	var Board = require('./board');
 	var BoardWidget = require('./board-widget');
 	var PlayGameTask = require('./play-game-task');
 	
@@ -38,9 +37,9 @@
 		});
 		
 		function assertAllSquares() {
-			domContext.assertElementCount('.monopoly-square', Board.squares().length);
+			domContext.assertElementCount('.monopoly-square', currentState.board().squares().length);
 			
-			_.each(Board.squares(), function (_, index) {
+			_.each(currentState.board().squares(), function (_, index) {
 				domContext.assertOneOf('.monopoly-square[data-ui=' + index + ']');
 			});
 		}

@@ -18,7 +18,7 @@
 	
 	exports.gameConfiguration = function () {
 		return {
-			squares: Board.squares(),
+			board: Board.standard(),
 			players: exports.playersConfiguration(),
 			options: { fastDice: true }
 		};

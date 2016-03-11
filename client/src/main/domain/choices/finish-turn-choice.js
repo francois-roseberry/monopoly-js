@@ -28,7 +28,7 @@
 			'FinishTurnChoice requires a game state to compute the next one');
 			
 		return GameState.turnStartState({
-			squares: state.squares(),
+			board: state.board(),
 			players: state.players(),
 			currentPlayerIndex: (state.currentPlayerIndex() + 1) % state.players().length
 		});

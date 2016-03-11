@@ -14,7 +14,8 @@
 		var currentOffer;
 		
 		beforeEach(function () {
-			currentPlayer = testData.players()[0].buyProperty(Board.properties().readingRailroad);
+			var board = Board.standard();
+			currentPlayer = testData.players()[0].buyProperty(board.properties().readingRailroad);
 			otherPlayer = testData.players()[1];
 			
 			var task = TradeTask.start(currentPlayer, otherPlayer);

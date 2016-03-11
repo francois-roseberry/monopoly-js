@@ -19,7 +19,7 @@
 		it('percentage tax is always rounded to the nearest integer', function () {
 				var choice = ChooseTaxTypeChoice.newPercentageTax(10, 197);
 				var state = GameState.turnEndState({
-					squares: Board.squares(),
+					board: Board.standard(),
 					players: testData.players(),
 					currentPlayerIndex: 0
 				}).changeChoices([choice]);
@@ -34,7 +34,7 @@
 			it('if flat tax was chosen, offers to pay the tax', function () {
 				var choice = ChooseTaxTypeChoice.newFlatTax(400);
 				var state = GameState.turnEndState({
-					squares: Board.squares(),
+					board: Board.standard(),
 					players: testData.players(),
 					currentPlayerIndex: 0
 				}).changeChoices([choice]);
@@ -48,7 +48,7 @@
 			it('if percentage tax was chosen, offers to pay the tax', function () {
 				var choice = ChooseTaxTypeChoice.newPercentageTax(10, 2000);
 				var state = GameState.turnEndState({
-					squares: Board.squares(),
+					board: Board.standard(),
 					players: testData.players(),
 					currentPlayerIndex: 0
 				}).changeChoices([choice]);
@@ -61,7 +61,7 @@
 			
 			it('if current player cannot afford, offers bankruptcy', function () {
 				var state = GameState.turnEndState({
-					squares: Board.squares(),
+					board: Board.standard(),
 					players: testData.players(),
 					currentPlayerIndex: 0
 				}).changeChoices([choice]);
