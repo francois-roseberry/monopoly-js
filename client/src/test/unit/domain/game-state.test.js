@@ -308,11 +308,19 @@
 	}
 	
 	function turnEndStateWithPlayers(players, paid) {
+		if (paid) {
+			return GameState.turnEndStateAfterPay({
+				board: Board.standard(),
+				players: players,
+				currentPlayerIndex: 0
+			});
+		}
+		
 		return GameState.turnEndState({
 			board: Board.standard(),
 			players: players,
 			currentPlayerIndex: 0
-		}, paid);
+		});
 	}
 	
 	function playerOnEstateOwnedByOther(property, squareIndex) {

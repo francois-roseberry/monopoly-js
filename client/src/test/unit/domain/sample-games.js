@@ -41,7 +41,7 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerOnEstate = function () {
@@ -51,7 +51,7 @@
 			board: Board.standard(),
 			players: [players[0].move([0, 1]), players[1], players[2]],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerOnRailroad = function () {
@@ -61,7 +61,7 @@
 			board: Board.standard(),
 			players: [players[0].move([0, 5]), players[1], players[2]],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerOnCompany = function () {
@@ -71,7 +71,7 @@
 			board: Board.standard(),
 			players: [players[0].move([0, 12]), players[1], players[2]],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerOnOwnedEstate = function () {
@@ -85,7 +85,7 @@
 				players[1], players[2]
 			],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerBrokeOnEstate = function () {
@@ -95,11 +95,23 @@
 			board: Board.standard(),
 			players: [players[0].pay(players[0].money() - 1).move([0, 1]), players[1], players[2]],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerOnLuxuryTax = function (paid) {
 		var players = testData.players();
+		
+		if (paid) {
+			return GameState.turnEndStateAfterPay({
+				board: Board.standard(),
+				players: [
+					players[0].move([0, 38]),
+					players[1],
+					players[2]
+				],
+				currentPlayerIndex: 0
+			});
+		}
 		
 		return GameState.turnEndState({
 			board: Board.standard(),
@@ -109,7 +121,7 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, paid || false);
+		});
 	};
 	
 	exports.playerBrokeOnLuxuryTax = function () {
@@ -123,11 +135,23 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerOnIncomeTax = function (paid) {
 		var players = testData.players();
+		
+		if (paid) {
+			return GameState.turnEndStateAfterPay({
+				board: Board.standard(),
+				players: [
+					players[0].move([0, 4]),
+					players[1],
+					players[2]
+				],
+				currentPlayerIndex: 0
+			});
+		}
 		
 		return GameState.turnEndState({
 			board: Board.standard(),
@@ -137,7 +161,7 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, paid || false);
+		});
 	};
 	
 	exports.playerBrokeOnIncomeTax = function () {
@@ -151,7 +175,7 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerBrokeOnEstateOwnedByOther = function () {
@@ -166,7 +190,7 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerBrokeOnRailroadOwnedByOther = function () {
@@ -181,7 +205,7 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerBrokeOnCompanyOwnedByOther = function () {
@@ -196,12 +220,24 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerOnCompanyOwnedByOther = function (paid) {
 		var board = Board.standard();
 		var players = testData.players();
+		
+		if (paid) {
+			return GameState.turnEndStateAfterPay({
+				board: board,
+				players: [
+					players[0].move([0, 12]),
+					players[1].buyProperty(board.properties().electricCompany),
+					players[2]
+				],
+				currentPlayerIndex: 0
+			});
+		}
 		
 		return GameState.turnEndState({
 			board: board,
@@ -211,12 +247,25 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, paid || false);
+		});
 	};
 	
 	exports.playerOnCompanyOwnedByOtherWithAllCompanies = function (paid) {
 		var board = Board.standard();
 		var players = testData.players();
+		
+		if (paid) {
+			return GameState.turnEndStateAfterPay({
+				board: board,
+				players: [
+					players[0].move([0, 12]),
+					players[1].buyProperty(board.properties().electricCompany)
+						.buyProperty(board.properties().waterWorks),
+					players[2]
+				],
+				currentPlayerIndex: 0
+			});
+		}
 		
 		return GameState.turnEndState({
 			board: board,
@@ -227,7 +276,7 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, paid || false);
+		});
 	};
 	
 	exports.playerOnRailroadOwnedByOtherWithOneRailroad = function (paid) {
@@ -235,11 +284,19 @@
 		var players = testData.players();
 		var owner = players[1].buyProperty(board.properties().readingRailroad);
 		
+		if (paid) {
+			return GameState.turnEndStateAfterPay({
+				board: board,
+				players: [players[0].move([0, 5]), owner, players[2]],
+				currentPlayerIndex: 0
+			});
+		}
+		
 		return GameState.turnEndState({
 			board: board,
 			players: [players[0].move([0, 5]), owner, players[2]],
 			currentPlayerIndex: 0
-		}, paid || false);
+		});
 	};
 	
 	exports.playerOnRailroadOwnedByOtherWithTwoRailroads = function () {
@@ -252,7 +309,7 @@
 			board: board,
 			players: [players[0].move([0, 5]), owner, players[2]],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerOnRailroadOwnedByOtherWithThreeRailroads = function () {
@@ -266,7 +323,7 @@
 			board: board,
 			players: [players[0].move([0, 5]), owner, players[2]],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerOnRailroadOwnedByOtherWithFourRailroads = function () {
@@ -281,7 +338,7 @@
 			board: board,
 			players: [players[0].move([0, 5]), owner, players[2]],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerOnMediterraneanAvenueAndGroupOwned = function () {
@@ -296,7 +353,7 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.playerOnGoToJail = function () {
@@ -310,7 +367,7 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.firstPlayerInJail = function () {
@@ -324,7 +381,7 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 	
 	exports.firstPlayerBrokeInJail = function () {
@@ -338,6 +395,6 @@
 				players[2]
 			],
 			currentPlayerIndex: 0
-		}, false);
+		});
 	};
 }());

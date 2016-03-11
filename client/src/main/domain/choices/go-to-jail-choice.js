@@ -39,6 +39,6 @@
 			board: state.board(),
 			players: newPlayers,
 			currentPlayerIndex: state.currentPlayerIndex()
-		}, true);
+		});
 	};
 }());

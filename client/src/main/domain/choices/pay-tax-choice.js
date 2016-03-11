@@ -45,10 +45,10 @@
 			return player;
 		});
 		
-		return GameState.turnEndState({
+		return GameState.turnEndStateAfterPay({
 			board: state.board(),
 			players: newPlayers,
 			currentPlayerIndex: state.currentPlayerIndex()
-		}, true);
+		});
 	};
 }());

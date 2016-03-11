@@ -94,29 +94,35 @@
 		return [MoveChoice.newChoice()].concat(tradeChoices);
 	}
 	
-	exports.turnEndState = function (info, paid) {
+	exports.turnEndState = function (info) {
 		validateInfo(info);
 			
-		var choices = turnEndChoices(info, paid || false);
+		var choices = turnEndChoices(info);
 		
 		return new GameState(info, choices);
 	};
 	
-	function turnEndChoices(info, paid) {
+	exports.turnEndStateAfterPay = function (info) {
+		validateInfo(info);
+		
+		return new GameState(info, [FinishTurnChoice.newChoice()]);
+	};
+	
+	function turnEndChoices(info) {
 		var currentPlayer = info.players[info.currentPlayerIndex];
 		var currentSquare = info.board.squares()[currentPlayer.position()];
-		var choices = choicesForSquare(currentSquare, info.players, currentPlayer, paid);
+		var choices = choicesForSquare(currentSquare, info.players, currentPlayer);
 			
 		return choices;
 	}
 	
-	function choicesForSquare(square, players, currentPlayer, paid) {
+	function choicesForSquare(square, players, currentPlayer) {
 		return square.match({
-			'estate': choicesForProperty(square, players, currentPlayer, paid),
-			'railroad': choicesForProperty(square, players, currentPlayer, paid),
-			'company': choicesForProperty(square, players, currentPlayer, paid),
-			'luxury-tax': payLuxuryTax(currentPlayer, paid),
-			'income-tax': payIncomeTax(currentPlayer, paid),
+			'estate': choicesForProperty(square, players, currentPlayer),
+			'railroad': choicesForProperty(square, players, currentPlayer),
+			'company': choicesForProperty(square, players, currentPlayer),
+			'luxury-tax': payLuxuryTax(currentPlayer),
+			'income-tax': payIncomeTax(currentPlayer),
 			'go-to-jail': goToJail,
 			_: onlyFinishTurn
 		});
@@ -126,26 +132,18 @@
 		return [GoToJailChoice.newChoice()];
 	}
 	
-	function payLuxuryTax(currentPlayer, paid) {
+	function payLuxuryTax(currentPlayer) {
 		return function (_, amount) {
-			if (!paid) {
-				return Choices.taxChoices(amount, currentPlayer);
-			}
-			
-			return [FinishTurnChoice.newChoice()];
+			return Choices.taxChoices(amount, currentPlayer);
 		};
 	}
 	
-	function payIncomeTax(currentPlayer, paid) {
+	function payIncomeTax(currentPlayer) {
 		return function (_, percentageTax, flatTax) {
-			if (!paid) {
-				return [
-					ChooseTaxTypeChoice.newPercentageTax(percentageTax, currentPlayer.netWorth()),
-					ChooseTaxTypeChoice.newFlatTax(flatTax)
-				];
-			}
-			
-			return [FinishTurnChoice.newChoice()];
+			return [
+				ChooseTaxTypeChoice.newPercentageTax(percentageTax, currentPlayer.netWorth()),
+				ChooseTaxTypeChoice.newFlatTax(flatTax)
+			];
 		};
 	}
 	
@@ -153,11 +151,11 @@
 		return [FinishTurnChoice.newChoice()];
 	}
 	
-	function choicesForProperty(square, players, currentPlayer, paid) {
+	function choicesForProperty(square, players, currentPlayer) {
 		return function (id, name, price) {
 			var owner = getOwner(players, square);
 			
-			if (!paid && owner && owner.id() !== currentPlayer.id()) {
+			if (owner && owner.id() !== currentPlayer.id()) {
 				var rent = square.rent(owner.properties());
 				if (rent.amount) {
 					return Choices.rentChoices(rent.amount, currentPlayer, owner);
