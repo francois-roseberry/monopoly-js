@@ -170,12 +170,15 @@
 		});
 	};
 	
-	Player.prototype.jail = function () {
+	Player.prototype.jail = function (jailPosition) {
+		precondition(_.isNumber(jailPosition) && jailPosition >= 0,
+			'Putting a player into jail requires the jail position');
+		
 		var player = newPlayer({
 			id: this.id(),
 			name: this.name(),
 			money: this.money(),
-			position: 10,
+			position: jailPosition,
 			color: this.color(),
 			type: this.type(),
 			properties: this.properties()

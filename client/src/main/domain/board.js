@@ -16,6 +16,7 @@
 		return new Board({
 			squares: standardSquares(properties),
 			properties: properties,
+			jailPosition: 10,
 			jailBailout: 50,
 			startMoney: 1500
 		});
@@ -24,12 +25,17 @@
 	function Board(info) {
 		this._squares = info.squares;
 		this._properties = info.properties;
+		this._jailPosition = info.jailPosition;
 		this._jailBailout = info.jailBailout;
 		this._startMoney = info.startMoney;
 	}
 	
 	Board.prototype.startMoney = function () {
 		return this._startMoney;
+	};
+	
+	Board.prototype.jailPosition = function () {
+		return this._jailPosition;
 	};
 	
 	Board.prototype.jailBailout = function () {

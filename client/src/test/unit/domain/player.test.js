@@ -141,27 +141,42 @@
 		});
 		
 		it('substracts the money when paying it', function () {
-			var amount = 100;
-			var newPlayer = player.pay(amount);
+			var AMOUNT = 100;
+			var newPlayer = player.pay(AMOUNT);
 			
-			expect(newPlayer.money()).to.eql(1500 - amount);
+			expect(newPlayer.money()).to.eql(player.money() - AMOUNT);
 		});
 		
 		it('cannot pay enough money to fall at 0', function () {
-			var amount = 1500;
-			
 			var pay = function () {
-				player.pay(amount);
+				player.pay(board.startMoney());
 			};
 			
 			expect(pay).to.throwError();
 		});
 		
 		it('adds the money when earning it', function () {
-			var amount = 100;
-			var newPlayer = player.earn(amount);
+			var AMOUNT = 100;
+			var newPlayer = player.earn(AMOUNT);
 			
-			expect(newPlayer.money()).to.eql(1500 + amount);
+			expect(newPlayer.money()).to.eql(player.money() + AMOUNT);
+		});
+		
+		describe('when sending to jail', function () {
+			var newPlayer;
+			var JAIL_POSITION = 15;
+			
+			beforeEach(function () {
+				newPlayer = player.jail(JAIL_POSITION);
+			});
+			
+			it('position becomes jail position', function () {
+				expect(newPlayer.position()).to.eql(JAIL_POSITION);
+			});
+			
+			it('becomes jailed', function () {
+				expect(newPlayer.jailed()).to.be(true);
+			});
 		});
 	});
 }());
