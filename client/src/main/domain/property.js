@@ -9,7 +9,7 @@
 		return candidate instanceof Property;
 	};
 	
-	exports.newEstate = function (id, name, group, prices) {
+	exports.estate = function (id, name, group, prices) {
 		precondition(_.isString(id) && id.length > 0, 'Estate requires an id');
 		precondition(_.isString(name) && name.length > 0, 'Estate requires a name');
 		precondition(group && PropertyGroup.isGroup(group), 'Estate requires a group');
@@ -42,7 +42,7 @@
 		});
 	}
 	
-	exports.newCompany = function (id, name, group) {
+	exports.company = function (id, name, group) {
 		precondition(_.isString(id) && id.length > 0, 'Company requires an id');
 		precondition(_.isString(name) && name.length > 0, 'Company requires a name');
 		precondition(group && PropertyGroup.isGroup(group), 'Creating a company requires a group');
@@ -73,7 +73,7 @@
 		}, 0) === 2;
 	}
 	
-	exports.newRailroad = function (id, name, group) {
+	exports.railroad = function (id, name, group) {
 		precondition(_.isString(id) && id.length > 0, 'Railroad requires an id');
 		precondition(_.isString(name) && name.length > 0, 'Railroad requires a name');
 		precondition(group && PropertyGroup.isGroup(group), 'Railroad requires a group');
