@@ -13,7 +13,10 @@
 	};
 	
 	exports.players = function () {
-		return Player.newPlayers(exports.playersConfiguration(), Board.standard().startMoney());
+		var board = Board.standard();
+		return Player.newPlayers(
+			exports.playersConfiguration(),
+			board.playerParameters());
 	};
 	
 	exports.gameConfiguration = function () {

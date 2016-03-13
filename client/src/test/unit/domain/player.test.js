@@ -12,7 +12,9 @@
 		
 		beforeEach(function () {
 			board = Board.standard();
-			var players = Player.newPlayers(testData.playersConfiguration(), board.startMoney());
+			var players = Player.newPlayers(
+				testData.playersConfiguration(),
+				board.playerParameters());
 			player = players[0];
 		});
 		
@@ -22,7 +24,7 @@
 			});
 			
 			it('has the money specified in the board to start with', function () {
-				expect(player.money()).to.eql(board.startMoney());
+				expect(player.money()).to.eql(board.playerParameters().startMoney);
 			});
 			
 			it('starts with an empty list of properties', function () {
@@ -30,20 +32,24 @@
 			});
 			
 			it('has a net worth of [startMoney] (since no properties)', function () {
-				expect(player.netWorth()).to.eql(board.startMoney());
+				expect(player.netWorth()).to.eql(board.playerParameters().startMoney);
 			});
 		});
 		
-		it('wraps around the board when moving past the end', function () {
-			var movedPlayer = player.move([0,40]);
+		describe('when lapping around the board', function () {
+			var movedPlayer;
 			
-			expect(movedPlayer.position()).to.eql(0);
-		});
-		
-		it('earns 200$ when wrapping around the board', function () {
-			var movedPlayer = player.move([0,40]);
+			beforeEach(function () {
+				movedPlayer = player.move([0,board.squares().length]);
+			});
 			
-			expect(movedPlayer.money()).to.eql(player.money() + 200);
+			it('wraps around the board', function () {
+				expect(movedPlayer.position()).to.eql(0);
+			});
+			
+			it('earns a salary', function () {
+				expect(movedPlayer.money()).to.eql(player.money() + board.playerParameters().salary);
+			});
 		});
 		
 		describe('when buying property', function () {
@@ -164,14 +170,13 @@
 		
 		describe('when sending to jail', function () {
 			var newPlayer;
-			var JAIL_POSITION = 15;
 			
 			beforeEach(function () {
-				newPlayer = player.jail(JAIL_POSITION);
+				newPlayer = player.jail();
 			});
 			
 			it('position becomes jail position', function () {
-				expect(newPlayer.position()).to.eql(JAIL_POSITION);
+				expect(newPlayer.position()).to.eql(board.playerParameters().jailPosition);
 			});
 			
 			it('becomes jailed', function () {

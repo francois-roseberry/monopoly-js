@@ -11,21 +11,28 @@
 		return candidate instanceof Player;
 	};
 	
-	exports.newPlayers = function (playerConfigurations, startMoney) {
+	exports.newPlayers = function (playerConfigurations, boardParameters) {
 		precondition(_.isArray(playerConfigurations) && playerConfigurations.length >= 3,
 			'Creating players require at least 3 player configurations');
-		precondition(_.isNumber(startMoney),
+		precondition(_.isNumber(boardParameters.startMoney) && boardParameters.startMoney,
 			'Creating players require an amount of money each player starts with');
+		precondition(_.isNumber(boardParameters.boardSize) && boardParameters.boardSize > 0,
+			'Creating players require a board size');
+		precondition(_.isNumber(boardParameters.salary) && boardParameters.salary > 0,
+			'Creating players require the salary players get when lapping the board');
+		precondition(_.isNumber(boardParameters.jailPosition) && boardParameters.jailPosition,
+			'Creating players require a jail position');
 		
 		return _.map(playerConfigurations, function (playerConfiguration, index) {
 			return newPlayer({
 				id: 'player' + index,
 				name: i18n.DEFAULT_PLAYER_NAME.replace('{index}', index + 1),
-				money: startMoney,
+				money: boardParameters.startMoney,
 				position: 0,
 				color: PlayerColors[index],
 				type: playerConfiguration.type,
-				properties: []
+				properties: [],
+				boardParameters: boardParameters
 			});
 		});
 	};
@@ -38,6 +45,7 @@
 		precondition(_.isString(info.color) && info.color !== '', 'Player requires a color');
 		precondition(_.isString(info.type) && validPlayerType(info.type), 'Player requires a valid type');
 		precondition(_.isArray(info.properties), 'Player requires a list of properties');
+		precondition(info.boardParameters, 'Player requires board parameters');
 		
 		return new Player(info);
 	}
@@ -55,6 +63,7 @@
 		this._type = info.type;
 		this._properties = info.properties;
 		this._jailed = false;
+		this._boardParameters = info.boardParameters;
 	}
 	
 	Player.prototype.id = function () {
@@ -156,32 +165,31 @@
 		precondition(_.isArray(dice) && dice.length === 2 && _.isNumber(dice[0]) && _.isNumber(dice[1]),
 			'Moving a player requires a dice with two numbers');
 			
-		var squareCount = 40;
+		var squareCount = this._boardParameters.boardSize;
 		var newPosition = this.position() + dice[0] + dice[1];
 		
 		return newPlayer({
 			id: this.id(),
 			name: this.name(),
-			money: this.money() + (newPosition >= squareCount ? 200 : 0),
+			money: this.money() + (newPosition >= squareCount ? this._boardParameters.salary : 0),
 			position: newPosition % squareCount,
 			color: this.color(),
 			type: this.type(),
-			properties: this.properties()
+			properties: this.properties(),
+			boardParameters: this._boardParameters
 		});
 	};
 	
-	Player.prototype.jail = function (jailPosition) {
-		precondition(_.isNumber(jailPosition) && jailPosition >= 0,
-			'Putting a player into jail requires the jail position');
-		
+	Player.prototype.jail = function () {
 		var player = newPlayer({
 			id: this.id(),
 			name: this.name(),
 			money: this.money(),
-			position: jailPosition,
+			position: this._boardParameters.jailPosition,
 			color: this.color(),
 			type: this.type(),
-			properties: this.properties()
+			properties: this.properties(),
+			boardParameters: this._boardParameters
 		});
 		
 		player._jailed = true;
@@ -197,7 +205,8 @@
 			position: this.position(),
 			color: this.color(),
 			type: this.type(),
-			properties: this.properties()
+			properties: this.properties(),
+			boardParameters: this._boardParameters
 		});
 		
 		player._jailed = false;
@@ -221,7 +230,8 @@
 			position: this.position(),
 			color: this.color(),
 			type: this.type(),
-			properties: insertProperty(property, this.properties())
+			properties: insertProperty(property, this.properties()),
+			boardParameters: this._boardParameters
 		});
 	};
 	
@@ -263,7 +273,8 @@
 			position: this.position(),
 			color: this.color(),
 			type: this.type(),
-			properties: insertProperty(property, this.properties())
+			properties: insertProperty(property, this.properties()),
+			boardParameters: this._boardParameters
 		});
 	};
 	
@@ -285,7 +296,8 @@
 			type: this.type(),
 			properties: _.filter(this.properties(), function (ownedProperty) {
 				return ownedProperty.id() !== property.id();
-			})
+			}),
+			boardParameters: this._boardParameters
 		});
 	};
 	
@@ -313,7 +325,8 @@
 			position: player.position(),
 			color: player.color(),
 			type: player.type(),
-			properties: player.properties()
+			properties: player.properties(),
+			boardParameters: player._boardParameters
 		});
 	}
 }());

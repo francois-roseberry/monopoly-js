@@ -29,7 +29,7 @@
 			
 		var newPlayers = _.map(state.players(), function (player, index) {
 			if (index === state.currentPlayerIndex()) {
-				return player.jail(state.board().jailPosition());
+				return player.jail();
 			}
 			
 			return player;

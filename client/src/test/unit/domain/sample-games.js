@@ -377,7 +377,7 @@
 		return GameState.turnStartState({
 			board: board,
 			players: [
-				players[0].jail(board.jailPosition()),
+				players[0].jail(),
 				players[1],
 				players[2]
 			],
@@ -392,7 +392,7 @@
 		return GameState.turnStartState({
 			board: board,
 			players: [
-				players[0].pay(players[0].money() - 1).jail(board.jailPosition()),
+				players[0].pay(players[0].money() - 1).jail(),
 				players[1],
 				players[2]
 			],

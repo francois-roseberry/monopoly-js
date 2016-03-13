@@ -18,7 +18,8 @@
 			properties: properties,
 			jailPosition: 10,
 			jailBailout: 50,
-			startMoney: 1500
+			startMoney: 1500,
+			salary: 200
 		});
 	};
 	
@@ -28,14 +29,16 @@
 		this._jailPosition = info.jailPosition;
 		this._jailBailout = info.jailBailout;
 		this._startMoney = info.startMoney;
+		this._salary = info.salary;
 	}
 	
-	Board.prototype.startMoney = function () {
-		return this._startMoney;
-	};
-	
-	Board.prototype.jailPosition = function () {
-		return this._jailPosition;
+	Board.prototype.playerParameters = function () {
+		return {
+			startMoney: this._startMoney,
+			boardSize: this._squares.length,
+			salary: this._salary,
+			jailPosition: this._jailPosition
+		};
 	};
 	
 	Board.prototype.jailBailout = function () {
