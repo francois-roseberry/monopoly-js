@@ -13,8 +13,8 @@
 		precondition(_.isString(id) && id.length > 0, 'Estate requires an id');
 		precondition(_.isString(name) && name.length > 0, 'Estate requires a name');
 		precondition(group && PropertyGroup.isGroup(group), 'Estate requires a group');
-		precondition(_.isNumber(prices.value) && prices.value > 0, 'Estate must have a price');
-		precondition(_.isNumber(prices.rent) && prices.rent > 0, 'Estate must have a rent');
+		precondition(_.isNumber(prices.value) && prices.value > 0, 'Estate requires a price');
+		precondition(_.isNumber(prices.rent) && prices.rent > 0, 'Estate requires a rent');
 		
 		return new Property({
 			id: id,
@@ -83,8 +83,8 @@
 			name: name,
 			group: group,
 			type: 'railroad',
-			price: 200,
-			rent: railroadRent(25, group)
+			price: group.propertyValue(),
+			rent: railroadRent(group.baseRent(), group)
 		});
 	};
 	

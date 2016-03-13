@@ -15,6 +15,27 @@
 		return new PropertyGroup(index, color, properties);
 	};
 	
+	exports.railroadGroup = function (index, color, properties, prices) {
+		precondition(_.isNumber(index), 'Railroad property group requires an index');
+		precondition(_.isString(color), 'Railroad property group requires a color');
+		precondition(_.isFunction(properties), 'Railroad property group requires a function to list its properties');
+		precondition(_.isNumber(prices.value) && prices.value > 0, 'Railroad property group requires a value');
+		precondition(_.isNumber(prices.baseRent) && prices.baseRent > 0,
+			'Railroad property group requires a base rent');
+		
+		var group = new PropertyGroup(index, color, properties);
+		
+		group.propertyValue = function () {
+			return prices.value;
+		};
+		
+		group.baseRent = function () {
+			return prices.baseRent;
+		};
+		
+		return group;
+	};
+	
 	function PropertyGroup(index, color, properties) {
 		this._index = index;
 		this._color = color;
