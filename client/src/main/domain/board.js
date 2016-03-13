@@ -77,18 +77,19 @@
 	
 	function standardProperties() {
 		var groups = [
-			PropertyGroup.newGroup(0, 'midnightblue', groupMembers),
-			PropertyGroup.newGroup(1, 'lightskyblue', groupMembers),
+			PropertyGroup.newGroup(0, 'midnightblue',    groupMembers),
+			PropertyGroup.newGroup(1, 'lightskyblue',    groupMembers),
 			PropertyGroup.newGroup(2, 'mediumvioletred', groupMembers),
-			PropertyGroup.newGroup(3, 'orange', groupMembers),
-			PropertyGroup.newGroup(4, 'red', groupMembers),
-			PropertyGroup.newGroup(5, 'yellow', groupMembers),
-			PropertyGroup.newGroup(6, 'green', groupMembers),
-			PropertyGroup.newGroup(7, 'blue', groupMembers)
+			PropertyGroup.newGroup(3, 'orange',          groupMembers),
+			PropertyGroup.newGroup(4, 'red',             groupMembers),
+			PropertyGroup.newGroup(5, 'yellow',          groupMembers),
+			PropertyGroup.newGroup(6, 'green',           groupMembers),
+			PropertyGroup.newGroup(7, 'blue',            groupMembers)
 		];
 		
-		var railroadGroup = PropertyGroup.railroadGroup(8, 'black', groupMembers, {value: 200, baseRent: 25});
-		var companyGroup =  PropertyGroup.newGroup(9, 'lightgreen', groupMembers);
+		var railroadGroup = PropertyGroup.railroadGroup(8, 'black',      groupMembers, {value: 200, baseRent: 25});
+		var companyGroup =  PropertyGroup.companyGroup(9, ' lightgreen', groupMembers,
+			{value: 150, multipliers: [4,10]});
 		
 		return {
 			mediterranean: 	Property.estate('md', i18n.PROPERTY_MD, groups[0], {value: 60,  rent: 2}),

@@ -52,14 +52,15 @@
 			name: name,
 			group: group,
 			type: 'company',
-			price: 150,
+			price: group.propertyValue(),
 			rent: companyRent(group)
 		});
 	};
 	
 	function companyRent(group) {
 		return function (ownerProperties) {
-			return { multiplier: (allCompanies(group, ownerProperties) ? 10 : 4) };
+			var multiplier = allCompanies(group, ownerProperties) ? group.multipliers()[1] : group.multipliers()[0];
+			return {multiplier: multiplier};
 		};
 	}
 	
@@ -84,14 +85,14 @@
 			group: group,
 			type: 'railroad',
 			price: group.propertyValue(),
-			rent: railroadRent(group.baseRent(), group)
+			rent: railroadRent(group)
 		});
 	};
 	
-	function railroadRent(baseRent, group) {
+	function railroadRent(group) {
 		return function (ownerProperties) {
 			var count = railroadCountIn(group, ownerProperties);
-			return { amount: baseRent * Math.pow(2, count - 1) };
+			return { amount: group.baseRent() * Math.pow(2, count - 1) };
 		};
 	}
 	
