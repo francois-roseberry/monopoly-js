@@ -13,7 +13,7 @@ Features missing to be a complete game of Monopoly :
 * Chance and community cards
 * Bidding
 
-Those nice features I'd like to do after the basics are complete :
+Those nice features I'd like to play with after the basics are complete :
 * Ability to use different Monopoly boards (for ex. : french classic, zelda and star wars)
 * Migrate the game processing on a server, probably Node, and find free Node hosting like Heroku, in order to :
 * Save the game
