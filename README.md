@@ -6,7 +6,7 @@ Not quite yet a complete Monopoly game, right now players alternate, roll the di
 
 Features missing to be a complete game of Monopoly :
 * Building houses and hotels, mortgage
-* When rent is too high, offer to mortgage and/or unbuild instead of going straight to bankruptcy
+* When rent is too high, offer to unmortgage and/or unbuild instead of going straight to bankruptcy
 * Double rolls roll again, and 3 in a row bring you to jail
 * Players are forced out of jail after 3 turns
 * Differentiating between bankruptcy because of the bank or because of an opponent (to transfer possessions)
