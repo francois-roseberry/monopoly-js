@@ -63,12 +63,13 @@
 			expect(currentHumanChoices).to.eql([]);
 		});
 		
-		it('stops when parent PlayGameTask stops', function () {
+		it('stop correctly', function () {
 			assert.taskStopCorrectlyOnEvent(task, [
 				task.choices(),
-				task.choiceMade()
+				task.choiceMade(),
+				task.completed()
 			], function () {
-				playGameTask.stop();
+				task.stop();
 			});
 		});
 		

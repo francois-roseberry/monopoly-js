@@ -51,6 +51,7 @@
 				};
 			})
 			.flatMap(computeNextState(self))
+			//.subscribe(self._gameState);
 			.subscribe(function (state) {
 				self._gameState.onNext(state);
 			});
@@ -73,7 +74,7 @@
 	};
 	
 	PlayGameTask.prototype.gameState = function () {
-		return this._gameState.asObservable();
+		return this._gameState.asObservable();//.takeUntil(this._completed);
 	};
 	
 	PlayGameTask.prototype.rollDiceTaskCreated = function () {
@@ -89,6 +90,8 @@
 	};
 	
 	PlayGameTask.prototype.stop = function () {
+		this._handleChoicesTask.stop();
+		
 		this._completed.onNext(true);
 		this._completed.onCompleted();
 	};

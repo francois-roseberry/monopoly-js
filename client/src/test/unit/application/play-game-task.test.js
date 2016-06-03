@@ -38,11 +38,12 @@
 			expect(task.handleChoicesTask()).to.be.ok();
 		});
 		
-		it('completes correctly', function () {
+		it('stops correctly', function () {
 			assert.taskStopCorrectly(task, [
 				task.messages(),
 				task.rollDiceTaskCreated(),
-				task.tradeTaskCreated()
+				task.tradeTaskCreated(),
+				task.handleChoicesTask().completed()
 			]);
 		});
 		

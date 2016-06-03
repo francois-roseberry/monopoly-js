@@ -7,15 +7,16 @@
 		precondition(playGameTask, 'HandleChoicesTask requires a PlayGameTask');
 		
 		var humanChoices = new Rx.ReplaySubject(1);
-		gameStateForPlayerType(playGameTask, 'human')
+		var completed = new Rx.AsyncSubject();
+		gameStateForPlayerType(playGameTask, 'human', completed)
 			.map(function (state) {
 				return state.choices();
 			})
 			.subscribe(humanChoices);
 		
-		var task = new HandleChoicesTask(humanChoices, playGameTask);
+		var task = new HandleChoicesTask(humanChoices, completed);
 		
-		gameStateForPlayerType(playGameTask, 'computer')
+		gameStateForPlayerType(playGameTask, 'computer', completed)
 			.filter(function (state) {
 				return state.choices().length > 0;
 			})
@@ -25,22 +26,27 @@
 		return task;
 	};
 	
-	function HandleChoicesTask(humanChoices, playGameTask) {
+	function HandleChoicesTask(humanChoices, completed) {
 		this._humanChoices = humanChoices;
 		this._choiceMade = new Rx.Subject();
-		this._playGameTask = playGameTask;
+		this._completed = completed;
 	}
 	
+	HandleChoicesTask.prototype.stop = function () {
+		this._completed.onNext(true);
+		this._completed.onCompleted();
+	};
+	
 	HandleChoicesTask.prototype.choices = function () {
-		return this._humanChoices.takeUntil(this._playGameTask.completed());
+		return this._humanChoices.takeUntil(this._completed);
 	};
 	
 	HandleChoicesTask.prototype.choiceMade = function () {
-		return this._choiceMade.takeUntil(this._playGameTask.completed());
+		return this._choiceMade.takeUntil(this._completed);
 	};
 	
 	HandleChoicesTask.prototype.completed = function () {
-		return this._playGameTask.completed();
+		return this._completed.asObservable();
 	};
 	
 	HandleChoicesTask.prototype.makeChoice = function (choice, arg) {
@@ -48,9 +54,9 @@
 		this._choiceMade.onNext({choice: choice, arg: arg});
 	};
 	
-	function gameStateForPlayerType(playGameTask, type) {
+	function gameStateForPlayerType(playGameTask, type, completed) {
 		return playGameTask.gameState()
-			.takeUntil(playGameTask.completed())
+			.takeUntil(completed)
 			.filter(function (state) {
 				return state.currentPlayer().type() === type;
 			});
