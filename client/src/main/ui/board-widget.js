@@ -70,6 +70,13 @@
 					var graphicalSquare = d3.select(this);
 					graphicalSquare.attr('data-ui', index);
 					renderPlayerTokens(graphicalSquare, index, square, state.players());
+					
+					square.match({
+						'estate': updateOwnerBand(graphicalSquare, state.players(), square),
+						'railroad': updateOwnerBand(graphicalSquare, state.players(), square),
+						'company': updateOwnerBand(graphicalSquare, state.players(), square),
+						_: _.noop
+					});
 				});
 			};
 	}
@@ -83,7 +90,7 @@
 			];
 	}
 	
-	function renderSquare(container, square, players) {
+	function renderSquare(container, square) {
 		square.match({
 			'estate': renderEstate(container),
 			'railroad': renderRailroad(container),
@@ -131,42 +138,8 @@
 				return player.id();
 			})
 			.attr({
-				cx: function (player, index) {
-					return square.match({
-						'jail': function () {
-							if (player.jailed()) {
-								return (SQUARE_WIDTH / 5) * (index % 4 + 1) + SQUARE_WIDTH / 5;
-							}
-							
-							if (index < 4) {
-								return SQUARE_HEIGHT - ((SQUARE_HEIGHT / 4 - tokenRadius) / 2 + tokenRadius);
-							}
-							
-							return (SQUARE_HEIGHT / 5) * (index % 4 + 1);
-						},
-						_: function () {
-							return (SQUARE_WIDTH / 5) * (index % 4 + 1);
-						}
-					});
-				},
-				cy: function (player, index) {
-					return square.match({
-						'jail': function () {
-							if (player.jailed) {
-								return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
-							}
-							
-							if (index < 4) {
-								return (SQUARE_HEIGHT / 5) * (index % 4 + 1);
-							}
-							
-							return SQUARE_HEIGHT - ((SQUARE_HEIGHT / 4 - tokenRadius) / 2 + tokenRadius);
-						},
-						_: function () {
-							return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
-						}
-					});
-				},
+				cx: tokenX(square, tokenRadius),
+				cy: tokenY(square, tokenRadius),
 				r: tokenRadius,
 				stroke: 'black',
 				'stroke-width': 1
@@ -181,6 +154,83 @@
 		tokens.exit().remove();
 	}
 	
+	function tokenX(square, tokenRadius) {
+		return function (player, index) {
+			return square.match({
+				'jail': function () {
+					if (player.jailed()) {
+						return (SQUARE_WIDTH / 5) * (index % 4 + 1) + SQUARE_WIDTH / 5;
+					}
+					
+					if (index < 4) {
+						return SQUARE_HEIGHT - ((SQUARE_HEIGHT / 4 - tokenRadius) / 2 + tokenRadius);
+					}
+					
+					return (SQUARE_HEIGHT / 5) * (index % 4 + 1);
+				},
+				_: function () {
+					return (SQUARE_WIDTH / 5) * (index % 4 + 1);
+				}
+			});
+		};
+	}
+	
+	function tokenY(square, tokenRadius) {
+		return function (player, index) {
+			return square.match({
+				'jail': function () {
+					if (player.jailed) {
+						return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
+					}
+					
+					if (index < 4) {
+						return (SQUARE_HEIGHT / 5) * (index % 4 + 1);
+					}
+					
+					return SQUARE_HEIGHT - ((SQUARE_HEIGHT / 4 - tokenRadius) / 2 + tokenRadius);
+				},
+				_: function () {
+					return (SQUARE_HEIGHT / 3) * (Math.floor(index / 4) + 1);
+				}
+			});
+		};
+	}
+	
+	function updateOwnerBand(container, players, square) {
+		var owner = getOwner(players, square);
+		
+		if (owner) {
+			container.select('.owner-band')
+				.attr({
+					fill: owner.color()
+				})
+				.style('display', null);
+		} else {
+			container.select('.owner-band')
+				.style('display', 'none');
+		}
+	}
+	
+	function renderOwnerBand(container) {
+		container.append('rect')
+			.attr({
+				y: SQUARE_HEIGHT - 3,
+				width: SQUARE_WIDTH,
+				height: 3,
+				stroke: 'black'
+			})
+			.style('display', 'none')
+			.classed('owner-band', true);
+	}
+	
+	function getOwner(players, square) {
+		return _.find(players, function (player) {
+			return _.some(player.properties(), function (property) {
+				return property.equals(square);
+			});
+		});
+	}
+	
 	function renderEstate(container) {
 		return function (_, name, price, group) {
 			container.append('rect')
@@ -193,6 +243,7 @@
 				
 			writeText(container, name, SQUARE_HEIGHT / 4 + 10);
 			writePrice(container, price);
+			renderOwnerBand(container);
 		};
 	}
 	
@@ -204,6 +255,7 @@
 				
 			writeText(container, name, 14);
 			writePrice(container, price);
+			renderOwnerBand(container);
 		};
 	}
 	
@@ -224,6 +276,7 @@
 		return function (_, name, price) {
 			writeText(container, name, 14);
 			writePrice(container, price);
+			renderOwnerBand(container);
 		};
 	}
 	
