@@ -16,11 +16,10 @@
 	function rollDice(fastOption, dieFunction, diceRolled) {
 		Rx.Observable.interval(100)
 			.take(fastOption ? 1 : 15)
-			.subscribe(function () {
-				diceRolled.onNext([dieFunction(), dieFunction()]);
-			}, _.noop, function () {
-				diceRolled.onCompleted();
-			});
+			.map(function () {
+				return [dieFunction(), dieFunction()];
+			})
+			.subscribe(diceRolled);
 	}
 	
 	function rollDie() {
