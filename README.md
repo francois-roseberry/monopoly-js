@@ -1,4 +1,6 @@
-# Monopoly-js [Halted]
+# Monopoly-js [Halted because tests were becoming flaky and I had other projects]
+
+Scroll done for demo
 
 Implementation of the Monopoly game in javascript, rendering done with D3
 
