@@ -1,6 +1,6 @@
 # Monopoly-js [Halted]
 
-Halted because tests were becoming flaky and I had other projects. I'm still listening though, fell free to contribute. 
+Halted because tests were becoming flaky and I had other projects. I'm still listening though, feel free to contribute. 
 
 Scroll down for demo
 
