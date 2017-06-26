@@ -35,8 +35,7 @@ UI is available in english and french, depending on your browser language. Other
 ![Game configuration screenshot]
 (http://francois-roseberry.github.io/monopoly-js/screenshots/game-configuration.png)
 
-![In-game screenshot]
-(http://francois-roseberry.github.io/monopoly-js/screenshots/in-game.png)
+[[http://francois-roseberry.github.io/monopoly-js/screenshots/in-game.png|In-game screenshot]]
 
 ## Development setup
 
