@@ -32,8 +32,7 @@ UI is available in english and french, depending on your browser language. Other
 
 ## Screenshots (with the french UI)
 
-![Game configuration screenshot]
-(http://francois-roseberry.github.io/monopoly-js/screenshots/game-configuration.png)
+![Game configuration screenshot](http://francois-roseberry.github.io/monopoly-js/screenshots/game-configuration.png)
 
 ![In-game screenshot](http://francois-roseberry.github.io/monopoly-js/screenshots/in-game.png)
 
@@ -64,7 +63,6 @@ play -> config [label="New game"];
 
 ... and for when the application is in the "Playing game" state :
 
-![Game flowchart]
-(http://francois-roseberry.github.io/monopoly-js/doc/game-flowchart.png)
+![Game flowchart](http://francois-roseberry.github.io/monopoly-js/doc/game-flowchart.png)
 
 As you can see, it still misses a couple of features to make it a standard game of monopoly. They will be implemented later.
