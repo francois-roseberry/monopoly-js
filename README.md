@@ -50,8 +50,7 @@ This setup is not tested on non-Windows systems and therefore I don't know if th
 
 **Application states**
 
-![Simple graph](https://g.gravizo.com/svg?
-digraph%20G%20%7Bstart%20%5Bshape%3Dbox%5D%3Bconfig%20%5Blabel%3D%22Configuring%20game%22%5D%3Bplay%5Blabel%3D%22Playing%20game%22%5Dstart%20-%3E%20config%3Bconfig%20-%3E%20play%20%5Blabel%3D%22Start%20game%22%5D%3Bplay%20-%3E%20config%20%5Blabel%3D%22New%20game%22%5D%3B%7D)
+![Simple graph](https://g.gravizo.com/svg?digraph%20G%20%7Bstart%20%5Bshape%3Dbox%5D%3Bconfig%20%5Blabel%3D%22Configuring%20game%22%5D%3Bplay%5Blabel%3D%22Playing%20game%22%5Dstart%20-%3E%20config%3Bconfig%20-%3E%20play%20%5Blabel%3D%22Start%20game%22%5D%3Bplay%20-%3E%20config%20%5Blabel%3D%22New%20game%22%5D%3B%7D)
 
 ... and for when the application is in the "Playing game" state :
 
