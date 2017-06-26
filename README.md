@@ -50,16 +50,7 @@ This setup is not tested on non-Windows systems and therefore I don't know if th
 
 **Application states**
 
-![Alt text](http://g.gravizo.com/g?
-digraph G {
-start [shape=box];
-config [label="Configuring game"];
-play [label="Playing game"]
-start -> config;
-config -> play [label="Start game"];
-play -> config [label="New game"];
-}
-)
+![Alt text](http://g.gravizo.com/g?digraph G {start [shape=box];config [label="Configuring game"];play[label="Playinggame"]start -> config;config -> play [label="Start game"];play -> config [label="New game"];})
 
 ... and for when the application is in the "Playing game" state :
 
