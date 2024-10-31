@@ -115,7 +115,8 @@
 				return property.id(); 
 			})
 			.text(function (property) {
-				return property.name();
+				const name  = i18n['PROPERTY_' + property.id().toUpperCase()];
+				return name;
 			})
 			.style('background-color', function (property) {
 				return property.group().color();

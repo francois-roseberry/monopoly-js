@@ -54,13 +54,13 @@
 	exports.FREE_PARKING = "Stationnement gratuit";
 	exports.GO_TO_JAIL = "Allez en prison";
 	
-	exports.COMPANY_WATER = 'Aqueduc';
-	exports.COMPANY_ELECTRIC = "Compagnie d'électricité";
+	exports.PROPERTY_COMPANY_WATER = 'Aqueduc';
+	exports.PROPERTY_COMPANY_ELECTRIC = "Compagnie d'électricité";
 	
-	exports.RAILROAD_READING = 'Chemin de fer Reading';
-	exports.RAILROAD_PENN = 'Chemin de fer Pennsylvanie';
-	exports.RAILROAD_B_O = 'Chemin de fer B.& O.';
-	exports.RAILROAD_SHORT = 'Chemin de fer Petit Réseau';
+	exports.PROPERTY_RAILROAD_READING = 'Chemin de fer Reading';
+	exports.PROPERTY_RAILROAD_PENN = 'Chemin de fer Pennsylvanie';
+	exports.PROPERTY_RAILROAD_B_O = 'Chemin de fer B.& O.';
+	exports.PROPERTY_RAILROAD_SHORT = 'Chemin de fer Petit Réseau';
 	
 	exports.PROPERTY_MD = 'Avenue de la Méditerrannée';
 	exports.PROPERTY_BT = 'Avenue de la Baltique';

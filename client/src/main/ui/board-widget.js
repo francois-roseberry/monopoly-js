@@ -94,18 +94,18 @@
 		square.match({
 			'estate': renderEstate(container),
 			'railroad': renderRailroad(container),
-			'community-chest': function (name) {
-				writeText(container, name, 14);
+			'community-chest': function () {
+				writeText(container, i18n.COMMUNITY_CHEST, 14);
 			},
-			'chance': function (name) {
-				writeText(container, name, 14);
+			'chance': function () {
+				writeText(container, i18n.CHANCE, 14);
 			},
-			'income-tax': function (name) {
-				writeText(container, name, 14);
+			'income-tax': function () {
+				writeText(container, i18n.INCOME_TAX, 14);
 				writeText(container, i18n.INCOME_TAX_DESCRIPTION, SQUARE_HEIGHT - 30, 10);
 			},
-			'luxury-tax': function (name) {
-				writeText(container, name, 14);
+			'luxury-tax': function () {
+				writeText(container, i18n.LUXURY_TAX, 14);
 				writeText(container, i18n.LUXURY_TAX_DESCRIPTION, SQUARE_HEIGHT - 8, 10);
 			},
 			'company': renderCompany(container),
@@ -240,7 +240,7 @@
 					fill: group.color(),
 					stroke: 'black'
 				});
-				
+
 			const name = i18n['PROPERTY_' + id.toUpperCase()];
 				
 			writeText(container, name, SQUARE_HEIGHT / 4 + 10);

@@ -1,7 +1,6 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n').i18n();
 	var precondition = require('./contract').precondition;
 	
 	var Property = require('./property');
@@ -222,28 +221,28 @@
 	
 	function communityChest() {
 		return {
-			match: match('community-chest', [i18n.COMMUNITY_CHEST]),
+			match: match('community-chest', []),
 			equals: hasId('community-chest')
 		};
 	}
 	
 	function chance() {
 		return {
-			match: match('chance', [i18n.CHANCE]),
+			match: match('chance', []),
 			equals: hasId('chance')
 		};
 	}
 	
 	function incomeTax(percentageTax, flatTax) {
 		return {
-			match: match('income-tax', [i18n.INCOME_TAX, percentageTax, flatTax]),
+			match: match('income-tax', [percentageTax, flatTax]),
 			equals: hasId('income-tax')
 		};
 	}
 	
 	function luxuryTax(amount) {
 		return {
-			match: match('luxury-tax', [i18n.LUXURY_TAX, amount]),
+			match: match('luxury-tax', [amount]),
 			equals: hasId('luxury-tax')
 		};
 	}
