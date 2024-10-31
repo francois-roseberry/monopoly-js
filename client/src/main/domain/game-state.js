@@ -152,7 +152,7 @@
 	}
 	
 	function choicesForProperty(square, players, currentPlayer) {
-		return function (id, name, price) {
+		return function (_, price) {
 			var owner = getOwner(players, square);
 			
 			if (owner && owner.id() !== currentPlayer.id()) {

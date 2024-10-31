@@ -2,23 +2,21 @@
 	"use strict";
 	
 	var precondition = require('./contract').precondition;
-	
+
 	var PropertyGroup = require('./property-group');
 	
 	exports.isProperty = function (candidate) {
 		return candidate instanceof Property;
 	};
 	
-	exports.estate = function (id, name, group, prices) {
+	exports.estate = function (id, group, prices) {
 		precondition(_.isString(id) && id.length > 0, 'Estate requires an id');
-		precondition(_.isString(name) && name.length > 0, 'Estate requires a name');
 		precondition(group && PropertyGroup.isGroup(group), 'Estate requires a group');
 		precondition(_.isNumber(prices.value) && prices.value > 0, 'Estate requires a price');
 		precondition(_.isNumber(prices.rent) && prices.rent > 0, 'Estate requires a rent');
 		
 		return new Property({
 			id: id,
-			name: name,
 			group: group,
 			type: 'estate',
 			price: prices.value,
@@ -42,14 +40,12 @@
 		});
 	}
 	
-	exports.company = function (id, name, group) {
+	exports.company = function (id, group) {
 		precondition(_.isString(id) && id.length > 0, 'Company requires an id');
-		precondition(_.isString(name) && name.length > 0, 'Company requires a name');
 		precondition(group && PropertyGroup.isGroup(group), 'Creating a company requires a group');
 		
 		return new Property({
 			id: id,
-			name: name,
 			group: group,
 			type: 'company',
 			price: group.propertyValue(),
@@ -74,14 +70,12 @@
 		}, 0) === 2;
 	}
 	
-	exports.railroad = function (id, name, group) {
+	exports.railroad = function (id, group) {
 		precondition(_.isString(id) && id.length > 0, 'Railroad requires an id');
-		precondition(_.isString(name) && name.length > 0, 'Railroad requires a name');
 		precondition(group && PropertyGroup.isGroup(group), 'Railroad requires a group');
 		
 		return new Property({
 			id: id,
-			name: name,
 			group: group,
 			type: 'railroad',
 			price: group.propertyValue(),
@@ -112,7 +106,6 @@
 	
 	function Property(info) {
 		this._id = info.id;
-		this._name = info.name;
 		this._group = info.group;
 		this._price = info.price;
 		this._rent = info.rent;
@@ -121,10 +114,6 @@
 	
 	Property.prototype.id = function () {
 		return this._id;
-	};
-	
-	Property.prototype.name = function () {
-		return this._name;
 	};
 	
 	Property.prototype.price = function () {
@@ -140,7 +129,7 @@
 	};
 	
 	Property.prototype.match = function (visitor) {
-		return matchWithDefault(visitor, this._type, [this._id, this._name, this._price, this._group]);
+		return matchWithDefault(visitor, this._type, [this._id, this._price, this._group]);
 	};
 	
 	function matchWithDefault(visitor, fn, args) {

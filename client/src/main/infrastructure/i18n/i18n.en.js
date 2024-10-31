@@ -54,13 +54,13 @@
 	exports.FREE_PARKING = "Free parking";
 	exports.GO_TO_JAIL = "Go to jail";
 	
-	exports.COMPANY_WATER = 'Water Works';
-	exports.COMPANY_ELECTRIC = "Electric Company";
+	exports.PROPERTY_COMPANY_WATER = 'Water Works';
+	exports.PROPERTY_COMPANY_ELECTRIC = "Electric Company";
 	
-	exports.RAILROAD_READING = 'Reading Railroad';
-	exports.RAILROAD_PENN = 'Pennsylvania Railroad';
-	exports.RAILROAD_B_O = 'B.& O. Railroad';
-	exports.RAILROAD_SHORT = 'Short line';
+	exports.PROPERTY_RAILROAD_READING = 'Reading Railroad';
+	exports.PROPERTY_RAILROAD_PENN = 'Pennsylvania Railroad';
+	exports.PROPERTY_RAILROAD_B_O = 'B.& O. Railroad';
+	exports.PROPERTY_RAILROAD_SHORT = 'Short line';
 	
 	exports.PROPERTY_MD = 'Mediterranean Avenue';
 	exports.PROPERTY_BT = 'Baltic Avenue';
@@ -78,7 +78,7 @@
 	exports.PROPERTY_IL = 'Illinois Avenue';
 	exports.PROPERTY_AT = 'Atlantic Avenue';
 	exports.PROPERTY_VR = 'Ventnor Avenue';
-	exports.PROPERTY_MN = 'Marvin Gardens';
+	exports.PROPERTY_MV = 'Marvin Gardens';
 	exports.PROPERTY_PA = 'Pacific Avenue';
 	exports.PROPERTY_NC = 'North Carolina Avenue';
 	exports.PROPERTY_PN = 'Pennsylvania Avenue';

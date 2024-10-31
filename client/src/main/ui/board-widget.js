@@ -232,7 +232,7 @@
 	}
 	
 	function renderEstate(container) {
-		return function (_, name, price, group) {
+		return function (id, price, group) {
 			container.append('rect')
 				.attr({
 					width: SQUARE_WIDTH,
@@ -241,6 +241,8 @@
 					stroke: 'black'
 				});
 				
+			const name = i18n['PROPERTY_' + id.toUpperCase()];
+				
 			writeText(container, name, SQUARE_HEIGHT / 4 + 10);
 			writePrice(container, price);
 			renderOwnerBand(container);
@@ -248,10 +250,12 @@
 	}
 	
 	function renderRailroad(container) {
-		return function (_, name, price) {
+		return function (id, price) {
 			container.append('g')
 				.attr('transform', 'scale(0.2) translate(50, 140)')
 				.html(Symbols.train());
+
+			const name = i18n['PROPERTY_' + id.toUpperCase()]
 				
 			writeText(container, name, 14);
 			writePrice(container, price);
@@ -273,7 +277,8 @@
 	}
 	
 	function renderCompany(container) {
-		return function (_, name, price) {
+		return function (id, price) {
+			const name = i18n['PROPERTY_' + id.toUpperCase()]
 			writeText(container, name, 14);
 			writePrice(container, price);
 			renderOwnerBand(container);

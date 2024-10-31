@@ -78,7 +78,7 @@
 	exports.PROPERTY_IL = 'Avenue Illinois';
 	exports.PROPERTY_AT = 'Avenue Atlantique';
 	exports.PROPERTY_VR = 'Avenue Ventnor';
-	exports.PROPERTY_MN = 'Jardins Marvin';
+	exports.PROPERTY_MV = 'Jardins Marvin';
 	exports.PROPERTY_PA = 'Avenue Pacifique';
 	exports.PROPERTY_NC = 'Avenue Caroline du Nord';
 	exports.PROPERTY_PN = 'Avenue Pennsylvanie';

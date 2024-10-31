@@ -15,7 +15,8 @@
 	
 	function BuyPropertyChoice(property) {
 		this.id = 'buy-property';
-		this.name = i18n.CHOICE_BUY_PROPERTY.replace('{property}', property.name())
+		const propertyName = i18n['PROPERTY_' + property.id().toUpperCase()];
+		this.name = i18n.CHOICE_BUY_PROPERTY.replace('{property}', propertyName)
 			.replace('{price}', i18n.formatPrice(property.price()));
 		this._property = property;
 	}
