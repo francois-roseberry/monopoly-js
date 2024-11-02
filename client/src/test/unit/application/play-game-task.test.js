@@ -102,7 +102,7 @@
 			expect(state.board().equals(testData.gameConfiguration().board)).to.be(true);
 			expect(state.players().length).to.eql(testData.playersConfiguration().length);
 			_.each(state.players(), function (player, index) {
-				expect(player.name()).to.eql('Joueur ' + (index + 1));
+				expect(player.name()).to.eql('Player ' + (index + 1));
 				expect(player.money()).to.eql(1500);
 				expect(player.position()).to.eql(0);
 				expect(player.color()).to.eql(PlayerColors[index]);

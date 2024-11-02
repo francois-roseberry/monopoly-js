@@ -133,13 +133,13 @@
 	}
 	
 	function payLuxuryTax(currentPlayer) {
-		return function (_, amount) {
+		return function (amount) {
 			return Choices.taxChoices(amount, currentPlayer);
 		};
 	}
 	
 	function payIncomeTax(currentPlayer) {
-		return function (_, percentageTax, flatTax) {
+		return function (percentageTax, flatTax) {
 			return [
 				ChooseTaxTypeChoice.newPercentageTax(percentageTax, currentPlayer.netWorth()),
 				ChooseTaxTypeChoice.newFlatTax(flatTax)
