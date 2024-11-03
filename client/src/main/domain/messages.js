@@ -43,7 +43,7 @@
 		precondition(Property.isProperty(property),
 			'A log about property bought requires the property that was bought');
 		
-		const propertyName = i18n['PROPERTY_' + property.id().toUpperCase()]
+		var propertyName = i18n['PROPERTY_' + property.id().toUpperCase()];
 		var message = i18n.LOG_PROPERTY_BOUGHT
 						.replace('{player}', coloredPlayer(player))
 						.replace('{property}', propertyName);

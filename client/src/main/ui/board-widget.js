@@ -241,7 +241,7 @@
 					stroke: 'black'
 				});
 
-			const name = i18n['PROPERTY_' + id.toUpperCase()];
+			var name = i18n['PROPERTY_' + id.toUpperCase()];
 				
 			writeText(container, name, SQUARE_HEIGHT / 4 + 10);
 			writePrice(container, price);
@@ -255,7 +255,7 @@
 				.attr('transform', 'scale(0.2) translate(50, 140)')
 				.html(Symbols.train());
 
-			const name = i18n['PROPERTY_' + id.toUpperCase()]
+			var name = i18n['PROPERTY_' + id.toUpperCase()];
 				
 			writeText(container, name, 14);
 			writePrice(container, price);
@@ -278,7 +278,7 @@
 	
 	function renderCompany(container) {
 		return function (id, price) {
-			const name = i18n['PROPERTY_' + id.toUpperCase()]
+			var name = i18n['PROPERTY_' + id.toUpperCase()];
 			writeText(container, name, 14);
 			writePrice(container, price);
 			renderOwnerBand(container);

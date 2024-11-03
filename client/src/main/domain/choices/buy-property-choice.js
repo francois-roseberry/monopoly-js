@@ -1,8 +1,8 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n').i18n();
-	var precondition = require('./contract').precondition;
+	var i18n = require('../../infrastructure/i18n/i18n').i18n();
+	var precondition = require('../../infrastructure/contract').precondition;
 	
 	var Property = require('./property');
 	var GameState = require('./game-state');
@@ -15,7 +15,7 @@
 	
 	function BuyPropertyChoice(property) {
 		this.id = 'buy-property';
-		const propertyName = i18n['PROPERTY_' + property.id().toUpperCase()];
+		var propertyName = i18n['PROPERTY_' + property.id().toUpperCase()];
 		this.name = i18n.CHOICE_BUY_PROPERTY.replace('{property}', propertyName)
 			.replace('{price}', i18n.formatPrice(property.price()));
 		this._property = property;

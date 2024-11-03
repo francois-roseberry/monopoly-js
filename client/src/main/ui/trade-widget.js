@@ -132,8 +132,7 @@
 					.append('button')
 					.classed('monopoly-trade-player-property', true)
 					.text(function (property) {
-						const name = i18n['PROPERTY_' + property.id()]
-						return name;
+						return i18n['PROPERTY_' + property.id().toUpperCase()];
 					})
 					.style('background-color', function (property) {
 						return property.group().color();
