@@ -27,8 +27,9 @@ module.exports = function(grunt) {
 					'Gruntfile.js',
 					'build/**/*.js',
 					'src/**/*.js',
+					'test/unit/**/*.js',
+					'test/integration/**/*.js',
 					exclude('src/**/i18n.*.js'),
-					exclude('src/test/smoke/*.js')
 				]
 			}
 		},
@@ -68,8 +69,8 @@ module.exports = function(grunt) {
 			flattenSourceAndTest: {
 				expand: true,
 				src: ['src/main/**/*.js',
-					'src/test/unit/**/*.js',
-					'src/test/integration/**/*.js'],
+					'test/unit/**/*.js',
+					'test/integration/**/*.js'],
 				dest: 'target/stagger/src',
 				filter: 'isFile',
 				flatten: true
