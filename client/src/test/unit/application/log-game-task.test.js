@@ -166,17 +166,22 @@
 			finishGame();
 			
 			var message = Messages.logGameWon(firstPlayer);
+
+			// The first message will be the 'Player 2 gone bankrupt'
+			// The second message will be 'Player 3 gone bankrupt'
+			// The third will be 'Playeer 1 won'. That's the one we want
 			expect(logs.length).to.eql(3);
-			expect(logs[2].equals(message)).to.be(true);
+			expect(logs[2]).to.be.eql(message);
 		});
 		
 		function finishGame() {
-			var choice = FinishTurnChoice.newChoice();
+			var choice = FinishTurnChoice.newChoice(); // Skip player 1
 			gameTask.handleChoicesTask().makeChoice(choice);
 			
 			choice = GoBankruptChoice.newChoice();
-			gameTask.handleChoicesTask().makeChoice(choice);
-			gameTask.handleChoicesTask().makeChoice(choice);
+			gameTask.handleChoicesTask().makeChoice(choice); // Bankrupt player 2
+			gameTask.handleChoicesTask().makeChoice(choice); // Bankrupt player 3
+			gameTask.stop();
 		}
 		
 		function gameTaskWithCheatedDice(dieValue) {

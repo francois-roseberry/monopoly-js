@@ -305,7 +305,8 @@
 		precondition(_.isNumber(amount) && amount >= 0,
 			'Player requires an amount to pay, that is greater than or equal to 0');
 			
-		precondition(this.money() > amount, 'Player does not have enough money to pay ' + amount);
+		precondition(this.money() > amount,
+			'Player does not have enough money to pay ' + amount + ', he only has ' + this.money());
 		
 		return playerWithAdditionalMoney(this, -amount);
 	};

@@ -64,13 +64,11 @@
 		});
 		
 		it('stop correctly', function () {
-			assert.taskStopCorrectlyOnEvent(task, [
+			assert.taskStopCorrectly(task, [
 				task.choices(),
 				task.choiceMade(),
 				task.completed()
-			], function () {
-				task.stop();
-			});
+			]);
 		});
 		
 		function switchTurnToComputerPlayer() {

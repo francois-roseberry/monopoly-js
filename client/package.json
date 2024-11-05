@@ -6,31 +6,35 @@
     "type": "git",
     "url": "https://github.com/francois-roseberry/monopoly-js.git"
   },
+  "scripts": {
+    "lint": "grunt lint",
+    "package": "grunt package",
+    "test": "mocha -r jsdom-global/register -r ./mocha_inject target/stagger/src/*.test.js",
+    "smoke-test": "yarn playwright test",
+    "start": "node ../server/server.js target/dist"
+  },
   "devDependencies": {
-    "bootstrap": "^3.3.5",
-    "expect.js": "^0.3.1",
-    "grunt": "~0.4.5",
-    "grunt-browserify": "^3.8.0",
-    "grunt-contrib-clean": "^0.6.0",
-    "grunt-contrib-concat": "^0.5.1",
-    "grunt-contrib-copy": "^0.8.0",
-    "grunt-contrib-csslint": "^0.4.0",
-    "grunt-contrib-cssmin": "^0.12.3",
-    "grunt-contrib-jshint": "^0.11.2",
-    "grunt-mocha-test": "^0.12.7",
-    "jquery": "^2.1.4",
-    "jquery-ui": "^1.10.5",
-    "karma": "^0.12.31",
-    "karma-commonjs": "0.0.13",
-    "karma-mocha": "^0.2.0",
-    "karma-phantomjs-launcher": "^0.1.4",
-    "mocha": "^2.2.5",
-    "phantomjs": "^1.9.7-15",
-    "selenium-webdriver": "^2.46.1"
+    "@playwright/test": "1.48.2",
+    "@types/node": "22.9.0",
+    "bootstrap": "3.3.5",
+    "expect.js": "0.3.1",
+    "grunt": "0.4.5",
+    "grunt-browserify": "3.8.0",
+    "grunt-contrib-clean": "0.6.0",
+    "grunt-contrib-concat": "0.5.1",
+    "grunt-contrib-copy": "0.8.0",
+    "grunt-contrib-csslint": "0.4.0",
+    "grunt-contrib-cssmin": "0.12.3",
+    "grunt-contrib-jshint": "0.11.2",
+    "jquery": "2.1.4",
+    "jquery-ui": "1.13.3",
+    "jsdom": "25.0.1",
+    "jsdom-global": "3.0.2",
+    "mocha": "10.8.2"
   },
   "dependencies": {
-    "d3": "^3.5.6",
-    "rx": "^2.5.3",
-    "underscore": "^1.8.3"
+    "d3": "3.5.17",
+    "rx": "2.5.3",
+    "underscore": "1.8.3"
   }
 }

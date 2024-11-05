@@ -74,7 +74,7 @@
 			}, done, done);
 		});
 		
-		it('when starting game, completes the the task', function () {
+		it('when starting game, completes the task', function () {
 			task.startGame();
 			
 			expect(completed).to.be(true);

@@ -51,7 +51,7 @@
 				};
 			})
 			.flatMap(computeNextState(self))
-			//.subscribe(self._gameState);
+			// .subscribe(self._gameState);
 			.subscribe(function (state) {
 				self._gameState.onNext(state);
 			});
@@ -74,7 +74,7 @@
 	};
 	
 	PlayGameTask.prototype.gameState = function () {
-		return this._gameState.asObservable();//.takeUntil(this._completed);
+		return this._gameState.asObservable().takeUntil(this._completed);
 	};
 	
 	PlayGameTask.prototype.rollDiceTaskCreated = function () {

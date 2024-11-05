@@ -1,52 +1,21 @@
 "use strict";
 
-var karmaRunner = require('./build/karma_runner');
-var buildServices = require('./build/build-services.js');
-
 module.exports = function(grunt) {
 	
 	// Default task, do everything
-	grunt.registerTask('default', 'Build and test everything', ['lint', 'package', 'test']);
+	grunt.registerTask('default', 'Build and test everything', ['lint', 'package'/*, 'test'*/]);
 	
 	// Quick build
-	grunt.registerTask('check', ['lint', 'package', 'runTest']);
+	grunt.registerTask('check', ['lint', 'package'/*, 'test'*/]);
 	
 	// Code quality
 	grunt.registerTask('lint', ['jshint', 'csslint']);
-	grunt.registerTask('test', ['service', 'runTest']);
-	grunt.registerTask('runTest', ['karmaTest', 'mochaTest']);
-
-	grunt.registerTask('karmaTest', 'Run the client unit test in all browser connected to Karma', function () {
-	  karmaRunner.runTests(grunt, this.async());
-	});
 	
 	// Packaging
-	grunt.registerTask('prepare', ['copy:html', 'copy:flattenSourceAndTest', 'copy:flattenSmokeTest']);
+	grunt.registerTask('prepare', ['copy:html', 'copy:flattenSourceAndTest'/*, 'copy:flattenSmokeTest'*/]);
 	grunt.registerTask('copySource', ['copy:jqueryUiImages', 'copy:lib', 'copy:fonts']);
 	grunt.registerTask('minify', ['cssmin']);
 	grunt.registerTask('package', ['prepare', 'browserify', 'concat', 'copySource', 'minify']);
-	
-	// Background services
-	grunt.registerTask('background', ['service', 'wait']);
-	grunt.registerTask('service', ['karmaServer', 'simpleServer', 'webdriver']);
-  
-	grunt.registerTask('simpleServer', function () {
-	  buildServices.startServer(this.async());
-	});
-
-	grunt.registerTask('karmaServer', function () {
-	  buildServices.startKarmaServer(this.async());
-	});
-
-	grunt.registerTask('webdriver', 'Start PhantomJS in WebDriver mode', function () {
-	  buildServices.startPhantomJsWebdriver(this.async());
-	});
-
-	grunt.registerTask('wait', 'wait until the exit, useful for background services', function () {
-	  grunt.log.writeln("Background service started".green);
-	  grunt.log.writeln("Run 'grunt check' to do a quick build while this process is running");
-	  this.async();
-	});
 	
 	grunt.initConfig({
 		jshint: {
@@ -58,7 +27,8 @@ module.exports = function(grunt) {
 					'Gruntfile.js',
 					'build/**/*.js',
 					'src/**/*.js',
-					exclude('src/**/i18n.*.js')
+					exclude('src/**/i18n.*.js'),
+					exclude('src/test/smoke/*.js')
 				]
 			}
 		},
@@ -87,7 +57,7 @@ module.exports = function(grunt) {
 					'node_modules/d3/d3.min.js',
 					'node_modules/rx/dist/rx.all.min.js',
 					'node_modules/jquery/dist/jquery.min.js',
-					'node_modules/jquery-ui/jquery-ui.js',
+					'node_modules/jquery-ui/dist/jquery-ui.min.js',
 					'node_modules/bootstrap/dist/js/bootstrap.min.js'
 				],
 				dest: 'target/dist/lib/dependencies.js'
@@ -104,16 +74,6 @@ module.exports = function(grunt) {
 				filter: 'isFile',
 				flatten: true
 			},
-
-			flattenSmokeTest: {
-				expand: true,
-				src: ['src/test/smoke/**/*.js',
-					'src/test/page-object/**/*.js'],
-				dest: 'target/stagger/smoke',
-				filter: 'isFile',
-				flatten: true
-			},
-			
 			lib: {
 				expand: true,
 				cwd: 'node_modules',
@@ -124,13 +84,11 @@ module.exports = function(grunt) {
 				filter: 'isFile',
 				flatten: true
 			},
-			
 			html: {
 				src: ['src/static/index.html'],
 				dest: 'target/dist/index.html',
 				filter: 'isFile'
 			},
-			
 			fonts: {
 				expand: true,
 				cwd: 'node_modules',
@@ -141,23 +99,12 @@ module.exports = function(grunt) {
 				filter: 'isFile',
 				flatten: true
 			},
-			
 			jqueryUiImages: {
 				expand: true,
-				cwd: 'node_modules/jquery-ui/themes/ui-lightness/images/',
+				cwd: 'node_modules/jquery-ui/dist/themes/ui-lightness/images/',
 				src: ['**/*'],
 				dest: 'target/dist/images/',
 				filter: 'isFile'
-			}
-		},
-		
-		mochaTest: {
-			smoke: {
-				options: {
-					reporter: 'list'
-				},
-
-				src: ['target/stagger/smoke/*']
 			}
 		},
 
@@ -165,9 +112,9 @@ module.exports = function(grunt) {
 			target: {
 				files: {
 					'target/dist/styles.min.css': [
-													'src/**/*.css',
-													'node_modules/jquery-ui/themes/ui-lightness/jquery-ui.min.css'
-												]
+						'src/**/*.css',
+						'node_modules/jquery-ui/dist/themes/ui-lightness/jquery-ui.min.css'
+					]
 				}
 			}
 		},
@@ -179,7 +126,6 @@ module.exports = function(grunt) {
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-csslint');
 	grunt.loadNpmTasks('grunt-contrib-copy');
-	grunt.loadNpmTasks('grunt-mocha-test');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-concat');

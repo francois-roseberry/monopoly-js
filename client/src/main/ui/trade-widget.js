@@ -132,12 +132,15 @@
 					.append('button')
 					.classed('monopoly-trade-player-property', true)
 					.text(function (property) {
+						// This is called
 						return i18n['PROPERTY_' + property.id().toUpperCase()];
 					})
 					.style('background-color', function (property) {
+						// This too
 						return property.group().color();
 					})
 					.on('click', function (property) {
+						// But not this ???
 						tradeTask.togglePropertyOfferedByPlayer(property.id(), playerIndex);
 					});
 					

@@ -40,6 +40,7 @@
 		
 		it('stops correctly', function () {
 			assert.taskStopCorrectly(task, [
+				task.gameState(),
 				task.messages(),
 				task.rollDiceTaskCreated(),
 				task.tradeTaskCreated(),

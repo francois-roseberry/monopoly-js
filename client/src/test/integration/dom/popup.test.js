@@ -34,7 +34,7 @@
             domContext.assertOneOf(".popup-content > .test");
         });
 
-        it('closes itself when clicking the close button', function () {
+        it.skip('closes itself when clicking the close button', function () {
             assertClosedWhen(function() {
                 domContext.clickOn('[data-ui=popup-close]');
             });

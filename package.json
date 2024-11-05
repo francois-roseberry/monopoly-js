@@ -7,9 +7,16 @@
     "type": "git",
     "url": "git+https://github.com/francois-roseberry/monopoly-js.git"
   },
+  "engines": {
+    "node": ">= 18.20.4"
+  }, 
+  "private": "true",
   "author": "francois-roseberry",
   "license": "WTFPL",
+  "scripts": {
+    "start": "node server/server.js client/target/dist"
+  },
   "dependencies": {
-    "express": "^4.13.1"
+    "express": "4.13.1"
   }
 }

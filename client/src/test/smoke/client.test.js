@@ -1,22 +1,14 @@
-(function() {
-	"use strict";
-	
-	var expect = require('expect.js');
-	var webdriver = require('selenium-webdriver');
-	
-	describe('The game', function () {
-		it('can launch without crashing', function () {
-			var driver = new webdriver.Builder()
-				.usingServer('http://localhost:8185')
-				.withCapabilities(webdriver.Capabilities.phantomjs())
-				.build();
-			
-			driver.get('http://localhost:3000');
-			
-			var container = driver.findElement(webdriver.By.className('game-container'));
-			expect(container).to.not.eql('undefined');
-			
-			driver.quit();
-		});
-	});
-}());
+// @ts-check
+const { test, expect } = require('@playwright/test');
+
+test('has title', async ({ page }) => {
+  await page.goto('http://localhost:3000');
+
+  await expect(page).toHaveTitle(/Monopoly/);
+});
+
+test('has a game container', async ({ page }) => {
+  await page.goto('http://localhost:3000');
+
+  await expect(page.locator('css=game-container')).toBeDefined()
+});

@@ -16,6 +16,10 @@
 		
 		watchGame(this._messages, playGameTask);
 	}
+
+	LogGameTask.prototype.messages = function () {
+		return this._messages.asObservable();
+	};
 	
 	function watchGame(messages, playGameTask) {
 		Rx.Observable.merge(
@@ -283,7 +287,7 @@
 				});
 			}
 			previous = current;
-		}, subject, subject);
+		}, subject, _.noop);
 		
 		return subject.asObservable();
 	}
@@ -295,8 +299,4 @@
 			player: state.players()[state.currentPlayerIndex()]
 		};
 	}
-	
-	LogGameTask.prototype.messages = function () {
-		return this._messages.asObservable();
-	};
 }());

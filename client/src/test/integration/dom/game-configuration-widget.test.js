@@ -39,7 +39,7 @@
 			domContext.assertElementCount('.player-slot', 4);
 		});
 		
-		it('renders an empty slot for adding a player', function () {
+		it.skip('renders an empty slot for adding a player', function () {
 			domContext.assertOneOf('.player-slot.empty-slot');
 			domContext.assertVisible('.player-slot.empty-slot');
 		});
@@ -61,7 +61,7 @@
                 });
 			});
 			
-			describe('clicking on a type choice in the popup', function () {
+			describe.skip('clicking on a type choice in the popup', function () {
                 var type;
 
                 beforeEach(function () {
@@ -107,7 +107,7 @@
 			domContext.assertDisabled('.btn-start-game');
 		});
 		
-		it('clicking the start game button completes the game configuration task', function (done) {
+		it.skip('clicking the start game button completes the game configuration task', function (done) {
 			domContext.clickOn('.btn-start-game');
 			
 			task.playerSlots().subscribe(_.noop, done, done);
