@@ -68,7 +68,11 @@ module.exports = function(grunt) {
 		copy: {
 			flattenSourceAndTest: {
 				expand: true,
-				src: ['src/main/**/*.js',
+				src: [
+					'src/application/**/*.js',
+					'src/domain/**/*.js',
+					'src/infrastructure/**/*.js',
+					'src/ui/**/*.js',
 					'test/unit/**/*.js',
 					'test/integration/**/*.js'],
 				dest: 'target/stagger/src',
