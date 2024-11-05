@@ -14,7 +14,12 @@
   "author": "francois-roseberry",
   "license": "WTFPL",
   "scripts": {
+    "e2e":  "yarn playwright test",
     "start": "node server/server.js client/target/dist"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.48.2",
+    "@types/node": "22.9.0"
   },
   "dependencies": {
     "express": "4.13.1"
