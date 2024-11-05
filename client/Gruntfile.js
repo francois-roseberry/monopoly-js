@@ -85,7 +85,7 @@ module.exports = function(grunt) {
 				flatten: true
 			},
 			html: {
-				src: ['src/static/index.html'],
+				src: ['static/index.html'],
 				dest: 'target/dist/index.html',
 				filter: 'isFile'
 			},
