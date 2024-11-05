@@ -1,33 +1,31 @@
-(function() {
-	"use strict";
+"use strict";
 
-	exports.taskStopCorrectly = function (task, observableList) {
-		exports.taskStopCorrectlyOnEvent(task, observableList, function () {
-			task.stop();
-		});
-	};
-	
-	exports.taskStopCorrectlyOnEvent = function (task, observableList, stopEvent) {
-		var observableCompleted = false;
-		var completedNotification = false;
+exports.taskStopCorrectly = function (task, observableList) {
+	exports.taskStopCorrectlyOnEvent(task, observableList, function () {
+		task.stop();
+	});
+};
 
-		Rx.Observable.merge(observableList)
-			.subscribeOnCompleted(function () {
-				observableCompleted = true;
-			});
+exports.taskStopCorrectlyOnEvent = function (task, observableList, stopEvent) {
+	var observableCompleted = false;
+	var completedNotification = false;
 
-		task.completed().subscribe(function () {
-			completedNotification = true;
+	Rx.Observable.merge(observableList)
+		.subscribeOnCompleted(function () {
+			observableCompleted = true;
 		});
 
-		stopEvent();
+	task.completed().subscribe(function () {
+		completedNotification = true;
+	});
 
-		if (!completedNotification) {
-			throw new Error('No completed event was sent when the task was stopped');
-		}
+	stopEvent();
 
-		if (!observableCompleted) {
-			throw new Error('Some observable did not complete when the task stopped');
-		}
-	};
-}());
+	if (!completedNotification) {
+		throw new Error('No completed event was sent when the task was stopped');
+	}
+
+	if (!observableCompleted) {
+		throw new Error('Some observable did not complete when the task stopped');
+	}
+};
