@@ -10,7 +10,7 @@
     "lint": "grunt lint",
     "package": "grunt package",
     "test": "mocha -r jsdom-global/register -r ./mocha_inject target/stagger/src/*.test.js",
-    "smoke-test": "yarn playwright test",
+    "e2e-test": "yarn playwright test",
     "start": "node ../server/server.js target/dist"
   },
   "devDependencies": {
