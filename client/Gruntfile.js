@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 	grunt.initConfig({
 		jshint: {
 			options: {
-				jshintrc: "build/jshintrc"
+				jshintrc: "jshintrc"
 			},
 			all: {
 				src: [
@@ -36,7 +36,7 @@ module.exports = function(grunt) {
 
 		csslint: {
 			options: {
-				csslintrc: 'build/csslintrc'
+				csslintrc: 'csslintrc'
 			},
 			all: {
 				src: ['src/**/*.css']
