@@ -3,25 +3,13 @@
 module.exports = function(grunt) {
 	
 	// Default task, do everything
-	grunt.registerTask('default', 'Lint and build', ['lint', 'package']);
-	
-	// Code quality
-	grunt.registerTask('lint', ['csslint']);
+	grunt.registerTask('default', 'Package', ['package']);
 	
 	// Packaging
 	grunt.registerTask('minify', ['cssmin']);
 	grunt.registerTask('package', ['concat', 'copy:html', 'copy:jqueryUiImages', 'copy:lib', 'copy:fonts', 'minify']);
 	
 	grunt.initConfig({
-		csslint: {
-			options: {
-				csslintrc: 'csslintrc'
-			},
-			all: {
-				src: ['src/**/*.css']
-			}
-		},
-
 		concat: {
 			dependencies: {
 				src: [
@@ -85,7 +73,6 @@ module.exports = function(grunt) {
 		clean: ['target/**'],
 	});
 
-	grunt.loadNpmTasks('grunt-contrib-csslint');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-clean');

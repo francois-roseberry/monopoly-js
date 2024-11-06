@@ -1,0 +1,10 @@
+{
+    "ignore": [
+        "adjoining-classes",
+        "box-sizing",
+        "known-properties",
+        "non-link-hover",
+        "order-alphabetical",
+        "unqualified-attributes"
+    ]
+}
