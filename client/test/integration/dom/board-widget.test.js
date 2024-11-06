@@ -1,10 +1,10 @@
 "use strict";
 	
-var BoardWidget = require('./board-widget');
-var PlayGameTask = require('./play-game-task');
+var BoardWidget = require('@ui/board-widget');
+var PlayGameTask = require('@app/play-game-task');
 
-var testData = require('./test-data');
-var describeInDom = require('./dom-fixture').describeInDom;
+var testData = require('@test/unit/test-data');
+var describeInDom = require('@test/integration/dom/util/dom-fixture').describeInDom;
 	
 describeInDom('A Board Widget', function (domContext) {
 	var task;

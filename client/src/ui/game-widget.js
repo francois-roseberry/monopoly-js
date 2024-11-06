@@ -1,10 +1,10 @@
 (function() {
 	"use strict";
 	
-	var GameConfigurationWidget = require('./game-configuration-widget');
-	var MonopolyGameWidget = require('./monopoly-game-widget');
+	var GameConfigurationWidget = require('@ui/game-configuration-widget');
+	var MonopolyGameWidget = require('@ui/monopoly-game-widget');
 	
-	var precondition = require('./contract').precondition;
+	var precondition = require('@infrastructure/contract').precondition;
 	
 	exports.render = function (container, gameTask) {
 		precondition(container, 'A Game widget requires a container to render into');

@@ -1,12 +1,12 @@
 "use strict";
 	
-var PlayersWidget = require('./players-widget');
-var PlayGameTask = require('./play-game-task');
-var GoBankruptChoice = require('./go-bankrupt-choice');
-var BuyPropertyChoice = require('./buy-property-choice');
+var PlayersWidget = require('@ui/players-widget');
+var PlayGameTask = require('@app/play-game-task');
+var GoBankruptChoice = require('@domain/choices/go-bankrupt-choice');
+var BuyPropertyChoice = require('@domain/choices/buy-property-choice');
 
-var testData = require('./test-data');
-var describeInDom = require('./dom-fixture').describeInDom;
+var testData = require('@test/unit/test-data');
+var describeInDom = require('@test/integration/dom/util/dom-fixture').describeInDom;
 
 describeInDom('A Players widget', function (domContext) {
 	var currentState;

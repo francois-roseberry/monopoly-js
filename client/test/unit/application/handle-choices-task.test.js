@@ -1,11 +1,11 @@
 "use strict";
 	
-var PlayGameTask = require('./play-game-task');
-var MoveChoice = require('./move-choice');
-var FinishTurnChoice = require('./finish-turn-choice');
+var PlayGameTask = require('@app/play-game-task');
+var MoveChoice = require('@domain/choices/move-choice');
+var FinishTurnChoice = require('@domain/choices/finish-turn-choice');
 
-var testData = require('./test-data');
-var assert = require('./assert');
+var testData = require('@test/unit/test-data');
+var assert = require('@test/unit/assert');
 
 describe('A HandleChoicesTask', function () {
 	var playGameTask;

@@ -1,9 +1,9 @@
 (function() {
 	"use strict";
 	
-	var precondition = require('./contract').precondition;
+	var precondition = require('@infrastructure/contract').precondition;
 	
-	var Messages = require('./messages');
+	var Messages = require('@domain/messages');
 	
 	exports.start = function (playGameTask) {
 		precondition(playGameTask, 'LogGameTask requires a PlayGameTask');

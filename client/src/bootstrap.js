@@ -1,10 +1,10 @@
 (function() {
 	"use strict";
 	
-	var GameTask = require('./game-task');
-	var GameWidget = require('./game-widget');
+	var GameTask = require('@app/game-task');
+	var GameWidget = require('@ui/game-widget');
 	
-	var failFast = require('./fail-fast');
+	var failFast = require('@infrastructure/fail-fast');
 	
 	failFast.crashOnUnhandledException();
     	failFast.crashOnResourceLoadingError();

@@ -1,9 +1,9 @@
 "use strict";
 	
-var FinishTurnChoice = require('./finish-turn-choice');
-var TryDoubleRollChoice = require('./try-double-roll-choice');
+var FinishTurnChoice = require('@domain/choices/finish-turn-choice');
+var TryDoubleRollChoice = require('@domain/choices/try-double-roll-choice');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('A TryDoubleRoll Choice', function () {
 	var choice;

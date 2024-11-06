@@ -10,3 +10,4 @@ target/
 
 # Other stuff
 npm-debug.log
+.yarn

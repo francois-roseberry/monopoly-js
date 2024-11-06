@@ -1,11 +1,11 @@
 "use strict";
 	
-var TradeTask = require('./trade-task');
-var TradeWidget = require('./trade-widget');
-var Board = require('./board');
+var TradeTask = require('@app/trade-task');
+var TradeWidget = require('@ui/trade-widget');
+var Board = require('@domain/board');
 
-var testData = require('./test-data');
-var describeInDom = require('./dom-fixture').describeInDom;
+var testData = require('@test/unit/test-data');
+var describeInDom = require('@test/integration/dom/util/dom-fixture').describeInDom;
 
 describeInDom('A Trade widget', function (domContext) {
 	var currentPlayer;

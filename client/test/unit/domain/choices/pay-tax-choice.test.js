@@ -1,8 +1,8 @@
 "use strict";
 	
-var PayTaxChoice = require('./pay-tax-choice');
+var PayTaxChoice = require('@domain/choices/pay-tax-choice');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('A Pay tax Choice', function () {
 	var choice;

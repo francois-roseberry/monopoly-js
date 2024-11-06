@@ -1,8 +1,8 @@
 "use strict";
 	
-var FinishTurnChoice = require('./finish-turn-choice');
+var FinishTurnChoice = require('@domain/choices/finish-turn-choice');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('A Finish turn Choice', function () {
 	var choice;

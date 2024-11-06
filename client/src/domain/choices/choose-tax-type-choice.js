@@ -1,11 +1,11 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n').i18n();
-	var precondition = require('./contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
+	var precondition = require('@infrastructure/contract').precondition;
 	
-	var GameState = require('./game-state');
-	var Choices = require('./choices');
+	var GameState = require('@domain/game-state');
+	var Choices = require('@domain/choices');
 	
 	exports.newFlatTax = function (amount) {
 		precondition(_.isNumber(amount) && amount > 0, 'A PayFlatTaxChoice requires a tax greater than 0');

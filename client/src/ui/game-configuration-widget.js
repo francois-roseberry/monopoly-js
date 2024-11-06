@@ -1,10 +1,10 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n').i18n();
-	var precondition = require('./contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
+	var precondition = require('@infrastructure/contract').precondition;
 	
-	var Popup = require('./popup');
+	var Popup = require('@ui/popup');
 	
 	exports.render = function (container, configureGameTask) {
 		precondition(container, 'Game configuration widget requires container to render into');

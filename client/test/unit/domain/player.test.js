@@ -1,9 +1,9 @@
 "use strict";
 	
-var Player = require('./player');
-var Board = require('./board');
+var Player = require('@domain/player');
+var Board = require('@domain/board');
 
-var testData = require('./test-data');
+var testData = require('@test/unit/test-data');
 
 describe('A player', function () {
 	var player;

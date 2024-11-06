@@ -1,7 +1,7 @@
 "use strict";
 	
-var Board = require('./board');
-var Player = require('./player');
+var Board = require('@domain/board');
+var Player = require('@domain/player');
 
 exports.playersConfiguration = function () {
 	return [

@@ -1,8 +1,8 @@
 'use strict';
 
-var Popup = require('./popup');
+var Popup = require('@ui/popup');
 
-var describeInDom = require('./dom-fixture').describeInDom;
+var describeInDom = require('@test/integration/dom/util/dom-fixture').describeInDom;
 
 describeInDom('An HTML popup with default options', function (domContext) {
     var positioning = {

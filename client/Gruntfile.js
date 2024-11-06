@@ -12,10 +12,9 @@ module.exports = function(grunt) {
 	grunt.registerTask('lint', ['jshint', 'csslint']);
 	
 	// Packaging
-	grunt.registerTask('prepare', ['copy:html', 'copy:flattenSourceAndTest'/*, 'copy:flattenSmokeTest'*/]);
-	grunt.registerTask('copySource', ['copy:jqueryUiImages', 'copy:lib', 'copy:fonts']);
+	grunt.registerTask('copySource', ['copy:html', 'copy:jqueryUiImages', 'copy:lib', 'copy:fonts']);
 	grunt.registerTask('minify', ['cssmin']);
-	grunt.registerTask('package', ['prepare', 'browserify', 'concat', 'copySource', 'minify']);
+	grunt.registerTask('package', ['concat', 'copySource', 'minify']);
 	
 	grunt.initConfig({
 		jshint: {
@@ -42,14 +41,6 @@ module.exports = function(grunt) {
 				src: ['src/**/*.css']
 			}
 		},
-		
-		browserify: {
-			dist: {
-				files: {
-					'./target/dist/lib/app.js': ['target/stagger/src/bootstrap.js']
-				}
-			}
-		},
 
 		concat: {
 			dependencies: {
@@ -66,19 +57,6 @@ module.exports = function(grunt) {
 		},
 			
 		copy: {
-			flattenSourceAndTest: {
-				expand: true,
-				src: [
-					'src/application/**/*.js',
-					'src/domain/**/*.js',
-					'src/infrastructure/**/*.js',
-					'src/ui/**/*.js',
-					'test/unit/**/*.js',
-					'test/integration/**/*.js'],
-				dest: 'target/stagger/src',
-				filter: 'isFile',
-				flatten: true
-			},
 			lib: {
 				expand: true,
 				cwd: 'node_modules',
@@ -127,7 +105,6 @@ module.exports = function(grunt) {
 		clean: ['target/**'],
 	});
 
-	grunt.loadNpmTasks('grunt-browserify');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-csslint');
 	grunt.loadNpmTasks('grunt-contrib-copy');

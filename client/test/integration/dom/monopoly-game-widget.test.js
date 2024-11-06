@@ -1,12 +1,12 @@
 "use strict";
 	
-var MonopolyGameWidget = require('./monopoly-game-widget');
-var PlayGameTask = require('./play-game-task');
-var MoveChoice = require('./move-choice');
-var TradeChoice = require('./trade-choice');
+var MonopolyGameWidget = require('@ui/monopoly-game-widget');
+var PlayGameTask = require('@app/play-game-task');
+var MoveChoice = require('@domain/choices/move-choice');
+var TradeChoice = require('@domain/choices/trade-choice');
 
-var testData = require('./test-data');
-var describeInDom = require('./dom-fixture').describeInDom;
+var testData = require('@test/unit/test-data');
+var describeInDom = require('@test/integration/dom/util/dom-fixture').describeInDom;
 
 describeInDom('A Monopoly game widget', function (domContext) {
 	var task;

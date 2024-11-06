@@ -1,14 +1,14 @@
 "use strict";
 	
-var PlayGameTask = require('./play-game-task');
-var Board = require('./board');
-var PlayerColors = require('./player-colors').colors();
-var MoveChoice = require('./move-choice');
-var FinishTurnChoice = require('./finish-turn-choice');
-var TradeChoice = require('./trade-choice');
+var PlayGameTask = require('@app/play-game-task');
+var Board = require('@domain/board');
+var PlayerColors = require('@domain/player-colors').colors();
+var MoveChoice = require('@domain/choices/move-choice');
+var FinishTurnChoice = require('@domain/choices/finish-turn-choice');
+var TradeChoice = require('@domain/choices/trade-choice');
 
-var testData = require('./test-data');
-var assert = require('./assert');
+var testData = require('@test/unit/test-data');
+var assert = require('@test/unit/assert');
 
 describe('The PlayGame task', function () {
 	var task;

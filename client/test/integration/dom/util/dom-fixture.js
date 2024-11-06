@@ -1,6 +1,6 @@
 'use strict';
 
-var addAssertions = require('./dom-assert').addAssertions;
+var addAssertions = require('@test/integration/dom/util/dom-assert').addAssertions;
 
 exports.describeInDom = function (message, testSuite) {
     describe("[DOM Test]", function () {

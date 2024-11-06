@@ -9,12 +9,11 @@
   },
   "engines": {
     "node": ">= 18.20.4"
-  }, 
-  "private": "true",
+  },
   "author": "francois-roseberry",
   "license": "WTFPL",
   "scripts": {
-    "e2e":  "yarn playwright test",
+    "e2e": "yarn playwright test",
     "start": "node server/server.js client/target/dist"
   },
   "devDependencies": {
@@ -23,5 +22,6 @@
   },
   "dependencies": {
     "express": "4.13.1"
-  }
+  },
+  "packageManager": "yarn@4.5.1"
 }

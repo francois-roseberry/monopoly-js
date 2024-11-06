@@ -1,10 +1,10 @@
 (function() {
 	"use strict";
 	
-	var Player = require('./player');
-	var TradeOffer = require('./trade-offer');
+	var Player = require('@domain/player');
+	var TradeOffer = require('@domain/trade-offer');
 	
-	var precondition = require('./contract').precondition;
+	var precondition = require('@infrastructure/contract').precondition;
 	
 	exports.start = function (currentPlayer, otherPlayer) {
 		precondition(Player.isPlayer(currentPlayer), 'A TradeTask requires a current player');

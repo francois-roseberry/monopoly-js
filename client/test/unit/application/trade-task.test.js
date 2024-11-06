@@ -1,9 +1,9 @@
 "use strict";
 	
-var TradeTask = require('./trade-task');
-var Board = require('./board');
+var TradeTask = require('@app/trade-task');
+var Board = require('@domain/board');
 
-var testData = require('./test-data');
+var testData = require('@test/unit/test-data');
 
 describe('A TradeTask', function () {
 	var task;

@@ -1,6 +1,6 @@
 "use strict";
 	
-var ConfigureGameTask = require('./configure-game-task');
+var ConfigureGameTask = require('@app/configure-game-task');
 
 describe('A ConfigureGameTask', function () {
 	var task;

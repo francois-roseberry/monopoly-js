@@ -1,7 +1,7 @@
 (function () {
     'use strict';
 
-    var precondition = require('./contract').precondition;
+    var precondition = require('@infrastructure/contract').precondition;
 
     exports.render = function (container, positioning, options) {
         precondition(container, "A popup require a positionned container to render into");

@@ -1,8 +1,8 @@
 (function() {
 	"use strict";
 
-	var i18n = require('./i18n').i18n();
-	var precondition = require('./contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
+	var precondition = require('@infrastructure/contract').precondition;
 	
 	exports.render = function (container, tradeTask) {
 		precondition(container, 'A TradeWidget requires a container to render into');

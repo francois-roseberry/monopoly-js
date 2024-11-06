@@ -1,8 +1,8 @@
 "use strict";
 	
-var RejectOfferChoice = require('./reject-offer-choice');
+var RejectOfferChoice = require('@domain/choices/reject-offer-choice');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('An RejectOffer Choice', function () {
 	var choice;

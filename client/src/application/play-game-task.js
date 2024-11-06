@@ -1,16 +1,16 @@
 (function() {
 	"use strict";
 	
-	var RollDiceTask = require('./roll-dice-task');
-	var TradeTask = require('./trade-task');
-	var LogGameTask = require('./log-game-task');
-	var HandleChoicesTask = require('./handle-choices-task');
-	var Player = require('./player');
-	var GameState = require('./game-state');
-	var TradeOffer = require('./trade-offer');
-	var Board = require('./board');
+	var RollDiceTask = require('@app/roll-dice-task');
+	var TradeTask = require('@app/trade-task');
+	var LogGameTask = require('@app/log-game-task');
+	var HandleChoicesTask = require('@app/handle-choices-task');
+	var Player = require('@domain/player');
+	var GameState = require('@domain/game-state');
+	var TradeOffer = require('@domain/trade-offer');
+	var Board = require('@domain/board');
 	
-	var precondition = require('./contract').precondition;
+	var precondition = require('@infrastructure/contract').precondition;
 	
 	exports.start = function (gameConfiguration) {
 		precondition(Board.isBoard(gameConfiguration.board),

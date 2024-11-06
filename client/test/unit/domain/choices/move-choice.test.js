@@ -1,8 +1,8 @@
 "use strict";
 	
-var MoveChoice = require('./move-choice');
+var MoveChoice = require('@domain/choices/move-choice');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('A Move Choice', function () {
 	var choice;

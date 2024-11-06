@@ -1,9 +1,9 @@
 "use strict";
 	
-var FinishTurnChoice = require('./finish-turn-choice');
-var PayDepositChoice = require('./pay-deposit-choice');
+var FinishTurnChoice = require('@domain/choices/finish-turn-choice');
+var PayDepositChoice = require('@domain/choices/pay-deposit-choice');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('A PayDeposit Choice', function () {
 	var choice;

@@ -1,9 +1,9 @@
 "use strict";
 	
-var GoToJailChoice = require('./go-to-jail-choice');
-var FinishTurnChoice = require('./finish-turn-choice');
+var GoToJailChoice = require('@domain/choices/go-to-jail-choice');
+var FinishTurnChoice = require('@domain/choices/finish-turn-choice');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('A Go To Jail Choice', function () {
 	var choice;

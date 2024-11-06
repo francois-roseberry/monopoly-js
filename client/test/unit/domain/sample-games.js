@@ -1,9 +1,9 @@
 "use strict";
 	
-var Board = require('./board');
-var GameState = require('./game-state');
+var Board = require('@domain/board');
+var GameState = require('@domain/game-state');
 
-var testData = require('./test-data');
+var testData = require('@test/unit/test-data');
 
 exports.turnStart = function () {
 	return GameState.turnStartState({

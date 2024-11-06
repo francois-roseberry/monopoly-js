@@ -1,7 +1,7 @@
 "use strict";
 	
-var Board = require('./board');
-var GameTask = require('./game-task');
+var Board = require('@domain/board');
+var GameTask = require('@app/game-task');
 
 describe('A Game task', function () {
 	var task;

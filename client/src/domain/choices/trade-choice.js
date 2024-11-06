@@ -1,12 +1,12 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n').i18n();
-	var precondition = require('./contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
+	var precondition = require('@infrastructure/contract').precondition;
 	
-	var GameState = require('./game-state');
-	var TradeOffer = require('./trade-offer');
-	var Player = require('./player');
+	var GameState = require('@domain/game-state');
+	var TradeOffer = require('@domain/trade-offer');
+	var Player = require('@domain/player');
 	
 	exports.newChoice = function (player) {
 		precondition(Player.isPlayer(player), 'A TradeChoice requires a player to trade with');

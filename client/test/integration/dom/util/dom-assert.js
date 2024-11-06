@@ -1,6 +1,6 @@
 'use strict';
 
-var precondition = require('./contract').precondition;
+var precondition = require('@infrastructure/contract').precondition;
 
 exports.addAssertions = function (context) {
     _.extend(context, assertionsOn(function () {

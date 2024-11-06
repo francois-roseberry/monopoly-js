@@ -1,11 +1,11 @@
 (function() {
 	"use strict";
 	
-	var PlayerColors = require('./player-colors').colors();
-	var Property = require('./property');
+	var PlayerColors = require('@domain/player-colors').colors();
+	var Property = require('@domain/property');
 	
-	var precondition = require('./contract').precondition;
-	var i18n = require('./i18n').i18n();
+	var precondition = require('@infrastructure/contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
 	
 	exports.isPlayer = function (candidate) {
 		return candidate instanceof Player;

@@ -1,11 +1,11 @@
 (function() {
 	"use strict";
 	
-	var precondition = require('./contract').precondition;
-	var i18n = require('./i18n').i18n();
+	var precondition = require('@infrastructure/contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
 	
-	var Symbols = require('./symbols');
-	var TextWrapper = require('./text-wrapper');
+	var Symbols = require('@ui/symbols');
+	var TextWrapper = require('@ui/text-wrapper');
 	
 	var SQUARE_WIDTH = 78;
 	var SQUARE_HEIGHT = 100;

@@ -1,15 +1,15 @@
 (function() {
 	"use strict";
 	
-	var BoardWidget = require('./board-widget');
-	var DiceWidget = require('./dice-widget');
-	var GameChoicesWidget = require('./game-choices-widget');
-	var PlayersWidget = require('./players-widget');
-	var LogGameWidget = require('./log-game-widget');
-	var TradeWidget = require('./trade-widget');
+	var BoardWidget = require('@ui/board-widget');
+	var DiceWidget = require('@ui/dice-widget');
+	var GameChoicesWidget = require('@ui/game-choices-widget');
+	var PlayersWidget = require('@ui/players-widget');
+	var LogGameWidget = require('@ui/log-game-widget');
+	var TradeWidget = require('@ui/trade-widget');
 	
-	var i18n = require('./i18n').i18n();
-	var precondition = require('./contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
+	var precondition = require('@infrastructure/contract').precondition;
 	
 	exports.render = function (container, playGameTask) {
 		precondition(container, 'A Monopoly game widget requires a container to render into');

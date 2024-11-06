@@ -1,9 +1,9 @@
 "use strict";
 	
-var RollDiceTask = require('./roll-dice-task');
-var DiceWidget = require('./dice-widget');
+var RollDiceTask = require('@app/roll-dice-task');
+var DiceWidget = require('@ui/dice-widget');
 
-var describeInDom = require('./dom-fixture').describeInDom;
+var describeInDom = require('@test/integration/dom/util/dom-fixture').describeInDom;
 
 describeInDom('A Dice widget', function (domContext) {
 	var diceCount;

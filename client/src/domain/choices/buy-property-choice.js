@@ -1,11 +1,11 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n').i18n();
-	var precondition = require('./contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
+	var precondition = require('@infrastructure/contract').precondition;
 	
-	var Property = require('./property');
-	var GameState = require('./game-state');
+	var Property = require('@domain/property');
+	var GameState = require('@domain/game-state');
 	
 	exports.newChoice = function (property) {
 		precondition(Property.isProperty(property), 'Buy property choice requires a property');

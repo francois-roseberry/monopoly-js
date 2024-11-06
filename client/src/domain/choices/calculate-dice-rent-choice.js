@@ -1,12 +1,12 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n').i18n();
-	var precondition = require('./contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
+	var precondition = require('@infrastructure/contract').precondition;
 	
-	var GameState = require('./game-state');
-	var Player = require('./player');
-	var Choices = require('./choices');
+	var GameState = require('@domain/game-state');
+	var Player = require('@domain/player');
+	var Choices = require('@domain/choices');
 	
 	exports.newChoice = function (multiplier, toPlayer) {
 		precondition(_.isNumber(multiplier) && multiplier > 0,

@@ -1,6 +1,6 @@
 "use strict";
 
-var RollDiceTask = require('./roll-dice-task');
+var RollDiceTask = require('@app/roll-dice-task');
 
 describe('A RollDiceTask', function () {
 	var task;

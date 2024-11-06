@@ -1,11 +1,11 @@
 "use strict";
 	
-var TradeChoice = require('./trade-choice');
-var TradeOffer = require('./trade-offer');
-var RejectOfferChoice = require('./reject-offer-choice');
-var AcceptOfferChoice = require('./accept-offer-choice');
+var TradeChoice = require('@domain/choices/trade-choice');
+var TradeOffer = require('@domain/trade-offer');
+var RejectOfferChoice = require('@domain/choices/reject-offer-choice');
+var AcceptOfferChoice = require('@domain/choices/accept-offer-choice');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('A Trade Choice', function () {
 	var choice;

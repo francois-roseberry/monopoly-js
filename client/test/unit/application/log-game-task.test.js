@@ -1,21 +1,21 @@
 "use strict";
 	
-var PlayGameTask = require('./play-game-task');
-var Messages = require('./messages');
-var Board = require('./board');
-var TradeOffer = require('./trade-offer');
-var PayTaxChoice = require('./pay-tax-choice');
-var PayRentChoice = require('./pay-rent-choice');
-var MoveChoice = require('./move-choice');
-var BuyPropertyChoice = require('./buy-property-choice');
-var AcceptOfferChoice = require('./accept-offer-choice');
-var RejectOfferChoice = require('./reject-offer-choice');
-var TradeChoice = require('./trade-choice');
-var GoToJailChoice = require('./go-to-jail-choice');
-var GoBankruptChoice = require('./go-bankrupt-choice');
-var FinishTurnChoice = require('./finish-turn-choice');
+var PlayGameTask = require('@app/play-game-task');
+var Messages = require('@domain/messages');
+var Board = require('@domain/board');
+var TradeOffer = require('@domain/trade-offer');
+var PayTaxChoice = require('@domain/choices/pay-tax-choice');
+var PayRentChoice = require('@domain/choices/pay-rent-choice');
+var MoveChoice = require('@domain/choices/move-choice');
+var BuyPropertyChoice = require('@domain/choices/buy-property-choice');
+var AcceptOfferChoice = require('@domain/choices/accept-offer-choice');
+var RejectOfferChoice = require('@domain/choices/reject-offer-choice');
+var TradeChoice = require('@domain/choices/trade-choice');
+var GoToJailChoice = require('@domain/choices/go-to-jail-choice');
+var GoBankruptChoice = require('@domain/choices/go-bankrupt-choice');
+var FinishTurnChoice = require('@domain/choices/finish-turn-choice');
 
-var testData = require('./test-data');
+var testData = require('@test/unit/test-data');
 
 describe('The log game task', function () {
 	var gameTask;

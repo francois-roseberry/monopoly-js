@@ -1,8 +1,8 @@
 (function() {
 	"use strict";
 	
-	var precondition =  require('./contract').precondition;
-	var i18n = require('./i18n').i18n();
+	var precondition =  require('@infrastructure/contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
 	
 	exports.render = function (container, gameState) {
 		precondition(container, 'Players widget requires a container to render into');

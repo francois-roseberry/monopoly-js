@@ -1,11 +1,11 @@
 "use strict";
 	
-var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
-var PayRentChoice = require('./pay-rent-choice');
-var GoBankruptChoice = require('./go-bankrupt-choice');
+var CalculateDiceRentChoice = require('@domain/choices/calculate-dice-rent-choice');
+var PayRentChoice = require('@domain/choices/pay-rent-choice');
+var GoBankruptChoice = require('@domain/choices/go-bankrupt-choice');
 
-var testData = require('./test-data');
-var games = require('./sample-games');
+var testData = require('@test/unit/test-data');
+var games = require('@test/unit/domain/sample-games');
 
 describe('A CalculateDiceRent Choice', function () {
 	it('requires dice', function () {

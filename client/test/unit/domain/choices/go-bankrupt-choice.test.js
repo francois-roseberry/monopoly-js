@@ -1,9 +1,9 @@
 "use strict";
 	
-var GoBankruptChoice = require('./go-bankrupt-choice');
-var FinishTurnChoice = require('./finish-turn-choice');
+var GoBankruptChoice = require('@domain/choices/go-bankrupt-choice');
+var FinishTurnChoice = require('@domain/choices/finish-turn-choice');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('A Go Bankrupt Choice', function () {
 	var choice;

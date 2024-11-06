@@ -1,9 +1,9 @@
 (function() {
 	"use strict";
 	
-	var Board = require('./board');
-	var PlayGameTask = require('./play-game-task');
-	var ConfigureGameTask = require('./configure-game-task');
+	var Board = require('@domain/board');
+	var PlayGameTask = require('@app/play-game-task');
+	var ConfigureGameTask = require('@app/configure-game-task');
 	
 	exports.start = function () {
 		return new GameTask();

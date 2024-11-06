@@ -1,9 +1,9 @@
 "use strict";
 	
-var BuyPropertyChoice = require('./buy-property-choice');
-var Board = require('./board');
+var BuyPropertyChoice = require('@domain/choices/buy-property-choice');
+var Board = require('@domain/board');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('A Buy property Choice', function () {
 	var choice;

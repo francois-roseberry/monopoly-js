@@ -1,12 +1,12 @@
 (function() {
 	"use strict";
 	
-	var GoBankruptChoice = require('./go-bankrupt-choice');
-	var PayRentChoice = require('./pay-rent-choice');
-	var PayTaxChoice = require('./pay-tax-choice');
-	var Player = require('./player');
+	var GoBankruptChoice = require('@domain/choices/go-bankrupt-choice');
+	var PayRentChoice = require('@domain/choices/pay-rent-choice');
+	var PayTaxChoice = require('@domain/choices/pay-tax-choice');
+	var Player = require('@domain/player');
 	
-	var precondition = require('./contract').precondition;
+	var precondition = require('@infrastructure/contract').precondition;
 	
 	exports.rentChoices = function (rent, fromPlayer, toPlayer) {
 		precondition(_.isNumber(rent) && rent > 0, 'Rent choices requires a rent greater than 0');

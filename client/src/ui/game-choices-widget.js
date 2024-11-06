@@ -1,7 +1,7 @@
 (function() {
 	"use strict";
 	
-	var precondition = require('./contract').precondition;
+	var precondition = require('@infrastructure/contract').precondition;
 	
 	exports.render = function(container, handleChoicesTask) {
 		precondition(container, 'The game choices widget requires a container to render into');

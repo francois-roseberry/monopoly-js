@@ -1,22 +1,22 @@
 "use strict";
 	
-var GameState = require('./game-state');
-var Board = require('./board');
-var PayTaxChoice = require('./pay-tax-choice');
-var PayRentChoice = require('./pay-rent-choice');
-var GoBankruptChoice = require('./go-bankrupt-choice');
-var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
-var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
-var MoveChoice = require('./move-choice');
-var FinishTurnChoice = require('./finish-turn-choice');
-var BuyPropertyChoice = require('./buy-property-choice');
-var TradeChoice = require('./trade-choice');
-var GoToJailChoice = require('./go-to-jail-choice');
-var PayDepositChoice = require('./pay-deposit-choice');
-var TryDoubleRollChoice = require('./try-double-roll-choice');
+var GameState = require('@domain/game-state');
+var Board = require('@domain/board');
+var PayTaxChoice = require('@domain/choices/pay-tax-choice');
+var PayRentChoice = require('@domain/choices/pay-rent-choice');
+var GoBankruptChoice = require('@domain/choices/go-bankrupt-choice');
+var ChooseTaxTypeChoice = require('@domain/choices/choose-tax-type-choice');
+var CalculateDiceRentChoice = require('@domain/choices/calculate-dice-rent-choice');
+var MoveChoice = require('@domain/choices/move-choice');
+var FinishTurnChoice = require('@domain/choices/finish-turn-choice');
+var BuyPropertyChoice = require('@domain/choices/buy-property-choice');
+var TradeChoice = require('@domain/choices/trade-choice');
+var GoToJailChoice = require('@domain/choices/go-to-jail-choice');
+var PayDepositChoice = require('@domain/choices/pay-deposit-choice');
+var TryDoubleRollChoice = require('@domain/choices/try-double-roll-choice');
 
-var games = require('./sample-games');
-var testData = require('./test-data');
+var games = require('@test/unit/domain/sample-games');
+var testData = require('@test/unit/test-data');
 
 describe('A turnStart state', function () {
 	describe('when player is in jail', function () {

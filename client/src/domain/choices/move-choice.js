@@ -1,10 +1,10 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n').i18n();
-	var precondition = require('./contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
+	var precondition = require('@infrastructure/contract').precondition;
 	
-	var GameState = require('./game-state');
+	var GameState = require('@domain/game-state');
 	
 	exports.newChoice = function() {
 		return new RollDiceChoice();

@@ -1,8 +1,8 @@
 "use strict";
 	
-var PayRentChoice = require('./pay-rent-choice');
+var PayRentChoice = require('@domain/choices/pay-rent-choice');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('A Pay rent Choice', function () {
 	var choice;

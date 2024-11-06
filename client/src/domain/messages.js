@@ -1,12 +1,12 @@
 (function() {
 	"use strict";
 	
-	var i18n = require('./i18n').i18n();
-	var precondition = require('./contract').precondition;
+	var i18n = require('@i18n/i18n').i18n();
+	var precondition = require('@infrastructure/contract').precondition;
 	
-	var Player = require('./player');
-	var Property = require('./property');
-	var TradeOffer = require('./trade-offer');
+	var Player = require('@domain/player');
+	var Property = require('@domain/property');
+	var TradeOffer = require('@domain/trade-offer');
 	
 	exports.logDiceRoll = function (player, die1, die2) {
 		precondition(Player.isPlayer(player),

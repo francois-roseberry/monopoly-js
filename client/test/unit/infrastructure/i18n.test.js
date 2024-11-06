@@ -26,12 +26,12 @@ describe('The i18n module', function () {
 
     function englishStrings(){
         forceEnglishLanguage();
-        return require('./i18n').i18n();
+        return require('@i18n/i18n').i18n();
     }
 
     function frenchStrings(){
         forceFrenchLanguage();
-        return require('./i18n').i18n();
+        return require('@i18n/i18n').i18n();
     }
 
     function forceEnglishLanguage(){

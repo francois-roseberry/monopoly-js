@@ -1,9 +1,9 @@
 (function() {
 	"use strict";
 	
-	var precondition = require('./contract').precondition;
+	var precondition = require('@infrastructure/contract').precondition;
 
-	var PropertyGroup = require('./property-group');
+	var PropertyGroup = require('@domain/property-group');
 	
 	exports.isProperty = function (candidate) {
 		return candidate instanceof Property;

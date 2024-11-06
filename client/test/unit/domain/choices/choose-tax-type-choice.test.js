@@ -1,12 +1,12 @@
 "use strict";
 	
-var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
-var PayTaxChoice = require('./pay-tax-choice');
-var GoBankruptChoice = require('./go-bankrupt-choice');
-var GameState = require('./game-state');
-var Board = require('./board');
+var ChooseTaxTypeChoice = require('@domain/choices/choose-tax-type-choice');
+var PayTaxChoice = require('@domain/choices/pay-tax-choice');
+var GoBankruptChoice = require('@domain/choices/go-bankrupt-choice');
+var GameState = require('@domain/game-state');
+var Board = require('@domain/board');
 
-var testData = require('./test-data');
+var testData = require('@test/unit/test-data');
 
 describe('A ChooseTaxType Choice', function () {
 	var choice = ChooseTaxTypeChoice.newFlatTax(1600);

@@ -1,22 +1,22 @@
 (function() {
 	"use strict";
 	
-	var Board = require('./board');
-	var Choices = require('./choices');
-	var MoveChoice = require('./move-choice');
-	var FinishTurnChoice = require('./finish-turn-choice');
-	var BuyPropertyChoice = require('./buy-property-choice');
-	var ChooseTaxTypeChoice = require('./choose-tax-type-choice');
-	var CalculateDiceRentChoice = require('./calculate-dice-rent-choice');
-	var TradeChoice = require('./trade-choice');
-	var AcceptOfferChoice = require('./accept-offer-choice');
-	var RejectOfferChoice = require('./reject-offer-choice');
-	var TradeOffer = require('./trade-offer');
-	var GoToJailChoice = require('./go-to-jail-choice');
-	var PayDepositChoice = require('./pay-deposit-choice');
-	var TryDoubleRollChoice = require('./try-double-roll-choice');
+	var Board = require('@domain/board');
+	var Choices = require('@domain/choices');
+	var MoveChoice = require('@domain/choices/move-choice');
+	var FinishTurnChoice = require('@domain/choices/finish-turn-choice');
+	var BuyPropertyChoice = require('@domain/choices/buy-property-choice');
+	var ChooseTaxTypeChoice = require('@domain/choices/choose-tax-type-choice');
+	var CalculateDiceRentChoice = require('@domain/choices/calculate-dice-rent-choice');
+	var TradeChoice = require('@domain/choices/trade-choice');
+	var AcceptOfferChoice = require('@domain/choices/accept-offer-choice');
+	var RejectOfferChoice = require('@domain/choices/reject-offer-choice');
+	var TradeOffer = require('@domain/trade-offer');
+	var GoToJailChoice = require('@domain/choices/go-to-jail-choice');
+	var PayDepositChoice = require('@domain/choices/pay-deposit-choice');
+	var TryDoubleRollChoice = require('@domain/choices/try-double-roll-choice');
 	
-	var precondition = require('./contract').precondition;
+	var precondition = require('@infrastructure/contract').precondition;
 	
 	exports.isGameState = function (candidate) {
 		return candidate instanceof GameState;

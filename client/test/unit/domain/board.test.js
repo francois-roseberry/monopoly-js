@@ -1,6 +1,6 @@
 "use strict";
 	
-var Board = require('./board');
+var Board = require('@domain/board');
 
 describe('Board property compare', function () {
 	var board;

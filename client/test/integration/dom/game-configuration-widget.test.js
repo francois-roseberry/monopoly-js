@@ -1,9 +1,9 @@
 "use strict";
 	
-var GameConfigurationWidget = require('./game-configuration-widget');
-var ConfigureGameTask = require('./configure-game-task');
+var GameConfigurationWidget = require('@ui/game-configuration-widget');
+var ConfigureGameTask = require('@app/configure-game-task');
 
-var describeInDom = require('./dom-fixture').describeInDom;
+var describeInDom = require('@test/integration/dom/util/dom-fixture').describeInDom;
 
 describeInDom('A game configuration widget', function (domContext) {
 	var task;

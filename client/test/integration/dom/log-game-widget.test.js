@@ -1,9 +1,9 @@
 "use strict";
 	
-var LogGameWidget = require('./log-game-widget');
-var Messages = require('./messages');
+var LogGameWidget = require('@ui/log-game-widget');
+var Messages = require('@domain/messages');
 
-var describeInDom = require('./dom-fixture').describeInDom;
+var describeInDom = require('@test/integration/dom/util/dom-fixture').describeInDom;
 
 describeInDom('A LogGameWidget', function (domContext) {
 	var messages;

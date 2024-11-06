@@ -1,10 +1,10 @@
 (function() {
 	"use strict";
 	
-	var precondition = require('./contract').precondition;
+	var precondition = require('@infrastructure/contract').precondition;
 	
-	var Property = require('./property');
-	var PropertyGroup = require('./property-group');
+	var Property = require('@domain/property');
+	var PropertyGroup = require('@domain/property-group');
 	
 	exports.isBoard = function (candidate) {
 		return candidate instanceof Board;

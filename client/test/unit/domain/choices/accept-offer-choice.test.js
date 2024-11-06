@@ -1,9 +1,9 @@
 "use strict";
 	
-var AcceptOfferChoice = require('./accept-offer-choice');
-var TradeOffer = require('./trade-offer');
+var AcceptOfferChoice = require('@domain/choices/accept-offer-choice');
+var TradeOffer = require('@domain/trade-offer');
 
-var games = require('./sample-games');
+var games = require('@test/unit/domain/sample-games');
 
 describe('An AcceptOffer Choice', function () {
 	var choice;
