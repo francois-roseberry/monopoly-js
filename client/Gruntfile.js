@@ -3,18 +3,14 @@
 module.exports = function(grunt) {
 	
 	// Default task, do everything
-	grunt.registerTask('default', 'Build and test everything', ['lint', 'package'/*, 'test'*/]);
-	
-	// Quick build
-	grunt.registerTask('check', ['lint', 'package'/*, 'test'*/]);
+	grunt.registerTask('default', 'Lint and build', ['lint', 'package']);
 	
 	// Code quality
 	grunt.registerTask('lint', ['jshint', 'csslint']);
 	
 	// Packaging
-	grunt.registerTask('copySource', ['copy:html', 'copy:jqueryUiImages', 'copy:lib', 'copy:fonts']);
 	grunt.registerTask('minify', ['cssmin']);
-	grunt.registerTask('package', ['concat', 'copySource', 'minify']);
+	grunt.registerTask('package', ['concat', 'copy:html', 'copy:jqueryUiImages', 'copy:lib', 'copy:fonts', 'minify']);
 	
 	grunt.initConfig({
 		jshint: {
@@ -24,10 +20,8 @@ module.exports = function(grunt) {
 			all: {
 				src: [
 					'Gruntfile.js',
-					'build/**/*.js',
 					'src/**/*.js',
-					'test/unit/**/*.js',
-					'test/integration/**/*.js',
+					'test/**/*.js',
 					exclude('src/**/i18n.*.js'),
 				]
 			}
