@@ -1,6 +1,4 @@
-# Monopoly-js [Halted]
-
-Halted because tests were becoming flaky and I had other projects. I'm still listening though, feel free to contribute. 
+# Monopoly-js
 
 Scroll down for demo
 
@@ -38,15 +36,21 @@ UI is available in english and french, depending on your browser language. Other
 
 ## Development setup
 
-To setup the project after downloading the sources, install node.js, then run 'npm install' both in the project directory and in the client/ subdirectory. After, the 'grunt' command should be available to build from that directory.
+To setup the project after checkout, install node.js and yarn, then run `yarn` both in the project directory and in the client/ subdirectory. 
 
-Run 'grunt background'. While it runs, open another terminal and run 'grunt check' to run tests and deploy. Also, the server is running in the background, so it is accessible on http://localhost:3000. It is also possible to connect directly to the Karma server on http://localhost:9876
+To run e2e tests, go to the project root and run `yarn e2e`
 
-Note: grunt runs karma on windows using git bash, so it must be in the path. Logically, at this point Git Bash should be installed, since you just pulled the sources from GitHub. But be sure to put Git Bash in the path (installation option in 'Git for Windows' installer)
+To run the client tests, go to the client directory and run `yarn test`
 
-This setup is not tested on non-Windows systems and therefore I don't know if this works.
+To build the client for the browser, go to the client directory and run `yarn build`
+
+To lint the client sources and CSS, go to the client directory and run `yarn lint`
+
+This project hasn't been touched in almost 10 years, a few of its tools were deprecated or a few majors behind. It followed best practices at the time, but it is far from the state of the art right now. However, the code is rather clean. So, as an exercisee, I'm picking it up and trying to modernize it. Any help welcome.
 
 ## Game Design Outline
+
+The game is modelized as a sort of giant state machines, transitions between states being player choices.
 
 **Application states**
 
