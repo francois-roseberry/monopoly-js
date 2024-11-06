@@ -7,8 +7,10 @@
     "url": "https://github.com/francois-roseberry/monopoly-js.git"
   },
   "scripts": {
-    "lint": "grunt lint",
-    "build": "node ./build.js && grunt package",
+    "lint:js": "jshint --verbose --config jshintrc Gruntfile.js src/**/*.js test/**/*.js",
+    "lint:css": "grunt lint",
+    "lint": "yarn lint:js && yarn lint:css",
+    "build": "yarn lint && node ./build.js && grunt package",
     "test": "mocha -r module-alias/register -r jsdom-global/register -r ./mocha_inject test/**/*.test.js"
   },
   "devDependencies": {
@@ -22,11 +24,11 @@
     "grunt-contrib-copy": "0.8.0",
     "grunt-contrib-csslint": "0.4.0",
     "grunt-contrib-cssmin": "0.12.3",
-    "grunt-contrib-jshint": "0.11.2",
     "jquery": "2.1.4",
     "jquery-ui": "1.13.3",
     "jsdom": "25.0.1",
     "jsdom-global": "3.0.2",
+    "jshint": "2.13.6",
     "mocha": "10.8.2"
   },
   "dependencies": {

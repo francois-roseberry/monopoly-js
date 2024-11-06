@@ -6,27 +6,13 @@ module.exports = function(grunt) {
 	grunt.registerTask('default', 'Lint and build', ['lint', 'package']);
 	
 	// Code quality
-	grunt.registerTask('lint', ['jshint', 'csslint']);
+	grunt.registerTask('lint', ['csslint']);
 	
 	// Packaging
 	grunt.registerTask('minify', ['cssmin']);
 	grunt.registerTask('package', ['concat', 'copy:html', 'copy:jqueryUiImages', 'copy:lib', 'copy:fonts', 'minify']);
 	
 	grunt.initConfig({
-		jshint: {
-			options: {
-				jshintrc: "jshintrc"
-			},
-			all: {
-				src: [
-					'Gruntfile.js',
-					'src/**/*.js',
-					'test/**/*.js',
-					exclude('src/**/i18n.*.js'),
-				]
-			}
-		},
-
 		csslint: {
 			options: {
 				csslintrc: 'csslintrc'
@@ -99,14 +85,9 @@ module.exports = function(grunt) {
 		clean: ['target/**'],
 	});
 
-	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-csslint');
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-concat');
-	  
-	function exclude(filePattern) {
-        return '!' + filePattern;
-    }
 };

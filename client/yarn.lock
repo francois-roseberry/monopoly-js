@@ -34,11 +34,11 @@ __metadata:
     grunt-contrib-copy: "npm:0.8.0"
     grunt-contrib-csslint: "npm:0.4.0"
     grunt-contrib-cssmin: "npm:0.12.3"
-    grunt-contrib-jshint: "npm:0.11.2"
     jquery: "npm:2.1.4"
     jquery-ui: "npm:1.13.3"
     jsdom: "npm:25.0.1"
     jsdom-global: "npm:3.0.2"
+    jshint: "npm:2.13.6"
     mocha: "npm:10.8.2"
     module-alias: "npm:2.2.3"
     rx: "npm:2.5.3"
@@ -1753,18 +1753,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"grunt-contrib-jshint@npm:0.11.2":
-  version: 0.11.2
-  resolution: "grunt-contrib-jshint@npm:0.11.2"
-  dependencies:
-    hooker: "npm:^0.2.3"
-    jshint: "npm:^2.6.0"
-  peerDependencies:
-    grunt: ">=0.4.0"
-  checksum: 10c0/cf8ef291508245f63f6bc5405da8e85afab50310ff045c5450be19085d6bc79e0c7c2506afac269c2e5d75de14c3c2bfac64b26ffb1d94b4b5081089d9e47c29
-  languageName: node
-  linkType: hard
-
 "grunt-legacy-log-utils@npm:~0.1.1":
   version: 0.1.1
   resolution: "grunt-legacy-log-utils@npm:0.1.1"
@@ -1963,7 +1951,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"hooker@npm:^0.2.3, hooker@npm:~0.2.3":
+"hooker@npm:~0.2.3":
   version: 0.2.3
   resolution: "hooker@npm:0.2.3"
   checksum: 10c0/beb6d634e0e09453d2e71ec6d15396c6cdb0120f2b9d2d80544c192c5d4e3e1e165d093fee04e0145888935266c29b75b90b27fc69132c532cf13576c4934ffb
@@ -2439,7 +2427,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jshint@npm:^2.6.0":
+"jshint@npm:2.13.6":
   version: 2.13.6
   resolution: "jshint@npm:2.13.6"
   dependencies:
