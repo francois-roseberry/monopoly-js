@@ -42,7 +42,7 @@ To build the client for the browser, go to the client directory and run `yarn bu
 
 To lint the client sources and CSS, go to the client directory and run `yarn lint`
 
-This project hasn't been touched in almost 10 years, a few of its tools were deprecated or a few majors behind. It followed best practices at the time, but it is far from the state of the art right now. However, the code is rather clean. So, as an exercisee, I'm picking it up and trying to modernize it. Any help welcome.
+This project hasn't been touched in almost 10 years, a few of its tools were deprecated or a few majors behind. It followed best practices at the time, but it is far from the state of the art right now. So it qualifies as "legacy" code. However, the code is rather clean. So, as an exercisee, I'm picking it up and trying to modernize it. Any help welcome.
 
 ## Game Design Outline
 
