@@ -2,7 +2,7 @@
 
 Scroll down for demo
 
-Implementation of the Monopoly game in javascript, rendering done with D3
+Implementation of the Monopoly game in frontend-only javascript, rendering done with D3. Being a frontend only app, it allows me to deploy it to github pages to have a demo ready for you.
 
 Not quite yet a complete Monopoly game, right now players alternate, roll the dice, buy and trade properties and pay rents (and eventually go bankrupt). The main game flow is operational, from the beginning to the end.
 
@@ -14,14 +14,10 @@ Features missing to be a complete game of Monopoly :
 * Differentiating between bankruptcy because of the bank or because of an opponent (to transfer possessions)
 * Chance and community cards
 * Bidding
+  
+## Computer player
 
-Those nice features I'd like to play with after the basics are complete :
-* Ability to use different Monopoly boards (for ex. : french classic, zelda and star wars)
-* Migrate the game processing on a server, probably Node, and find free Node hosting like Heroku, in order to :
-* Save the game
-* Experiment with WebSockets with Node to add networking
-* Collect lots of game stats, like rentability, frequency, etc. in order to :
-* Experiment with different types of AI players - basic minimax, machine learning based on statistics, etc.
+Right now, the computer player is dumb and just picks the first available choice when presented with many.
 
 ## Demo
 
