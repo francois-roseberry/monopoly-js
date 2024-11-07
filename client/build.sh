@@ -8,3 +8,7 @@ node ./build.js
 
 # Package assets for the web
 grunt package
+
+# Copy assets
+echo "Copying index.html entrypoint..."
+cp static/index.html dist/index.html
