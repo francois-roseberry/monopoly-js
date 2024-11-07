@@ -69,12 +69,9 @@ module.exports = function(grunt) {
 				}
 			}
 		},
-
-		clean: ['dist/**'],
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
-	grunt.loadNpmTasks('grunt-contrib-clean');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 };
