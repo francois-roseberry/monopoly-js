@@ -12,11 +12,16 @@ const aliases = require('./package.json')._moduleAliases
 
 const tr = transformTools.makeRequireTransform("requireTransform",
     { evaluateArguments: true }, (args, opts, cb) => {
-        // console.log()
+        const verbose = opts.verbose || false
+        if (verbose) {
+            console.log(); // Add a blank line
+        }
         // Add .js extension to avoid mixing up directories with files of the same name
         const requestPath = args[0] + ".js"
         const requiringDirectory = path.dirname(opts.file)
-        // console.log('Require to:', requestPath)
+        if (verbose) {
+            console.log('Require to:', requestPath)
+        }
         const matchingAlias = _.find(_.keys(aliases), (alias) => {
              // Matching /^alias(\/|$)/
             if (requestPath.indexOf(alias) === 0) {
@@ -28,16 +33,24 @@ const tr = transformTools.makeRequireTransform("requireTransform",
         })
         
         if (matchingAlias) {
-            // console.log('Found matching alias', matchingAlias)
+            if (verbose) {
+                console.log('Found matching alias', matchingAlias)
+            }
             const expandedPath = aliases[matchingAlias] + requestPath.substring(matchingAlias.length)
-            // console.log('Expanded required path would be:', expandedPath)
-            // console.log('Requiring file name:', opts.file)
-            // console.log('Requiring directory name:', requiringDirectory)
+            if (verbose) {
+                console.log('Expanded required path would be:', expandedPath)
+                console.log('Requiring file name:', opts.file)
+                console.log('Requiring directory name:', requiringDirectory)
+            }
             const relativePath = path.relative(requiringDirectory, expandedPath)
-            // console.log('Relative path: ', relativePath)
+            if (verbose) {
+                console.log('Relative path: ', relativePath)
+            }
             // Remove the unnecessary .js extension
             const newPath = `${relativePath.startsWith("../") ? "" : "./"}${relativePath}`.slice(0, -3)
-            // console.log('New path:', newPath)
+            if (verbose) {
+                console.log('New path:', newPath)
+            }
             return cb(null, "require('" + newPath + "')")
         }
 
