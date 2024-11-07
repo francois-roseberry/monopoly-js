@@ -31,7 +31,6 @@ __metadata:
     expect.js: "npm:0.3.1"
     grunt: "npm:0.4.5"
     grunt-contrib-concat: "npm:0.5.1"
-    grunt-contrib-copy: "npm:0.8.0"
     grunt-contrib-cssmin: "npm:0.12.3"
     jquery: "npm:2.1.4"
     jquery-ui: "npm:1.13.3"
@@ -1418,13 +1417,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-sync-cmp@npm:^0.1.0":
-  version: 0.1.1
-  resolution: "file-sync-cmp@npm:0.1.1"
-  checksum: 10c0/dc2b17c1c5c15b4b49c650554773523e827984818edbad62008bd73e79c334ea92fb1b7a50d1bad5ebb03a74dc91fb2ea4073f20b5ac6ed80ba70704de37ea57
-  languageName: node
-  linkType: hard
-
 "fill-range@npm:^7.1.1":
   version: 7.1.1
   resolution: "fill-range@npm:7.1.1"
@@ -1707,18 +1699,6 @@ __metadata:
   peerDependencies:
     grunt: ">=0.4.0"
   checksum: 10c0/0386cc4165702189da69c0162b1fb4392d7f7bd71f46d237f11bd7038a91b0936171d62dde16629e58d665270e8ade039b3f58b049ec77dc4a4caf93517a5f0e
-  languageName: node
-  linkType: hard
-
-"grunt-contrib-copy@npm:0.8.0":
-  version: 0.8.0
-  resolution: "grunt-contrib-copy@npm:0.8.0"
-  dependencies:
-    chalk: "npm:^0.5.1"
-    file-sync-cmp: "npm:^0.1.0"
-  peerDependencies:
-    grunt: ">=0.4.0"
-  checksum: 10c0/c8da1972953e75ac5b3b66cafaad56ac8c5f7d0d25aca079b87fa1d7e243878a7403a1bd283e91013a427e1d14efbdbbf60f14d26e0696223a57b49e22158a8b
   languageName: node
   linkType: hard
 

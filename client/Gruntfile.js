@@ -7,7 +7,7 @@ module.exports = function(grunt) {
 	
 	// Packaging
 	grunt.registerTask('minify', ['cssmin']);
-	grunt.registerTask('package', ['concat',  'copy:fonts', 'minify']);
+	grunt.registerTask('package', ['concat', 'minify']);
 	
 	grunt.initConfig({
 		concat: {
@@ -23,19 +23,6 @@ module.exports = function(grunt) {
 				dest: 'dist/lib/dependencies.js'
 			}
 		},
-			
-		copy: {
-			fonts: {
-				expand: true,
-				cwd: 'node_modules',
-				src: [
-					'bootstrap/dist/fonts/*.*'
-				],
-				dest: 'dist/fonts',
-				filter: 'isFile',
-				flatten: true
-			},
-		},
 
 		cssmin: {
 			target: {
@@ -49,7 +36,6 @@ module.exports = function(grunt) {
 		},
 	});
 
-	grunt.loadNpmTasks('grunt-contrib-copy');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
 	grunt.loadNpmTasks('grunt-contrib-concat');
 };
