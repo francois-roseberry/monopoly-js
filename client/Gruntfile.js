@@ -7,7 +7,7 @@ module.exports = function(grunt) {
 	
 	// Packaging
 	grunt.registerTask('minify', ['cssmin']);
-	grunt.registerTask('package', ['concat', 'copy:jqueryUiImages', 'copy:lib', 'copy:fonts', 'minify']);
+	grunt.registerTask('package', ['concat', 'copy:jqueryUiImages', 'copy:fonts', 'minify']);
 	
 	grunt.initConfig({
 		concat: {
@@ -25,16 +25,6 @@ module.exports = function(grunt) {
 		},
 			
 		copy: {
-			lib: {
-				expand: true,
-				cwd: 'node_modules',
-				src: [
-					'bootstrap/dist/css/bootstrap.css'
-				],
-				dest: 'dist/lib',
-				filter: 'isFile',
-				flatten: true
-			},
 			fonts: {
 				expand: true,
 				cwd: 'node_modules',
