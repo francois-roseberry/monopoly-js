@@ -7,7 +7,7 @@ module.exports = function(grunt) {
 	
 	// Packaging
 	grunt.registerTask('minify', ['cssmin']);
-	grunt.registerTask('package', ['concat', 'copy:jqueryUiImages', 'copy:fonts', 'minify']);
+	grunt.registerTask('package', ['concat',  'copy:fonts', 'minify']);
 	
 	grunt.initConfig({
 		concat: {
@@ -35,13 +35,6 @@ module.exports = function(grunt) {
 				filter: 'isFile',
 				flatten: true
 			},
-			jqueryUiImages: {
-				expand: true,
-				cwd: 'node_modules/jquery-ui/dist/themes/ui-lightness/images/',
-				src: ['**/*'],
-				dest: 'dist/images/',
-				filter: 'isFile'
-			}
 		},
 
 		cssmin: {

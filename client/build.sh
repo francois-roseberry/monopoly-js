@@ -15,3 +15,7 @@ cp static/index.html dist/index.html
 
 echo "Copying bootstrap CSS..."
 cp node_modules/bootstrap/dist/css/bootstrap.css dist/lib/bootstrap.css
+
+echo "Copying jQuery UI images..."
+mkdir -p dist/images
+cp node_modules/jquery-ui/dist/themes/ui-lightness/images/* dist/images
