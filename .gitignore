@@ -1,6 +1,6 @@
 # Build artifacts
 node_modules/
-target/
+dist/
 
 # Tests
 /test-results/

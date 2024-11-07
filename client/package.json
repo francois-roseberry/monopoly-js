@@ -10,7 +10,7 @@
     "lint:js": "jshint --verbose Gruntfile.js src/**/*.js test/**/*.js",
     "lint:css": "csslint src/**/*.css",
     "lint": "yarn lint:js && yarn lint:css",
-    "build": "yarn lint && node ./build.js && grunt package",
+    "build": "yarn lint && mkdir -p dist/lib && node ./build.js && grunt package",
     "test": "mocha -r module-alias/register -r jsdom-global/register -r ./mocha_inject test/**/*.test.js"
   },
   "devDependencies": {

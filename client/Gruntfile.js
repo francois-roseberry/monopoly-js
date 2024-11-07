@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 					'node_modules/jquery-ui/dist/jquery-ui.min.js',
 					'node_modules/bootstrap/dist/js/bootstrap.min.js'
 				],
-				dest: 'target/dist/lib/dependencies.js'
+				dest: 'dist/lib/dependencies.js'
 			}
 		},
 			
@@ -31,13 +31,13 @@ module.exports = function(grunt) {
 				src: [
 					'bootstrap/dist/css/bootstrap.css'
 				],
-				dest: 'target/dist/lib',
+				dest: 'dist/lib',
 				filter: 'isFile',
 				flatten: true
 			},
 			html: {
 				src: ['static/index.html'],
-				dest: 'target/dist/index.html',
+				dest: 'dist/index.html',
 				filter: 'isFile'
 			},
 			fonts: {
@@ -46,7 +46,7 @@ module.exports = function(grunt) {
 				src: [
 					'bootstrap/dist/fonts/*.*'
 				],
-				dest: 'target/dist/fonts',
+				dest: 'dist/fonts',
 				filter: 'isFile',
 				flatten: true
 			},
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
 				expand: true,
 				cwd: 'node_modules/jquery-ui/dist/themes/ui-lightness/images/',
 				src: ['**/*'],
-				dest: 'target/dist/images/',
+				dest: 'dist/images/',
 				filter: 'isFile'
 			}
 		},
@@ -62,7 +62,7 @@ module.exports = function(grunt) {
 		cssmin: {
 			target: {
 				files: {
-					'target/dist/styles.min.css': [
+					'dist/styles.min.css': [
 						'src/**/*.css',
 						'node_modules/jquery-ui/dist/themes/ui-lightness/jquery-ui.min.css'
 					]
@@ -70,7 +70,7 @@ module.exports = function(grunt) {
 			}
 		},
 
-		clean: ['target/**'],
+		clean: ['dist/**'],
 	});
 
 	grunt.loadNpmTasks('grunt-contrib-copy');

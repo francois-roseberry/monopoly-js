@@ -14,7 +14,7 @@
   "license": "WTFPL",
   "scripts": {
     "e2e": "yarn playwright test",
-    "start": "node server/server.js client/target/dist"
+    "start": "node server/server.js client/dist"
   },
   "devDependencies": {
     "@playwright/test": "1.48.2",

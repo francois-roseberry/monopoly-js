@@ -5,7 +5,7 @@ const path = require('path')
 const fs = require('fs');
 
 const inFile = "src/bootstrap.js"
-const outFile = "target/dist/lib/app.js"
+const outFile = "dist/lib/app.js"
 const writeStream = fs.createWriteStream(outFile, {flags: 'w'});
 
 const aliases = require('./package.json')._moduleAliases
