@@ -27,4 +27,4 @@ jobs:
         run: yarn client build
 
       - name: Run end-to-end tests
-        run: yarn e2e
+        run: yarn playwright install && yarn e2e
