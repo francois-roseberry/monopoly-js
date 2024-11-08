@@ -1,0 +1,21 @@
+name: After merge
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: yarn install --immutable
+      
+      - name: Lint, test and build client
+        run: yarn lint && yarn test && yarn build
+
+      - name: Run end-to-end tests
+        run: yarn e2e
