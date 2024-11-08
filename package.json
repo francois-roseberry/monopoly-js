@@ -10,11 +10,17 @@
   "engines": {
     "node": ">= 18.20.4"
   },
+  "workspaces": {
+    "packages": [
+      "client"
+    ]
+  },
   "author": "francois-roseberry",
   "license": "WTFPL",
   "scripts": {
     "e2e": "yarn playwright test",
-    "start": "node server/server.js client/dist"
+    "start": "node server/server.js client/dist",
+    "client": "yarn workspace @monopoly-js/client"
   },
   "devDependencies": {
     "@playwright/test": "1.48.2",
@@ -23,5 +29,13 @@
   "dependencies": {
     "express": "4.21.1"
   },
-  "packageManager": "yarn@4.5.1"
+  "packageManager": "yarn@4.5.1",
+  "_moduleAliases": {
+    "@test": "client/test",
+    "@app": "client/src/application",
+    "@domain": "client/src/domain",
+    "@ui": "client/src/ui",
+    "@infrastructure": "client/src/infrastructure",
+    "@i18n": "client/src/infrastructure/i18n"
+  }
 }

@@ -13,12 +13,12 @@ module.exports = function(grunt) {
 		concat: {
 			dependencies: {
 				src: [
-					'node_modules/underscore/underscore.js',
-					'node_modules/d3/d3.min.js',
-					'node_modules/rx/dist/rx.all.min.js',
-					'node_modules/jquery/dist/jquery.min.js',
-					'node_modules/jquery-ui/dist/jquery-ui.min.js',
-					'node_modules/bootstrap/dist/js/bootstrap.min.js'
+					'../node_modules/underscore/underscore.js',
+					'../node_modules/d3/d3.min.js',
+					'../node_modules/rx/dist/rx.all.min.js',
+					'../node_modules/jquery/dist/jquery.min.js',
+					'../node_modules/jquery-ui/dist/jquery-ui.min.js',
+					'../node_modules/bootstrap/dist/js/bootstrap.min.js'
 				],
 				dest: 'dist/lib/dependencies.js'
 			}
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
 				files: {
 					'dist/styles.min.css': [
 						'src/**/*.css',
-						'node_modules/jquery-ui/dist/themes/ui-lightness/jquery-ui.min.css'
+						'../node_modules/jquery-ui/dist/themes/ui-lightness/jquery-ui.min.css'
 					]
 				}
 			}

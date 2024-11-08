@@ -14,12 +14,12 @@ echo "Copying index.html entrypoint..."
 cp static/index.html dist/index.html
 
 echo "Copying bootstrap CSS..."
-cp node_modules/bootstrap/dist/css/bootstrap.css dist/lib/bootstrap.css
+cp ../node_modules/bootstrap/dist/css/bootstrap.css dist/lib/bootstrap.css
 
 echo "Copying jQuery UI images..."
 mkdir -p dist/images
-cp node_modules/jquery-ui/dist/themes/ui-lightness/images/* dist/images
+cp ../node_modules/jquery-ui/dist/themes/ui-lightness/images/* dist/images
 
 echo "Copying bootstrap fonts"
 mkdir -p dist/fonts
-cp node_modules/bootstrap/dist/fonts/* dist/fonts
+cp ../node_modules/bootstrap/dist/fonts/* dist/fonts
