@@ -40,7 +40,7 @@ __metadata:
     mocha: "npm:10.8.2"
     module-alias: "npm:2.2.3"
     rx: "npm:2.5.3"
-    underscore: "npm:1.8.3"
+    underscore: "npm:1.13.7"
   languageName: unknown
   linkType: soft
 
@@ -4338,10 +4338,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"underscore@npm:1.8.3":
-  version: 1.8.3
-  resolution: "underscore@npm:1.8.3"
-  checksum: 10c0/b9f8c5756252e01c057859c4b0932dc0bea73122121bbe465f1e1fa975ca6c3b6a3c8b967b7918d374686f9f1beb96c0d5c5d52788fc1328992bff02dba3599c
+"underscore@npm:1.13.7":
+  version: 1.13.7
+  resolution: "underscore@npm:1.13.7"
+  checksum: 10c0/fad2b4aac48847674aaf3c30558f383399d4fdafad6dd02dd60e4e1b8103b52c5a9e5937e0cc05dacfd26d6a0132ed0410ab4258241240757e4a4424507471cd
   languageName: node
   linkType: hard
 

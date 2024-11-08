@@ -33,7 +33,7 @@
   "dependencies": {
     "d3": "3.5.17",
     "rx": "2.5.3",
-    "underscore": "1.8.3"
+    "underscore": "1.13.7"
   },
   "packageManager": "yarn@4.5.1",
   "_moduleAliases": {
