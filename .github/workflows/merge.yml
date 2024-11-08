@@ -11,6 +11,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Enable corepack for yarn
+        run: corepack enable
+
       - name: Install dependencies
         run: yarn install --immutable
       
