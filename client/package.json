@@ -23,7 +23,7 @@
     "grunt-contrib-concat": "2.1.0",
     "grunt-contrib-cssmin": "5.0.0",
     "jquery": "2.1.4",
-    "jquery-ui": "1.13.3",
+    "jquery-ui": "1.14.1",
     "jsdom": "25.0.1",
     "jsdom-global": "3.0.2",
     "jshint": "2.13.6",

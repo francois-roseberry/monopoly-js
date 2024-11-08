@@ -33,7 +33,7 @@ __metadata:
     grunt-contrib-concat: "npm:2.1.0"
     grunt-contrib-cssmin: "npm:5.0.0"
     jquery: "npm:2.1.4"
-    jquery-ui: "npm:1.13.3"
+    jquery-ui: "npm:1.14.1"
     jsdom: "npm:25.0.1"
     jsdom-global: "npm:3.0.2"
     jshint: "npm:2.13.6"
@@ -2512,12 +2512,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jquery-ui@npm:1.13.3":
-  version: 1.13.3
-  resolution: "jquery-ui@npm:1.13.3"
+"jquery-ui@npm:1.14.1":
+  version: 1.14.1
+  resolution: "jquery-ui@npm:1.14.1"
   dependencies:
-    jquery: "npm:>=1.8.0 <4.0.0"
-  checksum: 10c0/d6c9b330e42ecd90cbf687ebd77c3f6572a4ef151c9572375fd82efe1dc4af21c0a568095af540805cbe1a1bea50306cfb6d12bff5297d646ae3d2fe3d6c54da
+    jquery: "npm:>=1.12.0 <5.0.0"
+  checksum: 10c0/cf7a3c0aac369e513d78bc5864bbafb6ddf85a43513ca5d00b11d65e2890a6618ff2ef5b8cb2925db9a6b7d0c2482d717fb10cc813e419024ae8bc457e18f51d
   languageName: node
   linkType: hard
 
@@ -2528,7 +2528,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jquery@npm:>=1.8.0 <4.0.0":
+"jquery@npm:>=1.12.0 <5.0.0":
   version: 3.7.1
   resolution: "jquery@npm:3.7.1"
   checksum: 10c0/808cfbfb758438560224bf26e17fcd5afc7419170230c810dd11f5c1792e2263e2970cca8d659eb84fcd9acc301edb6d310096e450277d54be4f57071b0c82d9
