@@ -17,8 +17,14 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
       
-      - name: Lint, test and build client
-        run: yarn lint && yarn test && yarn build
+      - name: Lint client
+        run: yarn client lint
+
+      - name: Test client
+        run: yarn client test
+
+      - name: Build client
+        run: yarn client build
 
       - name: Run end-to-end tests
         run: yarn e2e
