@@ -38,6 +38,10 @@ describe('The log game task', function () {
 				secondPlayer = state.players()[1];
 			});
 	});
+
+	afterEach(function () {
+		gameTask.stop()
+	});
 	
 	it('when dice finishes rolling, sends a message', function (done) {
 		gameTask.rollDiceTaskCreated().take(1).subscribe(function (task) {
