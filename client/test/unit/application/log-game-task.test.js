@@ -40,7 +40,7 @@ describe('The log game task', function () {
 	});
 
 	afterEach(function () {
-		gameTask.stop()
+		gameTask.stop();
 	});
 	
 	it('when dice finishes rolling, sends a message', function (done) {
